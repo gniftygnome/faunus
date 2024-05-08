@@ -1,10 +1,8 @@
 package cybercat5555.faunus.core.entity;
 
 import cybercat5555.faunus.core.entity.control.move.FlightWalkMoveControl;
+import cybercat5555.faunus.util.MCUtil;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ai.goal.EscapeDangerGoal;
-import net.minecraft.entity.ai.goal.FlyGoal;
-import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.passive.ParrotEntity;
 import net.minecraft.world.EntityView;
 import net.minecraft.world.World;
@@ -42,6 +40,7 @@ public class HoatzinEntity extends ParrotEntity implements GeoEntity {
     }
 
     protected <E extends HoatzinEntity> PlayState idleAnimController(final AnimationState<E> state) {
+
         if (state.isMoving() && isOnGround()) {
             state.setAndContinue(WALKING_ANIM);
         } else if (!isOnGround()) {
@@ -51,6 +50,13 @@ public class HoatzinEntity extends ParrotEntity implements GeoEntity {
         }
 
         return PlayState.CONTINUE;
+    }
+
+    @Override
+    public boolean isOnGround() {
+        double distanceToGround = this.getY() - MCUtil.getWorldSurface(this.getWorld(), this.getBlockPos());
+
+        return distanceToGround <= 1.5;
     }
 
     @Override
