@@ -1,6 +1,7 @@
 package cybercat5555.faunus.core;
 
 import cybercat5555.faunus.Faunus;
+import cybercat5555.faunus.core.item.QuetzalFeatherTrinket;
 import cybercat5555.faunus.util.FaunusID;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
@@ -35,6 +36,8 @@ public final class ItemRegistry {
     // Quetzal
     public static final Item QUETZAL_SPAWN_EGG = new SpawnEggItem(EntityRegistry.QUETZAL, 0x10cb6f, 0x800528, new FabricItemSettings());
     public static final Item QUETZAL_FEATHER = new Item(new FabricItemSettings());
+    public static final Item QUETZAL_FEATHER_TRINKET = new QuetzalFeatherTrinket(new FabricItemSettings().maxCount(1));
+
 
     // Hoatzin
     public static final Item HOATZIN_SPAWN_EGG = new SpawnEggItem(EntityRegistry.HOATZIN, 0xe0a040, 0x40a0e0, new FabricItemSettings());
@@ -85,6 +88,7 @@ public final class ItemRegistry {
             {
                 // misc
                 entries.add(QUETZAL_FEATHER);
+                entries.add(QUETZAL_FEATHER_TRINKET);
                 entries.add(HOATZIN_FEATHER);
                 entries.add(ARAPAIMA_SCALE);
                 entries.add(BOTTLED_LEECH);
@@ -134,6 +138,7 @@ public final class ItemRegistry {
         register("constrictor_spawn_egg", CONSTRICTOR_SPAWN_EGG);
         register("quetzal_spawn_egg", QUETZAL_SPAWN_EGG);
         register("quetzal_feather", QUETZAL_FEATHER);
+        register("quetzal_feather_trinket", QUETZAL_FEATHER_TRINKET);
         register("hoatzin_spawn_egg", HOATZIN_SPAWN_EGG);
         register("hoatzin_feather", HOATZIN_FEATHER);
         register("piranha_spawn_egg", PIRANHA_SPAWN_EGG);

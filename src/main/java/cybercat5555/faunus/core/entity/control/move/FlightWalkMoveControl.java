@@ -148,7 +148,6 @@ public class FlightWalkMoveControl extends MoveControl {
 
     private void startMovement() {
         boolean mustFly = new Random().nextFloat() < 0.01F;
-        System.out.println(mustFly);
 
         FlightWalkMoveControl.MoveType type = mustFly ? FlightWalkMoveControl.MoveType.FLY : FlightWalkMoveControl.MoveType.WALK;
         changeMovementType(type);
