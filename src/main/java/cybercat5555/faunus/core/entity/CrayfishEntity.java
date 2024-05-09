@@ -19,6 +19,7 @@ public class CrayfishEntity extends AnimalEntity implements GeoEntity {
     protected static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("idle");
 
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
+    private boolean hasBeenFed = false;
 
     public CrayfishEntity(EntityType<? extends CrayfishEntity> entityType, World world) {
         super(entityType, world);
@@ -41,5 +42,10 @@ public class CrayfishEntity extends AnimalEntity implements GeoEntity {
 
     protected <E extends CrayfishEntity> PlayState idleAnimController(final AnimationState<E> event) {
         return PlayState.CONTINUE;
+    }
+
+    @Override
+    public boolean cannotDespawn() {
+        return super.cannotDespawn() || hasBeenFed;
     }
 }

@@ -22,6 +22,8 @@ public class HoatzinEntity extends ParrotEntity implements GeoEntity {
 
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
 
+    private boolean hasBeenFed = false;
+
     public HoatzinEntity(EntityType<? extends ParrotEntity> entityType, World world) {
         super(entityType, world);
         setStepHeight(1.0f);
@@ -57,6 +59,11 @@ public class HoatzinEntity extends ParrotEntity implements GeoEntity {
         double distanceToGround = this.getY() - MCUtil.getWorldSurface(this.getWorld(), this.getBlockPos());
 
         return distanceToGround <= 1.5;
+    }
+
+    @Override
+    public boolean cannotDespawn() {
+        return super.cannotDespawn() || hasBeenFed;
     }
 
     @Override

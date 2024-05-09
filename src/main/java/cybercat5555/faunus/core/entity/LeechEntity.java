@@ -16,6 +16,7 @@ public class LeechEntity extends MobEntity implements GeoEntity {
     protected static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("idle");
 
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
+    private boolean hasBeenFed = false;
 
     public LeechEntity(EntityType<? extends MobEntity> entityType, World world) {
         super(entityType, world);
@@ -33,5 +34,10 @@ public class LeechEntity extends MobEntity implements GeoEntity {
 
     protected <E extends LeechEntity> PlayState idleAnimController(final AnimationState<E> event) {
         return PlayState.CONTINUE;
+    }
+
+    @Override
+    public boolean cannotDespawn() {
+        return super.cannotDespawn() || hasBeenFed;
     }
 }
