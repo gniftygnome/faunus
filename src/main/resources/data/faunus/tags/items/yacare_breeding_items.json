@@ -1,7 +1,12 @@
 {
 	"values": [
-		"minecraft:spider_eye",
+		"minecraft:cod",
+		"minecraft:cooked_cod",
 		"minecraft:salmon",
-		"minecraft:rotten_flesh"
+		"minecraft:cooked_salmon",
+		"minecraft:tropical_fish",
+		"minecraft:pufferfish",
+		"minecraft:chicken",
+		"minecraft:cooked_chicken"
 	]
 }
