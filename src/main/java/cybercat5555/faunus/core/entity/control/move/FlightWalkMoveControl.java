@@ -149,18 +149,12 @@ public class FlightWalkMoveControl extends MoveControl {
     private void startMovement() {
         boolean mustFly = new Random().nextFloat() < 0.01F;
 
-        FlightWalkMoveControl.MoveType type = mustFly ? FlightWalkMoveControl.MoveType.FLY : FlightWalkMoveControl.MoveType.WALK;
+        MoveType type = mustFly ? MoveType.FLY : MoveType.WALK;
         changeMovementType(type);
     }
 
     private void stopMovement() {
         this.entity.setUpwardSpeed(0.0F);
         this.entity.setForwardSpeed(0.0F);
-    }
-
-
-    public enum MoveType {
-        FLY,
-        WALK
     }
 }
