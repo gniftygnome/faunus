@@ -1,9 +1,18 @@
 package cybercat5555.faunus.core.entity;
 
 import cybercat5555.faunus.core.entity.control.move.FlightWalkMoveControl;
+import cybercat5555.faunus.core.entity.control.move.MoveType;
+import cybercat5555.faunus.util.FaunusID;
 import cybercat5555.faunus.util.MCUtil;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.ParrotEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.world.EntityView;
 import net.minecraft.world.World;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -16,6 +25,8 @@ import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class HoatzinEntity extends ParrotEntity implements GeoEntity {
+    public static final TagKey<Item> BREED_ITEMS = TagKey.of(RegistryKeys.ITEM, FaunusID.content("hoatzin_breeding_items"));
+
     protected static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("idle");
     protected static final RawAnimation WALKING_ANIM = RawAnimation.begin().thenLoop("walk");
     protected static final RawAnimation FLY_ANIM = RawAnimation.begin().thenLoop("flight");
@@ -28,7 +39,27 @@ public class HoatzinEntity extends ParrotEntity implements GeoEntity {
         super(entityType, world);
         setStepHeight(1.0f);
         moveControl = new FlightWalkMoveControl(this, 90, false);
-        ((FlightWalkMoveControl) moveControl).changeMovementType(FlightWalkMoveControl.MoveType.WALK);
+        ((FlightWalkMoveControl) moveControl).changeMovementType(MoveType.WALK);
+    }
+
+    @Override
+    public ActionResult interactMob(PlayerEntity player, Hand hand) {
+        ItemStack handItem = player.getStackInHand(hand);
+        feedEntity(player, handItem);
+
+        return super.interactMob(player, hand);
+    }
+
+    private void feedEntity(PlayerEntity player, ItemStack handItem) {
+        if (isBreedingItem(handItem)) {
+            hasBeenFed = true;
+            handItem.decrement(1);
+        }
+    }
+
+    @Override
+    public boolean isBreedingItem(ItemStack stack) {
+        return stack.isIn(BREED_ITEMS);
     }
 
     @Override

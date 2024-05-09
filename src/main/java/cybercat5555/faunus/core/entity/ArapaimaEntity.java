@@ -31,7 +31,7 @@ import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class ArapaimaEntity extends SchoolingFishEntity implements GeoEntity {
-    public static final TagKey<Item> ARAPAIMA_BREED_ITEMS = TagKey.of(RegistryKeys.ITEM, FaunusID.content("arapaima_breeding_items"));
+    public static final TagKey<Item> BREED_ITEMS = TagKey.of(RegistryKeys.ITEM, FaunusID.content("arapaima_breeding_items"));
     protected static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("idle");
     protected static final RawAnimation SWIM_ANIM = RawAnimation.begin().thenLoop("swimming");
     protected static final RawAnimation FLOP_ANIM = RawAnimation.begin().thenLoop("flopping");
@@ -117,7 +117,7 @@ public class ArapaimaEntity extends SchoolingFishEntity implements GeoEntity {
     }
 
     public boolean isBreedingItem(ItemStack stack) {
-        return stack.isIn(ARAPAIMA_BREED_ITEMS);
+        return stack.isIn(BREED_ITEMS);
     }
 
     @Override

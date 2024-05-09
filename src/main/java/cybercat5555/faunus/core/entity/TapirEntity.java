@@ -3,7 +3,6 @@ package cybercat5555.faunus.core.entity;
 import cybercat5555.faunus.core.EffectStatusRegistry;
 import cybercat5555.faunus.core.EntityRegistry;
 import cybercat5555.faunus.core.ItemRegistry;
-import cybercat5555.faunus.core.entity.ai.goals.RamGoal;
 import cybercat5555.faunus.util.FaunusID;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.entity.EntityType;
@@ -62,7 +61,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.List;
 
 public class TapirEntity extends AnimalEntity implements GeoEntity, SmartBrainOwner<TapirEntity> {
-    public static final TagKey<Item> TAPIR_BREED_ITEMS = TagKey.of(RegistryKeys.ITEM, FaunusID.content("tapir_breeding_items"));
+    public static final TagKey<Item> BREED_ITEMS = TagKey.of(RegistryKeys.ITEM, FaunusID.content("tapir_breeding_items"));
 
     protected static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("idle");
     protected static final RawAnimation WALKING_ANIM = RawAnimation.begin().thenLoop("walking");
@@ -173,7 +172,7 @@ public class TapirEntity extends AnimalEntity implements GeoEntity, SmartBrainOw
 
     @Override
     public boolean isBreedingItem(ItemStack stack) {
-        return stack.isIn(TAPIR_BREED_ITEMS);
+        return stack.isIn(BREED_ITEMS);
     }
 
     private boolean canGetMilked() {
