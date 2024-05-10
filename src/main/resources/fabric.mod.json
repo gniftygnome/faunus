@@ -16,7 +16,7 @@
 		"sources": "https://github.com/cybercat5555/faunus"
 	},
 	"license": "CC-BY-NC-ND-4.0",
-	"icon": "assets/modid/icon.png",
+	"icon": "assets/faunus/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
