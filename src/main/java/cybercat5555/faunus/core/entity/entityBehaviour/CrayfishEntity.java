@@ -1,6 +1,7 @@
-package cybercat5555.faunus.core.entity;
+package cybercat5555.faunus.core.entity.entityBehaviour;
 
 import cybercat5555.faunus.core.EntityRegistry;
+import cybercat5555.faunus.core.entity.FeedableEntity;
 import cybercat5555.faunus.util.FaunusID;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.AnimalEntity;
@@ -14,6 +15,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager.ControllerRegistrar;
@@ -23,8 +25,7 @@ import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class CrayfishEntity extends AnimalEntity implements GeoEntity {
-    public static final TagKey<Item> BREED_ITEMS = TagKey.of(RegistryKeys.ITEM, FaunusID.content("crayfish_breeding_items"));
+public class CrayfishEntity extends AnimalEntity implements GeoEntity, FeedableEntity {
 
     protected static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("idle");
 
@@ -38,26 +39,9 @@ public class CrayfishEntity extends AnimalEntity implements GeoEntity {
     @Override
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack handItem = player.getStackInHand(hand);
-        feedEntity(player, handItem);
+        feedEntity(handItem);
 
         return super.interactMob(player, hand);
-    }
-
-    private void feedEntity(PlayerEntity player, ItemStack handItem) {
-        if (isBreedingItem(handItem)) {
-            hasBeenFed = true;
-            handItem.decrement(1);
-        }
-    }
-
-    public boolean isBreedingItem(ItemStack stack) {
-        return stack.isIn(BREED_ITEMS);
-    }
-
-
-    @Override
-    public PassiveEntity createChild(ServerWorld world, PassiveEntity other) {
-        return EntityRegistry.CRAYFISH.create(world);
     }
 
     @Override
@@ -77,5 +61,34 @@ public class CrayfishEntity extends AnimalEntity implements GeoEntity {
     @Override
     public boolean cannotDespawn() {
         return super.cannotDespawn() || hasBeenFed;
+    }
+
+    @Override
+    public void feedEntity(ItemStack stack) {
+        if (!hasBeenFed && canFedWithItem(stack)) {
+            hasBeenFed = true;
+            stack.decrement(1);
+        }
+    }
+
+    @Override
+    public boolean canFedWithItem(ItemStack stack) {
+        return stack.isIn(getBreedingItemsTag());
+    }
+
+    @Override
+    public boolean hasBeenFed() {
+        return hasBeenFed;
+    }
+
+    @Override
+    public TagKey<Item> getBreedingItemsTag() {
+        return TagKey.of(RegistryKeys.ITEM, FaunusID.content("crayfish_breeding_items"));
+    }
+
+    @Nullable
+    @Override
+    public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
+        return EntityRegistry.CRAYFISH.create(world);
     }
 }

@@ -1,4 +1,4 @@
-package cybercat5555.faunus.core.entity;
+package cybercat5555.faunus.core.entity.entityBehaviour;
 
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;

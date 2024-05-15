@@ -1,5 +1,6 @@
-package cybercat5555.faunus.core.entity;
+package cybercat5555.faunus.core.entity.entityBehaviour;
 
+import cybercat5555.faunus.core.entity.FeedableEntity;
 import cybercat5555.faunus.core.entity.control.move.FlightWalkMoveControl;
 import cybercat5555.faunus.core.entity.control.move.MoveType;
 import cybercat5555.faunus.util.FaunusID;
@@ -24,8 +25,7 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class HoatzinEntity extends ParrotEntity implements GeoEntity {
-    public static final TagKey<Item> BREED_ITEMS = TagKey.of(RegistryKeys.ITEM, FaunusID.content("hoatzin_breeding_items"));
+public class HoatzinEntity extends ParrotEntity implements GeoEntity, FeedableEntity {
 
     protected static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("idle");
     protected static final RawAnimation WALKING_ANIM = RawAnimation.begin().thenLoop("walk");
@@ -45,21 +45,9 @@ public class HoatzinEntity extends ParrotEntity implements GeoEntity {
     @Override
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack handItem = player.getStackInHand(hand);
-        feedEntity(player, handItem);
+        feedEntity(handItem);
 
         return super.interactMob(player, hand);
-    }
-
-    private void feedEntity(PlayerEntity player, ItemStack handItem) {
-        if (isBreedingItem(handItem)) {
-            hasBeenFed = true;
-            handItem.decrement(1);
-        }
-    }
-
-    @Override
-    public boolean isBreedingItem(ItemStack stack) {
-        return stack.isIn(BREED_ITEMS);
     }
 
     @Override
@@ -100,5 +88,29 @@ public class HoatzinEntity extends ParrotEntity implements GeoEntity {
     @Override
     public EntityView method_48926() {
         return null;
+    }
+
+
+    @Override
+    public void feedEntity(ItemStack stack) {
+        if (canFedWithItem(stack)) {
+            hasBeenFed = true;
+            stack.decrement(1);
+        }
+    }
+
+    @Override
+    public boolean canFedWithItem(ItemStack stack) {
+        return stack.isIn(getBreedingItemsTag());
+    }
+
+    @Override
+    public boolean hasBeenFed() {
+        return hasBeenFed;
+    }
+
+    @Override
+    public TagKey<Item> getBreedingItemsTag() {
+        return TagKey.of(RegistryKeys.ITEM, FaunusID.content("hoatzin_breeding_items"));
     }
 }

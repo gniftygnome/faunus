@@ -1,4 +1,4 @@
-package cybercat5555.faunus.core.entity;
+package cybercat5555.faunus.core.entity.entityBehaviour;
 
 import cybercat5555.faunus.core.ItemRegistry;
 import cybercat5555.faunus.core.entity.ai.goals.PiranhaAttackGoal;

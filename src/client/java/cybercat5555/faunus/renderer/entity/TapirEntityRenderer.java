@@ -1,6 +1,6 @@
 package cybercat5555.faunus.renderer.entity;
 
-import cybercat5555.faunus.core.entity.TapirEntity;
+import cybercat5555.faunus.core.entity.entityBehaviour.TapirEntity;
 import cybercat5555.faunus.util.FaunusID;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRendererFactory.Context;

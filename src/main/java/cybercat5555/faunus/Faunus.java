@@ -1,5 +1,6 @@
 package cybercat5555.faunus;
 
+import cybercat5555.faunus.common.EventManager;
 import cybercat5555.faunus.core.*;
 import net.fabricmc.api.ModInitializer;
 
@@ -17,5 +18,11 @@ public class Faunus implements ModInitializer {
         SoundRegistry.init();
         EffectStatusRegistry.init();
         PotionRegistry.init();
+
+        eventHandler();
+    }
+
+    public void eventHandler() {
+        EventManager.onAttack();
     }
 }

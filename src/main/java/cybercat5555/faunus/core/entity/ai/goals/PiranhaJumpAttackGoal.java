@@ -1,16 +1,13 @@
 package cybercat5555.faunus.core.entity.ai.goals;
 
-import cybercat5555.faunus.core.entity.PiranhaEntity;
+import cybercat5555.faunus.core.entity.entityBehaviour.PiranhaEntity;
 import cybercat5555.faunus.util.MCUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import org.jetbrains.annotations.NotNull;
 
 public class PiranhaJumpAttackGoal extends MeleeAttackGoal {
 

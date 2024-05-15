@@ -1,18 +1,7 @@
 package cybercat5555.faunus.core;
 
 import cybercat5555.faunus.Faunus;
-import cybercat5555.faunus.core.entity.ArapaimaEntity;
-import cybercat5555.faunus.core.entity.CapuchinEntity;
-import cybercat5555.faunus.core.entity.ConstrictorEntity;
-import cybercat5555.faunus.core.entity.CrayfishEntity;
-import cybercat5555.faunus.core.entity.HoatzinEntity;
-import cybercat5555.faunus.core.entity.LeechEntity;
-import cybercat5555.faunus.core.entity.PiranhaEntity;
-import cybercat5555.faunus.core.entity.QuetzalEntity;
-import cybercat5555.faunus.core.entity.SnappingTurtleEntity;
-import cybercat5555.faunus.core.entity.SongbirdEntity;
-import cybercat5555.faunus.core.entity.TapirEntity;
-import cybercat5555.faunus.core.entity.YacareEntity;
+import cybercat5555.faunus.core.entity.entityBehaviour.*;
 import cybercat5555.faunus.util.FaunusID;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
@@ -86,6 +75,10 @@ public final class EntityRegistry {
             .dimensions(EntityDimensions.fixed(1f, 0.5f))
             .build());
 
+    public static final EntityType<YacareManEaterEntity> YACARE_MANEATER = register("yacare_maneater", FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, YacareManEaterEntity::new)
+            .dimensions(EntityDimensions.fixed(2f, 1f))
+            .build());
+
     /**
      * Registers all entities.
      */
@@ -99,11 +92,12 @@ public final class EntityRegistry {
         FabricDefaultAttributeRegistry.register(QUETZAL, QuetzalEntity.createQuetzalAttributes());
         FabricDefaultAttributeRegistry.register(HOATZIN, HoatzinEntity.createParrotAttributes());
         FabricDefaultAttributeRegistry.register(PIRANHA, PiranhaEntity.createMobAttributes());
-        FabricDefaultAttributeRegistry.register(ARAPAIMA, ArapaimaEntity.createFishAttributes());
+        FabricDefaultAttributeRegistry.register(ARAPAIMA, ArapaimaEntity.createMobAttributes());
         FabricDefaultAttributeRegistry.register(SNAPPING_TURTLE, SnappingTurtleEntity.createTurtleAttributes());
         FabricDefaultAttributeRegistry.register(CRAYFISH, CrayfishEntity.createMobAttributes());
         FabricDefaultAttributeRegistry.register(LEECH, LeechEntity.createMobAttributes());
         FabricDefaultAttributeRegistry.register(YACARE, YacareEntity.createMobAttributes());
+        FabricDefaultAttributeRegistry.register(YACARE_MANEATER, YacareManEaterEntity.createMobAttributes());
 
         BiomeModifications.addSpawn(ctx -> ctx.hasTag(BiomeTags.IS_JUNGLE), SpawnGroup.WATER_CREATURE, PIRANHA, 12, 5, 8);
     }

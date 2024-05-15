@@ -1,12 +1,7 @@
 package cybercat5555.faunus.core.entity.ai.goals;
 
-import cybercat5555.faunus.core.entity.PiranhaEntity;
-import net.minecraft.entity.ai.goal.DolphinJumpGoal;
+import cybercat5555.faunus.core.entity.entityBehaviour.PiranhaEntity;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.registry.tag.FluidTags;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import org.jetbrains.annotations.NotNull;
 
 import static net.minecraft.util.Util.getRandom;
 

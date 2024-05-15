@@ -31,5 +31,6 @@ public final class EntityRendererRegistry {
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(EntityRegistry.CRAYFISH, CrayfishEntityRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(EntityRegistry.LEECH, LeechEntityRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(EntityRegistry.YACARE, YacareEntityRenderer::new);
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(EntityRegistry.YACARE_MANEATER, YacareEntityRenderer::new);
     }
 }
