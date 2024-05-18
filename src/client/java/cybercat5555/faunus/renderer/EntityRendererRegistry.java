@@ -1,18 +1,7 @@
 package cybercat5555.faunus.renderer;
 
 import cybercat5555.faunus.core.EntityRegistry;
-import cybercat5555.faunus.renderer.entity.ArapaimaEntityRenderer;
-import cybercat5555.faunus.renderer.entity.CapuchinEntityRenderer;
-import cybercat5555.faunus.renderer.entity.ConstrictorEntityRenderer;
-import cybercat5555.faunus.renderer.entity.CrayfishEntityRenderer;
-import cybercat5555.faunus.renderer.entity.HoatzinEntityRenderer;
-import cybercat5555.faunus.renderer.entity.LeechEntityRenderer;
-import cybercat5555.faunus.renderer.entity.PiranhaEntityRenderer;
-import cybercat5555.faunus.renderer.entity.QuetzalEntityRenderer;
-import cybercat5555.faunus.renderer.entity.SnappingTurtleEntityRenderer;
-import cybercat5555.faunus.renderer.entity.SongbirdEntityRenderer;
-import cybercat5555.faunus.renderer.entity.TapirEntityRenderer;
-import cybercat5555.faunus.renderer.entity.YacareEntityRenderer;
+import cybercat5555.faunus.renderer.entity.*;
 
 public final class EntityRendererRegistry {
     private EntityRendererRegistry() {
@@ -31,6 +20,6 @@ public final class EntityRendererRegistry {
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(EntityRegistry.CRAYFISH, CrayfishEntityRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(EntityRegistry.LEECH, LeechEntityRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(EntityRegistry.YACARE, YacareEntityRenderer::new);
-        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(EntityRegistry.YACARE_MANEATER, YacareEntityRenderer::new);
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(EntityRegistry.YACARE_MANEATER, YacareManEaterEntityRenderer::new);
     }
 }

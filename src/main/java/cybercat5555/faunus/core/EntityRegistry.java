@@ -76,7 +76,7 @@ public final class EntityRegistry {
             .build());
 
     public static final EntityType<YacareManEaterEntity> YACARE_MANEATER = register("yacare_maneater", FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, YacareManEaterEntity::new)
-            .dimensions(EntityDimensions.fixed(2f, 1f))
+            .dimensions(EntityDimensions.fixed(3f, 1f))
             .build());
 
     /**

@@ -6,8 +6,8 @@ import net.minecraft.client.render.entity.EntityRendererFactory.Context;
 import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
-public class YacareEntityRenderer extends GeoEntityRenderer<YacareEntity> {
-    public YacareEntityRenderer(Context renderManager) {
-        super(renderManager, new DefaultedEntityGeoModel<>(FaunusID.content("yacare"), true));
+public class YacareManEaterEntityRenderer extends GeoEntityRenderer<YacareEntity> {
+    public YacareManEaterEntityRenderer(Context renderManager) {
+        super(renderManager, new DefaultedEntityGeoModel<>(FaunusID.content("yacare_maneating"), true));
     }
 }

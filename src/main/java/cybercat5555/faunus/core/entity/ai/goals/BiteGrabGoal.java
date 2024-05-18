@@ -10,8 +10,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3i;
 
-public class BiteGrabGoal extends Goal {
+public class BiteGrabGoal extends Goal implements HungerMeter {
+    public static final float MAX_HUNGER = 100;
     public static final int MAX_GRAB_TIME = 100;
+    private float hunger = 0;
+
 
     protected MobEntity mob;
     protected LivingEntity target;
@@ -29,6 +32,7 @@ public class BiteGrabGoal extends Goal {
     public void tick() {
         if (target == null) return;
         this.mob.getLookControl().lookAt(this.target, 30.0f, 30.0f);
+        increaseHunger(0.2f);
 
         if (isGrabbing) {
             if (shouldDrop(this.target)) {
@@ -60,12 +64,20 @@ public class BiteGrabGoal extends Goal {
 
     private void grabDamage(LivingEntity target) {
         target.damage(this.mob.getDamageSources().generic(), (float) this.mob.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE));
+
+        if (!target.isAlive()) {
+            increaseHunger(-(MAX_HUNGER / 10));
+        }
     }
 
     private void rollDamage(LivingEntity target) {
         ((BiteGrabEntity) this.mob).setPerformDeathRoll(true);
 
         target.damage(this.mob.getDamageSources().generic(), (float) this.mob.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE) * 2.0f);
+
+        if (!target.isAlive()) {
+            increaseHunger(-(MAX_HUNGER / 10));
+        }
     }
 
     private boolean tryGrab(LivingEntity target) {
@@ -110,10 +122,9 @@ public class BiteGrabGoal extends Goal {
 
     @Override
     public boolean canStart() {
-        if (this.mob == null) return false;
-
         LivingEntity livingEntity = this.mob.getTarget();
-        if (livingEntity == null) {
+        if (livingEntity == null || !doesHaveHunger()) {
+            increaseHunger(0.2f);
             return false;
         }
 
@@ -124,7 +135,7 @@ public class BiteGrabGoal extends Goal {
 
     @Override
     public boolean shouldContinue() {
-        if (target != null && !target.isAlive()) {
+        if (target == null || !target.isAlive() || !doesHaveHunger()) {
             return false;
         }
 
@@ -138,5 +149,16 @@ public class BiteGrabGoal extends Goal {
     public void stop() {
         this.target = null;
         this.mob.getNavigation().stop();
+    }
+
+
+    @Override
+    public void increaseHunger(float hunger) {
+        this.hunger = Math.max(0, Math.min(MAX_HUNGER, this.hunger + hunger));
+    }
+
+    @Override
+    public boolean doesHaveHunger() {
+        return hunger > (MAX_HUNGER / 2);
     }
 }

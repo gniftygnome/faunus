@@ -51,7 +51,7 @@ public class QuetzalEntity extends ParrotEntity implements GeoEntity {
     public void playAmbientSound() {
         SoundEvent soundEvent = this.getAmbientSound();
 
-        if (soundEvent != null && this.random.nextInt(100) <= 20) {
+        if (soundEvent != null && this.random.nextFloat() <= 0.2) {
             this.playSound(soundEvent, this.getSoundVolume(), this.getSoundPitch());
         }
     }
