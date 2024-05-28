@@ -1,6 +1,7 @@
 package cybercat5555.faunus.core.entity.entityBehaviour;
 
 import cybercat5555.faunus.core.EntityRegistry;
+import cybercat5555.faunus.core.entity.BiteGrabEntity;
 import cybercat5555.faunus.core.entity.BreedableEntity;
 import cybercat5555.faunus.core.entity.FeedableEntity;
 import cybercat5555.faunus.core.entity.ai.goals.MeleeHungryGoal;
@@ -8,10 +9,7 @@ import cybercat5555.faunus.util.FaunusID;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.control.AquaticMoveControl;
-import net.minecraft.entity.ai.goal.ActiveTargetGoal;
-import net.minecraft.entity.ai.goal.LookAroundGoal;
-import net.minecraft.entity.ai.goal.RevengeGoal;
-import net.minecraft.entity.ai.goal.WanderAroundGoal;
+import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
@@ -46,7 +44,7 @@ public class YacareEntity extends AnimalEntity implements GeoEntity, FeedableEnt
     protected static final RawAnimation RUSH_WATER_ANIM = RawAnimation.begin().thenLoop("rush_water");
     protected static final RawAnimation WALK_ANIM = RawAnimation.begin().thenLoop("walk");
     protected static final RawAnimation RUSH_LAND_ANIM = RawAnimation.begin().thenLoop("rush_land");
-    protected static final RawAnimation DEATH_ROLL_ANIM = RawAnimation.begin().thenLoop("WIP death roll3");
+    protected static final RawAnimation DEATH_ROLL_ANIM = RawAnimation.begin().thenLoop("WIP death roll3").thenLoop("idle_land");
 
     private static final int MAX_LOVE_TICKS = 600;
     private int loveTicks;
@@ -67,16 +65,16 @@ public class YacareEntity extends AnimalEntity implements GeoEntity, FeedableEnt
 
     public static DefaultAttributeContainer.Builder createMobAttributes() {
         return MobEntity.createMobAttributes()
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 72f)
+                .add(EntityAttributes.GENERIC_MAX_HEALTH, 24f)
                 .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.35f)
-                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 18f)
+                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6f)
                 .add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 0.3f)
                 .add(EntityAttributes.GENERIC_ATTACK_SPEED, 1f);
     }
 
     @Override
     protected void initGoals() {
-        goalSelector.add(1, new MeleeHungryGoal(this, isSubmergedInWater() ? 3 : 1.35f, false));
+        goalSelector.add(1, new MeleeHungryGoal(this,  isSubmergedInWater() ? 3 : 1.35f, false));
         goalSelector.add(2, new LookAroundGoal(this));
         goalSelector.add(3, new WanderAroundGoal(this, 0.7D));
         targetSelector.add(1, new RevengeGoal(this));
@@ -94,7 +92,7 @@ public class YacareEntity extends AnimalEntity implements GeoEntity, FeedableEnt
 
     @Override
     public boolean onKilledOther(ServerWorld world, LivingEntity other) {
-        if (other instanceof PlayerEntity) {
+        if(other instanceof PlayerEntity) {
             this.turnIntoManEater();
         }
 
@@ -113,7 +111,7 @@ public class YacareEntity extends AnimalEntity implements GeoEntity, FeedableEnt
     public void turnIntoManEater() {
         YacareManEaterEntity manEater = EntityRegistry.YACARE_MANEATER.create(this.getWorld());
 
-        if (manEater != null) {
+        if(manEater != null) {
             manEater.updatePositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
             this.getWorld().spawnEntity(manEater);
             this.remove(RemovalReason.DISCARDED);

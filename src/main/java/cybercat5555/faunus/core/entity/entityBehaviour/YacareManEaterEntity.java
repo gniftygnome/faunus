@@ -9,6 +9,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.control.AquaticMoveControl;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
+import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.mob.IllagerEntity;
@@ -21,10 +22,9 @@ import net.minecraft.world.World;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.object.PlayState;
-
 public class YacareManEaterEntity extends YacareEntity implements GeoEntity, BiteGrabEntity {
-    protected boolean isGrabbing = false;
-    protected boolean isPerformingDeathRoll = false;
+    protected boolean isGrabbing;
+    protected boolean isPerformingDeathRoll;
 
     public YacareManEaterEntity(EntityType<? extends AnimalEntity> entityType, World world) {
         super(entityType, world);
@@ -45,9 +45,12 @@ public class YacareManEaterEntity extends YacareEntity implements GeoEntity, Bit
 
     @Override
     protected <E extends YacareEntity> PlayState idleAnimController(AnimationState<E> event) {
-        if (isPerformingDeathRoll) {
+        if (isPerformingDeathRoll || (event.isCurrentAnimation(DEATH_ROLL_ANIM))) {
             event.setAndContinue(DEATH_ROLL_ANIM);
-            setPerformDeathRoll(false);
+
+            if(event.getController().hasAnimationFinished()){
+                setPerformDeathRoll(false);
+            }
 
             return PlayState.CONTINUE;
         }
@@ -62,7 +65,7 @@ public class YacareManEaterEntity extends YacareEntity implements GeoEntity, Bit
 
     @Override
     protected void updatePassengerPosition(Entity passenger, PositionUpdater positionUpdater) {
-        Vec3d vec3 = (new Vec3d(0, 0, 1.2)).rotateY(-bodyYaw * 0.017453292F);
+        Vec3d vec3 = (new Vec3d(0, 0.5, 1.7)).rotateY(-bodyYaw * 0.017453292F);
         passenger.setPose(EntityPose.STANDING);
 
         positionUpdater.accept(passenger, this.getX() + vec3.x, this.getY() + vec3.y, this.getZ() + vec3.z);

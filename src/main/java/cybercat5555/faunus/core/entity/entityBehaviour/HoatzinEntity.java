@@ -12,6 +12,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.EntityView;
@@ -71,6 +72,12 @@ public class HoatzinEntity extends ParrotEntity implements GeoEntity, FeedableEn
         }
 
         return PlayState.CONTINUE;
+    }
+
+
+    @Override
+    protected void addFlapEffects() {
+        this.playSound(SoundEvents.ENTITY_PARROT_FLY, 0.075f, 1.0f);
     }
 
     @Override

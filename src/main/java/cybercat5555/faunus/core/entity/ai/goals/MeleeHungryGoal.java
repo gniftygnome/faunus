@@ -15,7 +15,6 @@ public class MeleeHungryGoal extends MeleeAttackGoal implements HungerMeter {
     @Override
     public void tick() {
         increaseHunger(0.2f);
-
         super.tick();
     }
 
@@ -28,9 +27,10 @@ public class MeleeHungryGoal extends MeleeAttackGoal implements HungerMeter {
         }
     }
 
+
     @Override
     public boolean canStart() {
-        if (!doesHaveHunger()) {
+        if (!doesHaveHunger() && this.mob.getTarget() == null) {
             increaseHunger(0.2f);
             return false;
         }
@@ -40,7 +40,7 @@ public class MeleeHungryGoal extends MeleeAttackGoal implements HungerMeter {
 
     @Override
     public boolean shouldContinue() {
-        return doesHaveHunger() && super.shouldContinue();
+        return (!doesHaveHunger() && this.mob.getTarget() == null) && super.shouldContinue();
     }
 
     @Override

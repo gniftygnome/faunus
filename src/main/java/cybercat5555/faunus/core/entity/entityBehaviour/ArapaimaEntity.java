@@ -8,7 +8,10 @@ import cybercat5555.faunus.core.entity.ai.goals.RamGoal;
 import cybercat5555.faunus.util.FaunusID;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.SchoolingFishEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
@@ -52,6 +55,16 @@ public class ArapaimaEntity extends SchoolingFishEntity implements GeoEntity, Fe
     protected void initGoals() {
         goalSelector.add(1, new RamGoal(this, 2.5d, 0.3f));
         goalSelector.add(2, new EscapeDangerGoal(this, 1.25d));
+    }
+
+
+    public static DefaultAttributeContainer.Builder createMobAttributes() {
+        return MobEntity.createMobAttributes()
+                .add(EntityAttributes.GENERIC_MAX_HEALTH, 24f)
+                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.35f)
+                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6f)
+                .add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 0.3f)
+                .add(EntityAttributes.GENERIC_ATTACK_SPEED, 1.5f);
     }
 
     @Override

@@ -23,7 +23,13 @@ public class TerritorialSelectorGoal<T extends LivingEntity> extends ActiveTarge
     }
 
     @Override
-    public void start() {
+    public void tick() {
+        if (target == null) targetEntity();
+
+        super.tick();
+    }
+
+    public void targetEntity() {
         List<Entity> entities = mob.getWorld().getOtherEntities(mob, mob.getBoundingBox().expand(16.0D, 8.0D, 16.0D), predicate);
 
         if (!entities.isEmpty()) {
@@ -31,8 +37,6 @@ public class TerritorialSelectorGoal<T extends LivingEntity> extends ActiveTarge
             startBlockPos = mob.getBlockPos();
             timeToAttack = 0;
         }
-
-        super.start();
     }
 
     @Override

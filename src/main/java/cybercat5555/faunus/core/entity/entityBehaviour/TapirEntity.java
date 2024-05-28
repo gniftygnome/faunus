@@ -9,10 +9,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.task.BreedTask;
-import net.minecraft.entity.ai.goal.AnimalMateGoal;
-import net.minecraft.entity.ai.goal.EscapeDangerGoal;
-import net.minecraft.entity.ai.goal.LookAroundGoal;
-import net.minecraft.entity.ai.goal.LookAtEntityGoal;
+import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -107,8 +104,9 @@ public class TapirEntity extends AnimalEntity implements GeoEntity, SmartBrainOw
     @Override
     public final void initGoals() {
         goalSelector.add(1, new EscapeDangerGoal(this, 2.5d));
-        goalSelector.add(2, new LookAroundGoal(this));
-        goalSelector.add(3, new LookAtEntityGoal(this, PlayerEntity.class, 3.0f));
+        goalSelector.add(2, new FollowParentGoal(this, 1.25d));
+        goalSelector.add(3, new LookAroundGoal(this));
+        goalSelector.add(4, new LookAtEntityGoal(this, PlayerEntity.class, 3.0f));
 
         targetSelector.add(1, new AnimalMateGoal(this, 1.0));
     }

@@ -10,6 +10,7 @@ import net.minecraft.entity.passive.ParrotEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.EntityView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -61,6 +62,11 @@ public class QuetzalEntity extends ParrotEntity implements GeoEntity {
         controllers.add(new AnimationController<>(this, "idle", 10, this::idleAnimController));
     }
 
+    @Override
+    protected void addFlapEffects() {
+        this.playSound(SoundEvents.ENTITY_PARROT_FLY, 0.075f, 1.0f);
+    }
+
     protected <E extends QuetzalEntity> PlayState idleAnimController(final AnimationState<E> state) {
         if (isTouchingWater()) {
             state.setAndContinue(FLYING_UPRIGHT_ANIM);
@@ -72,6 +78,7 @@ public class QuetzalEntity extends ParrotEntity implements GeoEntity {
             state.setAndContinue(IDLE_ANIM);
         }
 
+        state.setControllerSpeed(state.isCurrentAnimation(FLYING_ANIM) || state.isCurrentAnimation(FLYING_UPRIGHT_ANIM) ? 1.5f : 1f);
         return PlayState.CONTINUE;
     }
 
