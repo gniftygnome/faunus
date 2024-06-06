@@ -1,4 +1,4 @@
-package cybercat5555.faunus.core.entity.entityBehaviour;
+package cybercat5555.faunus.core.entity.livingEntity;
 
 import cybercat5555.faunus.core.EntityRegistry;
 import cybercat5555.faunus.core.SoundRegistry;
@@ -95,6 +95,6 @@ public class QuetzalEntity extends ParrotEntity implements GeoEntity {
 
     @Override
     public EntityView method_48926() {
-        return null;
+        return getWorld();
     }
 }

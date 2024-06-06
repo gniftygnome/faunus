@@ -1,0 +1,343 @@
+package cybercat5555.faunus.core.entity.livingEntity;
+
+import cybercat5555.faunus.core.EntityRegistry;
+import cybercat5555.faunus.core.entity.BreedableEntity;
+import cybercat5555.faunus.core.entity.FeedableEntity;
+import cybercat5555.faunus.core.entity.ai.goals.HangTreeGoal;
+import cybercat5555.faunus.util.FaunusID;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.passive.PassiveEntity;
+import net.minecraft.entity.passive.TameableShoulderEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.EntityView;
+import net.minecraft.world.World;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.AnimatableManager.ControllerRegistrar;
+import software.bernie.geckolib.core.animation.AnimationController;
+import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.util.GeckoLibUtil;
+
+import java.util.ArrayList;
+
+public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity, FeedableEntity, BreedableEntity {
+    protected static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("idle");
+    protected static final RawAnimation HANGING_TAIL_IDLE_ANIM = RawAnimation.begin().thenLoop("hanging_tail_idle");
+    protected static final RawAnimation SITTING_ANIM = RawAnimation.begin().thenLoop("sitting_idle");
+    protected static final RawAnimation SITTING_SHOULDER_ANIM = RawAnimation.begin().thenLoop("sitting_idle_shoulder");
+    protected static final RawAnimation SITTING_GROOMING_ANIM = RawAnimation.begin().thenLoop("sitting_grooming");
+    protected static final RawAnimation WALKING_ANIM = RawAnimation.begin().thenLoop("walking");
+    protected static final RawAnimation RUNNING_ANIM = RawAnimation.begin().thenLoop("running");
+    protected static final RawAnimation ATTACK_LEFT_ANIM = RawAnimation.begin().thenLoop("attack_left");
+    protected static final RawAnimation ATTACK_RIGHT_ANIM = RawAnimation.begin().thenLoop("attack_right");
+    protected static final RawAnimation HANGING_HANDS_IDLE_ANIM = RawAnimation.begin().thenLoop("hanging_hands_idle");
+    protected static final RawAnimation HANGING_MOVEMENT_ANIM = RawAnimation.begin().thenLoop("hanging_movement");
+    protected static final RawAnimation SITTING_GROOMING_FLARE_ANIM = RawAnimation.begin().thenLoop("sitting_grooming_flare");
+
+    private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
+    private int loveTicks;
+    private boolean hasBeenFed;
+
+    public CapuchinEntity(EntityType<? extends CapuchinEntity> entityType, World world) {
+        super(entityType, world);
+        this.setNoGravity(false);
+    }
+
+    @Override
+    public PassiveEntity createChild(ServerWorld world, PassiveEntity other) {
+        return EntityRegistry.CAPUCHIN.create(world);
+    }
+
+    public static DefaultAttributeContainer.Builder createMobAttributes() {
+        return MobEntity.createMobAttributes()
+                .add(EntityAttributes.GENERIC_MAX_HEALTH, 14f)
+                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25f)
+                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 4f)
+                .add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 0.1f)
+                .add(EntityAttributes.GENERIC_ATTACK_SPEED, 1f);
+    }
+
+    @Override
+    protected void initGoals() {
+        this.goalSelector.add(0, new EscapeDangerGoal(this, 1.25));
+        this.goalSelector.add(1, new MeleeCapuchinGoal(this, 1.0, true));
+        this.goalSelector.add(1, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
+        this.goalSelector.add(2, new HangTreeGoal(this, 1.0));
+        this.goalSelector.add(3, new FollowOwnerGoal(this, 1.0, 5.0f, 1.0f, true));
+
+        targetSelector.add(1, new RevengeGoal(this));
+        targetSelector.add(2, new ActiveTargetGoal<>(this, LivingEntity.class, true,
+                target -> target instanceof CapuchinEntity || target instanceof PlayerEntity));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return geoCache;
+    }
+
+    @Override
+    public void registerControllers(ControllerRegistrar controllers) {
+        controllers.add(new AnimationController<>(this, "idle", 5, this::idleAnimController));
+    }
+
+    protected <E extends CapuchinEntity> PlayState idleAnimController(final AnimationState<E> event) {
+        boolean isMoving = this.getVelocity().lengthSquared() > 0.001;
+        boolean isRunning = this.getVelocity().lengthSquared() > 0.00207;
+        boolean isSitting = this.isSitting();
+        boolean isSittingInPlayerShoulder = this.getVehicle() instanceof PlayerEntity;
+        boolean isNear2Capuchin = this.nearCapuchinCount() >= 2;
+        boolean isHangingTree = isHangingTree(this.getPos());
+        boolean isAlreadyPlayingAttackAnim = event.getController().getCurrentRawAnimation() == ATTACK_LEFT_ANIM || event.getController().getCurrentRawAnimation() == ATTACK_RIGHT_ANIM;
+        boolean isAlreadyPlayingHangingAnim = event.getController().getCurrentRawAnimation() == HANGING_HANDS_IDLE_ANIM || event.getController().getCurrentRawAnimation() == HANGING_TAIL_IDLE_ANIM;
+
+
+        if (isSitting) {
+            if (isSittingInPlayerShoulder) {
+                event.setAnimation(SITTING_SHOULDER_ANIM);
+            } else if (isNear2Capuchin) {
+                event.setAnimation(SITTING_GROOMING_FLARE_ANIM);
+            } else if (isNearCapuchin()) {
+                event.setAnimation(SITTING_GROOMING_ANIM);
+            } else {
+                event.setAnimation(SITTING_ANIM);
+            }
+
+        } else if (isMoving) {
+            event.setAnimation(!isRunning && isHangingTree ? HANGING_MOVEMENT_ANIM : isRunning ? RUNNING_ANIM : WALKING_ANIM);
+        } else if (isAttacking()) {
+            if (isAlreadyPlayingAttackAnim) {
+                return PlayState.CONTINUE;
+            }
+
+        } else {
+            if (isAlreadyPlayingHangingAnim) {
+                return PlayState.CONTINUE;
+            }
+
+            event.setAnimation(isHangingTree ? Math.random() < 0.5 ? HANGING_HANDS_IDLE_ANIM : HANGING_TAIL_IDLE_ANIM : IDLE_ANIM);
+        }
+
+        return PlayState.CONTINUE;
+    }
+
+    @Override
+    public EntityView method_48926() {
+        return getWorld();
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+
+        if (getVehicle() != null && getVehicle() instanceof PlayerEntity player && !player.isOnGround()) {
+            stopRiding();
+        }
+
+        breed();
+    }
+
+    @Override
+    public ActionResult interactMob(PlayerEntity player, Hand hand) {
+        ItemStack handItem = player.getStackInHand(hand);
+        feedEntity(player, handItem);
+
+        if (isOwner(player) && hand.equals(Hand.MAIN_HAND)) {
+            if (player.isSneaking()) {
+                startRiding(player, true);
+            } else if (getVehicle() == null) {
+                setSitting(!isSitting());
+            }
+        }
+
+        return super.interactMob(player, hand);
+    }
+
+    @Override
+    public void breed() {
+    }
+
+    @Override
+    public boolean isInLove() {
+        return loveTicks > 0;
+    }
+
+    @Override
+    public void findMate() {
+        ArrayList<CapuchinEntity> entities = (ArrayList<CapuchinEntity>) this.getWorld().getEntitiesByClass(
+                CapuchinEntity.class,
+                this.getBoundingBox().expand(8.0D),
+                entity -> entity != this && entity.loveTicks > 0
+        );
+
+        if (!entities.isEmpty() && !this.isNearMate() && this.getNavigation().getCurrentPath() == null) {
+            this.getNavigation().startMovingTo(entities.get(0), 1.0D);
+        }
+    }
+
+    @Override
+    public boolean isNearMate() {
+        ArrayList<CapuchinEntity> entities = (ArrayList<CapuchinEntity>) this.getWorld().getEntitiesByClass(
+                CapuchinEntity.class,
+                this.getBoundingBox().expand(2.0D),
+                entity -> entity != this && entity.loveTicks > 0
+        );
+
+        return entities.size() > 0;
+    }
+
+    @Override
+    public void createChild() {
+        CapuchinEntity child = EntityRegistry.CAPUCHIN.create(this.getWorld());
+
+        if (child != null) {
+            child.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
+            this.getWorld().spawnEntity(child);
+        }
+    }
+
+    @Override
+    public void feedEntity(PlayerEntity player, ItemStack stack) {
+        if (canFedWithItem(stack)) {
+            hasBeenFed = true;
+
+            if (!this.isTamed()) {
+                double changeToTame = Math.random();
+                if (changeToTame < 0.1) {
+                    this.setTamed(true);
+                    this.setOwner(player);
+                    this.setPersistent();
+
+                    this.spawnHearts();
+                } else {
+                    this.spawnConsumption();
+                }
+
+                if (!player.isCreative() && !player.isSpectator()) {
+                    stack.decrement(1);
+                }
+            }
+        }
+    }
+
+
+    @Override
+    public boolean canFedWithItem(ItemStack stack) {
+        return stack.isIn(getBreedingItemsTag());
+    }
+
+    @Override
+    public boolean hasBeenFed() {
+        return hasBeenFed;
+    }
+
+    @Override
+    public TagKey<Item> getBreedingItemsTag() {
+        return TagKey.of(RegistryKeys.ITEM, FaunusID.content("capuchin_breeding_items"));
+    }
+
+    public boolean isNearCapuchin() {
+        return nearCapuchinCount() > 0;
+    }
+
+    public int nearCapuchinCount() {
+        ArrayList<CapuchinEntity> entities = (ArrayList<CapuchinEntity>) this.getWorld().getEntitiesByClass(
+                CapuchinEntity.class,
+                this.getBoundingBox().expand(8.0D),
+                entity -> entity != this
+        );
+
+        return entities.size();
+    }
+
+    private void spawnHearts() {
+        for (int i = 0; i < 7; i++) {
+            double d = this.random.nextGaussian() * 0.02D;
+            double e = this.random.nextGaussian() * 0.02D;
+            double f = this.random.nextGaussian() * 0.02D;
+            this.getWorld().addParticle(ParticleTypes.HEART, this.getParticleX(1.0D), this.getRandomBodyY() + 0.5D, this.getParticleZ(1.0D), d, e, f);
+        }
+    }
+
+    private void spawnConsumption() {
+        for (int i = 0; i < 7; i++) {
+            double d = this.random.nextGaussian() * 0.02D;
+            double e = this.random.nextGaussian() * 0.02D;
+            double f = this.random.nextGaussian() * 0.02D;
+            this.getWorld().addParticle(ParticleTypes.ASH, this.getParticleX(1.0D), this.getRandomBodyY() + 0.5D, this.getParticleZ(1.0D), d, e, f);
+        }
+    }
+
+    private boolean isHangingTree(BlockPos pos) {
+        return getWorld().getBlockState(pos).getBlock().getTranslationKey().contains("leave");
+    }
+
+    private boolean isHangingTree(Vec3d pos) {
+        BlockPos blockPos = new BlockPos((int) pos.x, (int) pos.y, (int) pos.z);
+
+        return getWorld().getBlockState(blockPos).getBlock().getTranslationKey().contains("leave");
+    }
+
+    static class MeleeCapuchinGoal extends MeleeAttackGoal {
+
+        public MeleeCapuchinGoal(CapuchinEntity mob, double speed, boolean pauseWhenMobIdle) {
+            super(mob, speed, pauseWhenMobIdle);
+        }
+
+        @Override
+        protected void attack(LivingEntity target, double squaredDistance) {
+            // TODO: Throw arrow
+        }
+
+        @Override
+        public boolean canStart() {
+            int nearCapuchin = ((CapuchinEntity) this.mob).nearCapuchinCount();
+            boolean shouldAttack = nearCapuchin >= 3 && !((CapuchinEntity) this.mob).isTamed();
+
+
+            if (shouldAttack) {
+                return super.canStart();
+            } else if (nearCapuchin <= 2 && getNearestCapuchin() != null) {
+                // Run in opposite direction of the nearest capuchin
+                Vec3d capuchinPos = getNearestCapuchin().getPos();
+                double dX = this.mob.getX() - capuchinPos.x;
+                double dZ = this.mob.getZ() - capuchinPos.z;
+                double distance = Math.sqrt(dX * dX + dZ * dZ);
+                this.mob.getNavigation().startMovingTo(capuchinPos.x + dX / distance * 10, capuchinPos.y, capuchinPos.z + dZ / distance * 10, 1.0);
+                return false;
+            }
+
+            return false;
+        }
+
+        public CapuchinEntity getNearestCapuchin() {
+            ArrayList<CapuchinEntity> entities = (ArrayList<CapuchinEntity>) this.mob.getWorld().getEntitiesByClass(
+                    CapuchinEntity.class,
+                    this.mob.getBoundingBox().expand(8.0D),
+                    entity -> entity != this.mob
+            );
+
+            if (entities.size() > 0) {
+                return entities.get(0);
+            }
+
+            return null;
+        }
+    }
+}

@@ -1,22 +1,32 @@
-package cybercat5555.faunus.core.entity.entityBehaviour;
+package cybercat5555.faunus.core.entity.livingEntity;
 
+import cybercat5555.faunus.core.EntityRegistry;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.passive.TurtleEntity;
+import net.minecraft.entity.passive.AnimalEntity;
+import net.minecraft.entity.passive.PassiveEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager.ControllerRegistrar;
-import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.animation.AnimatableManager.ControllerRegistrar;
+import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class SnappingTurtleEntity extends TurtleEntity implements GeoEntity {
+public class ConstrictorEntity extends AnimalEntity implements GeoEntity {
     protected static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("idle");
+
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
-    public SnappingTurtleEntity(EntityType<? extends TurtleEntity> entityType, World world) {
+
+    public ConstrictorEntity(EntityType<? extends AnimalEntity> entityType, World world) {
         super(entityType, world);
+    }
+
+    @Override
+    public PassiveEntity createChild(ServerWorld world, PassiveEntity other) {
+        return EntityRegistry.CONSTRICTOR.create(world);
     }
 
     @Override
@@ -29,8 +39,7 @@ public class SnappingTurtleEntity extends TurtleEntity implements GeoEntity {
         controllers.add(new AnimationController<>(this, "idle", 5, this::idleAnimController));
     }
 
-    protected <E extends SnappingTurtleEntity> PlayState idleAnimController(final AnimationState<E> event) {
+    protected <E extends ConstrictorEntity> PlayState idleAnimController(final AnimationState<E> event) {
         return PlayState.CONTINUE;
     }
-
 }

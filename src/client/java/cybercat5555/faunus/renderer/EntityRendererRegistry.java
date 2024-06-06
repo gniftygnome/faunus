@@ -3,23 +3,25 @@ package cybercat5555.faunus.renderer;
 import cybercat5555.faunus.core.EntityRegistry;
 import cybercat5555.faunus.renderer.entity.*;
 
+import static net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.*;
+
 public final class EntityRendererRegistry {
     private EntityRendererRegistry() {
     }
 
     public static void init() {
-        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(EntityRegistry.SONGBIRD, SongbirdEntityRenderer::new);
-        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(EntityRegistry.CAPUCHIN, CapuchinEntityRenderer::new);
-        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(EntityRegistry.TAPIR, TapirEntityRenderer::new);
-        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(EntityRegistry.CONSTRICTOR, ConstrictorEntityRenderer::new);
-        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(EntityRegistry.QUETZAL, QuetzalEntityRenderer::new);
-        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(EntityRegistry.HOATZIN, HoatzinEntityRenderer::new);
-        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(EntityRegistry.PIRANHA, PiranhaEntityRenderer::new);
-        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(EntityRegistry.ARAPAIMA, ArapaimaEntityRenderer::new);
-        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(EntityRegistry.SNAPPING_TURTLE, SnappingTurtleEntityRenderer::new);
-        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(EntityRegistry.CRAYFISH, CrayfishEntityRenderer::new);
-        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(EntityRegistry.LEECH, LeechEntityRenderer::new);
-        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(EntityRegistry.YACARE, YacareEntityRenderer::new);
-        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(EntityRegistry.YACARE_MANEATER, YacareManEaterEntityRenderer::new);
+        register(EntityRegistry.SONGBIRD, SongbirdEntityRenderer::new);
+        register(EntityRegistry.CAPUCHIN, CapuchinEntityRenderer::new);
+        register(EntityRegistry.TAPIR, TapirEntityRenderer::new);
+        register(EntityRegistry.CONSTRICTOR, ConstrictorEntityRenderer::new);
+        register(EntityRegistry.QUETZAL, QuetzalEntityRenderer::new);
+        register(EntityRegistry.HOATZIN, HoatzinEntityRenderer::new);
+        register(EntityRegistry.PIRANHA, PiranhaEntityRenderer::new);
+        register(EntityRegistry.ARAPAIMA, ArapaimaEntityRenderer::new);
+        register(EntityRegistry.SNAPPING_TURTLE, SnappingTurtleEntityRenderer::new);
+        register(EntityRegistry.CRAYFISH, CrayfishEntityRenderer::new);
+        register(EntityRegistry.LEECH, LeechEntityRenderer::new);
+        register(EntityRegistry.YACARE, YacareEntityRenderer::new);
+        register(EntityRegistry.YACARE_MANEATER, YacareManEaterEntityRenderer::new);
     }
 }

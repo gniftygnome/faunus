@@ -1,6 +1,6 @@
 package cybercat5555.faunus.core.entity.ai.goals;
 
-import cybercat5555.faunus.core.entity.entityBehaviour.PiranhaEntity;
+import cybercat5555.faunus.core.entity.livingEntity.PiranhaEntity;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 
 import static net.minecraft.util.Util.getRandom;

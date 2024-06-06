@@ -1,6 +1,6 @@
 package cybercat5555.faunus.common;
 
-import cybercat5555.faunus.core.entity.entityBehaviour.YacareManEaterEntity;
+import cybercat5555.faunus.core.entity.livingEntity.YacareManEaterEntity;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResult;

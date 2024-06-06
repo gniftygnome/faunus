@@ -1,4 +1,4 @@
-package cybercat5555.faunus.core.entity.entityBehaviour;
+package cybercat5555.faunus.core.entity.livingEntity;
 
 import cybercat5555.faunus.core.EffectStatusRegistry;
 import cybercat5555.faunus.core.EntityRegistry;

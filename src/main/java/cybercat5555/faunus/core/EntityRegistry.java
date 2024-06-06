@@ -1,16 +1,12 @@
 package cybercat5555.faunus.core;
 
 import cybercat5555.faunus.Faunus;
-import cybercat5555.faunus.core.entity.entityBehaviour.*;
+import cybercat5555.faunus.core.entity.livingEntity.*;
 import cybercat5555.faunus.util.FaunusID;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnGroup;
-import net.minecraft.entity.SpawnRestriction;
+import net.minecraft.entity.*;
 import net.minecraft.entity.passive.FishEntity;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;

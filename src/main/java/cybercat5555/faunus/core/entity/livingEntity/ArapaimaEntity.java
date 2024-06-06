@@ -1,4 +1,4 @@
-package cybercat5555.faunus.core.entity.entityBehaviour;
+package cybercat5555.faunus.core.entity.livingEntity;
 
 import cybercat5555.faunus.core.EntityRegistry;
 import cybercat5555.faunus.core.ItemRegistry;
@@ -43,8 +43,11 @@ public class ArapaimaEntity extends SchoolingFishEntity implements GeoEntity, Fe
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
 
     private static final int MAX_LOVE_TICKS = 600;
+    private static final int MAX_BREED_COOLDOWN = 2400;
+
     private int loveTicks;
     private boolean hasBeenFed;
+    private int breedCooldown;
 
 
     public ArapaimaEntity(EntityType<? extends SchoolingFishEntity> entityType, World world) {
@@ -70,7 +73,7 @@ public class ArapaimaEntity extends SchoolingFishEntity implements GeoEntity, Fe
     @Override
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack handItem = player.getStackInHand(hand);
-        feedEntity(handItem);
+        feedEntity(player, handItem);
 
         return super.interactMob(player, hand);
     }
@@ -123,11 +126,14 @@ public class ArapaimaEntity extends SchoolingFishEntity implements GeoEntity, Fe
     }
 
     @Override
-    public void feedEntity(ItemStack stack) {
+    public void feedEntity(PlayerEntity player, ItemStack stack) {
         if (canFedWithItem(stack)) {
             loveTicks += MAX_LOVE_TICKS;
             hasBeenFed = true;
-            stack.decrement(1);
+
+            if(!player.isCreative() && !player.isSpectator()){
+                stack.decrement(1);
+            }
         }
     }
 
@@ -148,12 +154,17 @@ public class ArapaimaEntity extends SchoolingFishEntity implements GeoEntity, Fe
 
     @Override
     public void breed() {
-        if (loveTicks >= 0) {
+        if (breedCooldown > 0) {
+            breedCooldown--;
+        }
+
+        if (loveTicks >= 0 && breedCooldown <= 0) {
             loveTicks--;
             findMate();
 
             if (isNearMate()) {
                 createChild();
+                breedCooldown = MAX_BREED_COOLDOWN;
             }
         }
     }
@@ -168,7 +179,7 @@ public class ArapaimaEntity extends SchoolingFishEntity implements GeoEntity, Fe
         ArrayList<ArapaimaEntity> entities = (ArrayList<ArapaimaEntity>) this.getWorld().getEntitiesByClass(
                 ArapaimaEntity.class,
                 this.getBoundingBox().expand(8.0D),
-                entity -> entity != this && entity.isInLove()
+                entity -> entity != this && entity.loveTicks > 0
         );
 
         if (!entities.isEmpty() && !this.isNearMate() && this.getNavigation().getCurrentPath() == null) {
@@ -181,7 +192,7 @@ public class ArapaimaEntity extends SchoolingFishEntity implements GeoEntity, Fe
         ArrayList<ArapaimaEntity> entities = (ArrayList<ArapaimaEntity>) this.getWorld().getEntitiesByClass(
                 ArapaimaEntity.class,
                 this.getBoundingBox().expand(2.0D),
-                entity -> entity != this && entity.isInLove()
+                entity -> entity != this && entity.loveTicks > 0
         );
 
         return entities.size() > 0;

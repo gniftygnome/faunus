@@ -1,4 +1,4 @@
-package cybercat5555.faunus.core.entity.entityBehaviour;
+package cybercat5555.faunus.core.entity.livingEntity;
 
 import cybercat5555.faunus.core.entity.BiteGrabEntity;
 import cybercat5555.faunus.core.entity.ai.goals.BiteGrabGoal;
@@ -9,7 +9,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.control.AquaticMoveControl;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
-import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.mob.IllagerEntity;

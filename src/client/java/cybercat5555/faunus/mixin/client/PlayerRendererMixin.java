@@ -1,6 +1,6 @@
 package cybercat5555.faunus.mixin.client;
 
-import cybercat5555.faunus.core.entity.entityBehaviour.YacareManEaterEntity;
+import cybercat5555.faunus.core.entity.livingEntity.YacareManEaterEntity;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRendererFactory;
