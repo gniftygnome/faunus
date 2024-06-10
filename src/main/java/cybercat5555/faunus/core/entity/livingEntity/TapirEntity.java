@@ -122,7 +122,8 @@ public class TapirEntity extends AnimalEntity implements GeoEntity, SmartBrainOw
 
     /**
      * Breeds the tapir with the player if the player is holding the breeding item and the tapir is not a baby.
-     * @param player The player that is interacting with the tapir.
+     *
+     * @param player   The player that is interacting with the tapir.
      * @param handItem The item that the player is holding. Must be a tapir breeding item.
      */
     private void feedEntity(PlayerEntity player, ItemStack handItem) {
@@ -133,8 +134,9 @@ public class TapirEntity extends AnimalEntity implements GeoEntity, SmartBrainOw
 
     /**
      * Milks the tapir if the player is holding a glass bottle and the tapir can be milked. The tapir will give a bottled stinky item.
-     * @param player The player that is interacting with the tapir.
-     * @param hand The hand that the player is using to interact with the tapir, so the hand is holding the glass bottle.
+     *
+     * @param player   The player that is interacting with the tapir.
+     * @param hand     The hand that the player is using to interact with the tapir, so the hand is holding the glass bottle.
      * @param handItem The item that the player is holding. Must be a glass bottle.
      */
     private void milkTapir(PlayerEntity player, Hand hand, ItemStack handItem) {
@@ -230,17 +232,10 @@ public class TapirEntity extends AnimalEntity implements GeoEntity, SmartBrainOw
     protected <E extends TapirEntity> PlayState idleAnimController(final AnimationState<E> state) {
         if (isSubmergedInWater()) {
             state.setAndContinue(WALKING_ANIM);
-            return PlayState.CONTINUE;
-        }
-
-        if (state.isMoving()) {
-            state.setAndContinue(isSprinting() ? RUNNING_ANIM : WALKING_ANIM);
-        } else if (state.isCurrentAnimation(WALKING_ANIM)) {
-            state.setAndContinue(IDLE_ANIM);
-        }
-
-        if (state.isCurrentAnimation(IDLE_ANIM) && tempInt < 5) {
-            state.setAndContinue(LAYING_DOWN_ANIM);
+        } else if (state.isMoving()) {
+            state.setAndContinue(getVelocity().lengthSquared() > 0.01f ? RUNNING_ANIM : WALKING_ANIM);
+        } else {
+            state.setAndContinue(tempInt < 5 ? LAYING_DOWN_ANIM : tempInt < 10 ? SNIFFING_ANIM : IDLE_ANIM);
         }
 
         return PlayState.CONTINUE;

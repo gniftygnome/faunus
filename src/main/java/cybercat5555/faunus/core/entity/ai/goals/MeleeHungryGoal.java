@@ -30,7 +30,9 @@ public class MeleeHungryGoal extends MeleeAttackGoal implements HungerMeter {
 
     @Override
     public boolean canStart() {
-        if (!doesHaveHunger() && this.mob.getTarget() == null) {
+        if(this.mob.getLastAttacker() != null) this.mob.setTarget(this.mob.getLastAttacker());
+
+        if (!doesHaveHunger() || this.mob.getTarget() == null) {
             increaseHunger(0.2f);
             return false;
         }

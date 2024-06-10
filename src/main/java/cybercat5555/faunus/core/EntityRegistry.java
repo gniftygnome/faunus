@@ -2,6 +2,7 @@ package cybercat5555.faunus.core;
 
 import cybercat5555.faunus.Faunus;
 import cybercat5555.faunus.core.entity.livingEntity.*;
+import cybercat5555.faunus.core.entity.projectile.CocoaBeanProjectile;
 import cybercat5555.faunus.util.FaunusID;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
@@ -75,11 +76,16 @@ public final class EntityRegistry {
             .dimensions(EntityDimensions.fixed(3f, 1f))
             .build());
 
+
+    public static final EntityType<CocoaBeanProjectile> COCOA_BEAN_PROJECTILE = register("cocoa_bean_projectile", FabricEntityTypeBuilder.<CocoaBeanProjectile>create(SpawnGroup.MISC, CocoaBeanProjectile::new)
+            .dimensions(EntityDimensions.fixed(0.25F, 0.25F))
+            .build());
+
     /**
      * Registers all entities.
      */
     public static void init() {
-        Faunus.LOG.info("Registering entities for " + Faunus.MODID);
+        Faunus.LOG.info("Registering entity's attributes for " + Faunus.MODID);
 
         FabricDefaultAttributeRegistry.register(SONGBIRD, SongbirdEntity.createSongbirdAttributes());
         FabricDefaultAttributeRegistry.register(CAPUCHIN, CapuchinEntity.createMobAttributes());

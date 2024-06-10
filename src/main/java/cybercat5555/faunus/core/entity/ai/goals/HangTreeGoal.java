@@ -1,6 +1,5 @@
 package cybercat5555.faunus.core.entity.ai.goals;
 
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.NoPenaltyTargeting;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.mob.PathAwareEntity;
@@ -76,23 +75,29 @@ public class HangTreeGoal extends WanderAroundGoal {
                 isHanging = true;
 
                 if (wanderTarget != null && !isMovingToTarget) {
+                    wanderTarget = new BlockPos((int) wanderTarget.x, (int) wanderTarget.y, (int) wanderTarget.z).toCenterPos();
                     int startChance = this.mob.getRandom().nextInt(WanderAroundGoal.toGoalTicks(this.chance));
                     boolean shouldWander = startChance < 5;
 
                     if (shouldWander && isHangingTree(wanderTarget.add(0, 2, 0))) {
+
                         targetX = wanderTarget.x;
                         targetY = wanderTarget.y + 2;
                         targetZ = wanderTarget.z;
                     }
+                } else if (isMovingToTarget) {
+                    // Move to wander target with setVelocity
+                    double x = distanceX / distance;
+                    double z = distanceZ / distance;
+                    BlockPos nextPos = new BlockPos((int) (this.mob.getX() + x), (int) this.mob.getY(), (int) (this.mob.getZ() + z));
+
+                    if (isHangingTree(nextPos.up())) {
+                        this.mob.setVelocity(x * 0.05, 0.0, z * 0.05);
+                        targetX = this.mob.getX();
+                        targetY = this.mob.getY();
+                        targetZ = this.mob.getZ();
+                    }
                 }
-
-
-                // Move to wander target with setVelocity
-                double x = distanceX / distance;
-                double z = distanceZ / distance;
-
-                if (distance > 1D)
-                    this.mob.setVelocity(x * 0.05, 0.0, z * 0.05);
             }
         } else {
             this.mob.setNoGravity(false);
@@ -109,12 +114,20 @@ public class HangTreeGoal extends WanderAroundGoal {
         }
 
         if (!isHangingTree(this.mob.getBlockPos().up()) && hangingSpot != null) {
+            double verticalDistance = hangingSpot.getY() - this.mob.getY();
+
+            if (verticalDistance > 3) {
+                isHanging = false;
+                hangingSpot = null;
+                return;
+            }
+
 
             // Move this.entity to treePos
             this.mob.getNavigation().startMovingTo(hangingSpot.getX(), hangingSpot.getY(), hangingSpot.getZ(), 1.0);
             double horizontalDistance = Math.sqrt(hangingSpot.getSquaredDistance(this.mob.getX(), hangingSpot.getY(), this.mob.getZ()));
 
-            if (horizontalDistance <= 1.5 &&
+            if (horizontalDistance <= 1.5 && verticalDistance <= 3 &&
                     mob.isOnGround() && !isHanging) {
                 // Jump from ground to tree block
                 jumpTo(hangingSpot);
@@ -123,14 +136,14 @@ public class HangTreeGoal extends WanderAroundGoal {
     }
 
     private void jumpTo(BlockPos hangingSpot) {
-        double distanceX = hangingSpot.getX() - this.mob.getX();
-        double distanceZ = hangingSpot.getZ() - this.mob.getZ();
+        double distanceX = hangingSpot.toCenterPos().getX() - this.mob.getBlockPos().toCenterPos().getX();
+        double distanceZ = hangingSpot.toCenterPos().getZ() - this.mob.getBlockPos().toCenterPos().getZ();
         double distance = Math.sqrt(distanceX * distanceX + distanceZ * distanceZ);
 
         double x = distanceX / distance;
         double z = distanceZ / distance;
 
-        this.mob.setVelocity(x * 0.5, 0.5, z * 0.5);
+        this.mob.setVelocity(x * 0.5, 0.6, z * 0.5);
     }
 
 

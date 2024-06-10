@@ -124,7 +124,7 @@ public class BiteGrabGoal extends Goal implements HungerMeter {
 
     @Override
     public boolean canStart() {
-        return this.mob.getTarget() != null;
+        return this.mob.getTarget() != null || this.mob.getLastAttacker() != null;
     }
 
 
@@ -139,7 +139,10 @@ public class BiteGrabGoal extends Goal implements HungerMeter {
 
     @Override
     public void start() {
-        this.mob.setTarget(this.mob.getTarget());
+        if(this.mob.getLastAttacker() != null){
+            this.mob.setTarget(this.mob.getLastAttacker());
+        }
+
         this.mob.getNavigation().startMovingTo(this.mob.getTarget(), 3f);
 
         super.start();

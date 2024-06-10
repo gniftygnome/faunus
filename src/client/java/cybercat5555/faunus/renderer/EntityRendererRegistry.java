@@ -2,6 +2,7 @@ package cybercat5555.faunus.renderer;
 
 import cybercat5555.faunus.core.EntityRegistry;
 import cybercat5555.faunus.renderer.entity.*;
+import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
 
 import static net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.*;
 
@@ -23,5 +24,6 @@ public final class EntityRendererRegistry {
         register(EntityRegistry.LEECH, LeechEntityRenderer::new);
         register(EntityRegistry.YACARE, YacareEntityRenderer::new);
         register(EntityRegistry.YACARE_MANEATER, YacareManEaterEntityRenderer::new);
+        register(EntityRegistry.COCOA_BEAN_PROJECTILE, FlyingItemEntityRenderer::new);
     }
 }
