@@ -12,6 +12,7 @@ import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableShoulderEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -77,8 +78,8 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
 
     @Override
     protected void initGoals() {
-        this.goalSelector.add(0, new EscapeDangerGoal(this, 1.25));
-        this.goalSelector.add(1, new MeleeCapuchinGoal(this, 1.0, true));
+        this.goalSelector.add(0, new RunAwayCapuchinGoal(this, 1.25));
+        this.goalSelector.add(1, new MeleeCapuchinGoal(this, 1.0, false));
         this.goalSelector.add(1, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
         this.goalSelector.add(2, new HangTreeGoal(this, 1.0));
         this.goalSelector.add(3, new FollowOwnerGoal(this, 1.0, 5.0f, 1.0f, true));
@@ -103,7 +104,7 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
         boolean isRunning = this.getVelocity().lengthSquared() > 0.001;
         boolean isSitting = this.isSitting();
         boolean isSittingInPlayerShoulder = this.getVehicle() instanceof PlayerEntity;
-        boolean isNear2Capuchin = this.nearCapuchinCount() >= 2;
+        boolean isNear2Capuchin = this.nearCapuchinCount(16) >= 2;
         boolean isHangingTree = isHangingTree(this.getPos().add(0, 1, 0));
         boolean isAlreadyPlayingAttackAnim = event.getController().getCurrentRawAnimation() == ATTACK_LEFT_ANIM || event.getController().getCurrentRawAnimation() == ATTACK_RIGHT_ANIM;
         boolean isAlreadyPlayingHangingAnim = event.getController().getCurrentRawAnimation() == HANGING_HANDS_IDLE_ANIM || event.getController().getCurrentRawAnimation() == HANGING_TAIL_IDLE_ANIM;
@@ -256,13 +257,13 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
     }
 
     public boolean isNearCapuchin() {
-        return nearCapuchinCount() > 0;
+        return nearCapuchinCount(16) > 0;
     }
 
-    public int nearCapuchinCount() {
+    public int nearCapuchinCount(double distance) {
         ArrayList<CapuchinEntity> entities = (ArrayList<CapuchinEntity>) this.getWorld().getEntitiesByClass(
                 CapuchinEntity.class,
-                this.getBoundingBox().expand(16.0D),
+                this.getBoundingBox().expand(distance),
                 entity -> entity != this
         );
 
@@ -287,10 +288,6 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
         }
     }
 
-    private boolean isHangingTree(BlockPos pos) {
-        return getWorld().getBlockState(pos).getBlock().getTranslationKey().contains("leave");
-    }
-
     private boolean isHangingTree(Vec3d pos) {
         BlockPos blockPos = new BlockPos((int) pos.x, (int) pos.y, (int) pos.z);
 
@@ -306,9 +303,10 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
         @Override
         protected void attack(LivingEntity target, double squaredDistance) {
             double distanceToTarget = mob.squaredDistanceTo(target.getX(), target.getY(), target.getZ());
+            this.mob.setAttacking(true);
 
             if (distanceToTarget <= squaredDistance) {
-                super.attack(target, squaredDistance);
+                this.mob.tryAttack(target);
             } else {
                 throwCocoaBean(target);
             }
@@ -323,47 +321,38 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
 
             projectile.setVelocity(dX, dY + distance, dZ, 1.6F, 2.0F);
             mob.getWorld().spawnEntity(projectile);
-            this.mob.setAttacking(true);
         }
 
         @Override
         public boolean canStart() {
-            int nearCapuchin = ((CapuchinEntity) this.mob).nearCapuchinCount();
-            boolean shouldAttack = nearCapuchin >= 3 && !((CapuchinEntity) this.mob).isTamed() && Math.random() < 0.1;
-            boolean enoughTimePassed = this.mob.age % 20 == 0;
+            int nearCapuchin = ((CapuchinEntity) this.mob).nearCapuchinCount(16);
+            boolean shouldAttack = ((nearCapuchin >= 3 && !((CapuchinEntity) this.mob).isTamed()) || this.mob.getLastAttacker() != null);
 
             if (this.mob.getLastAttacker() != null) {
                 this.mob.setTarget(this.mob.getLastAttacker());
                 this.mob.getNavigation().startMovingTo(this.mob.getLastAttacker(), 1.0);
             }
 
-            if (shouldAttack && this.mob.getTarget() != null && enoughTimePassed) {
+            if (shouldAttack && this.mob.getTarget() != null && Math.random() < 0.25) {
                 attack(this.mob.getTarget(), 4);
-            } else if (nearCapuchin <= 2 && getNearestCapuchin() != null) {
-                // Run in opposite direction of the nearest capuchin
-                Vec3d capuchinPos = getNearestCapuchin().getPos();
-                double dX = this.mob.getX() - capuchinPos.x;
-                double dZ = this.mob.getZ() - capuchinPos.z;
-                double distance = Math.sqrt(dX * dX + dZ * dZ);
-                this.mob.getNavigation().startMovingTo(capuchinPos.x + dX / distance * 10, capuchinPos.y, capuchinPos.z + dZ / distance * 10, 1.0);
-                return false;
             }
+
 
             return false;
         }
+    }
 
-        public CapuchinEntity getNearestCapuchin() {
-            ArrayList<CapuchinEntity> entities = (ArrayList<CapuchinEntity>) this.mob.getWorld().getEntitiesByClass(
-                    CapuchinEntity.class,
-                    this.mob.getBoundingBox().expand(8.0D),
-                    entity -> entity != this.mob
-            );
+    static class RunAwayCapuchinGoal extends EscapeDangerGoal {
 
-            if (entities.size() > 0) {
-                return entities.get(0);
-            }
+        public RunAwayCapuchinGoal(PathAwareEntity mob, double speed) {
+            super(mob, speed);
+        }
 
-            return null;
+        @Override
+        protected boolean isInDanger() {
+            int nearCapuchin = ((CapuchinEntity) this.mob).nearCapuchinCount(8);
+
+            return (nearCapuchin > 2 && !((CapuchinEntity) this.mob).isTamed());
         }
     }
 }
