@@ -95,7 +95,7 @@ public final class EntityRegistry {
         FabricDefaultAttributeRegistry.register(HOATZIN, HoatzinEntity.createParrotAttributes());
         FabricDefaultAttributeRegistry.register(PIRANHA, PiranhaEntity.createMobAttributes());
         FabricDefaultAttributeRegistry.register(ARAPAIMA, ArapaimaEntity.createMobAttributes());
-        FabricDefaultAttributeRegistry.register(SNAPPING_TURTLE, SnappingTurtleEntity.createTurtleAttributes());
+        FabricDefaultAttributeRegistry.register(SNAPPING_TURTLE, SnappingTurtleEntity.createMobAttributes());
         FabricDefaultAttributeRegistry.register(CRAYFISH, CrayfishEntity.createMobAttributes());
         FabricDefaultAttributeRegistry.register(LEECH, LeechEntity.createMobAttributes());
         FabricDefaultAttributeRegistry.register(YACARE, YacareEntity.createMobAttributes());

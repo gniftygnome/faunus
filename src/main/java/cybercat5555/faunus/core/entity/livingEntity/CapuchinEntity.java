@@ -54,8 +54,13 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
     protected static final RawAnimation SITTING_GROOMING_FLARE_ANIM = RawAnimation.begin().thenLoop("sitting_grooming_flare");
 
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
+
+    private static final int MAX_LOVE_TICKS = 600;
+    private static final int MAX_BREED_COOLDOWN = 2400;
+
     private int loveTicks;
     private boolean hasBeenFed;
+    private int breedCooldown;
 
     public CapuchinEntity(EntityType<? extends CapuchinEntity> entityType, World world) {
         super(entityType, world);
@@ -96,17 +101,17 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
 
     @Override
     public void registerControllers(ControllerRegistrar controllers) {
-        controllers.add(new AnimationController<>(this, "idle", 5, this::idleAnimController));
+        controllers.add(new AnimationController<>(this, "movement", 5, this::movementAnimController));
+        controllers.add(new AnimationController<>(this, "attack", 0, this::attackAnimController));
     }
 
-    protected <E extends CapuchinEntity> PlayState idleAnimController(final AnimationState<E> event) {
+    protected <E extends CapuchinEntity> PlayState movementAnimController(final AnimationState<E> event) {
         boolean isMoving = event.isMoving();
         boolean isRunning = this.getVelocity().lengthSquared() > 0.001;
         boolean isSitting = this.isSitting();
         boolean isSittingInPlayerShoulder = this.getVehicle() instanceof PlayerEntity;
         boolean isNear2Capuchin = this.nearCapuchinCount(16) >= 2;
         boolean isHangingTree = isHangingTree(this.getPos().add(0, 1, 0));
-        boolean isAlreadyPlayingAttackAnim = event.getController().getCurrentRawAnimation() == ATTACK_LEFT_ANIM || event.getController().getCurrentRawAnimation() == ATTACK_RIGHT_ANIM;
         boolean isAlreadyPlayingHangingAnim = event.getController().getCurrentRawAnimation() == HANGING_HANDS_IDLE_ANIM || event.getController().getCurrentRawAnimation() == HANGING_TAIL_IDLE_ANIM;
 
 
@@ -122,20 +127,29 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
             }
 
         } else if (isMoving) {
-            event.setAnimation(!isRunning && isHangingTree ? HANGING_MOVEMENT_ANIM : isRunning ? RUNNING_ANIM : WALKING_ANIM);
+            event.setAnimation(isHangingTree ? HANGING_MOVEMENT_ANIM : isRunning ? RUNNING_ANIM : WALKING_ANIM);
             event.setControllerSpeed(1.5f);
-        } else if (isAttacking()) {
-            if (isAlreadyPlayingAttackAnim) {
-                return PlayState.CONTINUE;
-            }
 
-            event.setAnimation(Math.random() < 0.5 ? ATTACK_LEFT_ANIM : ATTACK_RIGHT_ANIM);
         } else {
             if (isAlreadyPlayingHangingAnim) {
                 return PlayState.CONTINUE;
             }
 
             event.setAnimation(isHangingTree ? Math.random() < 0.5 ? HANGING_HANDS_IDLE_ANIM : HANGING_TAIL_IDLE_ANIM : IDLE_ANIM);
+        }
+
+        return PlayState.CONTINUE;
+    }
+
+    protected <E extends CapuchinEntity> PlayState attackAnimController(final AnimationState<E> event) {
+        boolean isAlreadyPlayingAttackAnim = event.getController().getCurrentRawAnimation() == ATTACK_LEFT_ANIM || event.getController().getCurrentRawAnimation() == ATTACK_RIGHT_ANIM;
+
+        if (isAttacking()) {
+            if (isAlreadyPlayingAttackAnim) {
+                return PlayState.CONTINUE;
+            }
+
+            event.setAnimation(Math.random() < 0.5 ? ATTACK_LEFT_ANIM : ATTACK_RIGHT_ANIM);
         }
 
         return PlayState.CONTINUE;
@@ -152,6 +166,10 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
 
         if (getVehicle() != null && getVehicle() instanceof PlayerEntity player && !player.isOnGround()) {
             stopRiding();
+        }
+
+        if (isSitting()) {
+            this.getNavigation().stop();
         }
 
         breed();
@@ -175,6 +193,19 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
 
     @Override
     public void breed() {
+        if (breedCooldown > 0) {
+            breedCooldown--;
+        }
+
+        if (loveTicks >= 0 && breedCooldown <= 0) {
+            loveTicks--;
+            findMate();
+
+            if (isNearMate()) {
+                createChild();
+                breedCooldown = MAX_BREED_COOLDOWN;
+            }
+        }
     }
 
     @Override
@@ -219,6 +250,7 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
     @Override
     public void feedEntity(PlayerEntity player, ItemStack stack) {
         if (canFedWithItem(stack)) {
+            loveTicks = MAX_LOVE_TICKS;
             hasBeenFed = true;
 
             if (!this.isTamed()) {
@@ -302,10 +334,7 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
 
         @Override
         protected void attack(LivingEntity target, double squaredDistance) {
-            double distanceToTarget = mob.squaredDistanceTo(target.getX(), target.getY(), target.getZ());
-            this.mob.setAttacking(true);
-
-            if (distanceToTarget <= squaredDistance) {
+            if (this.mob.isInAttackRange(target)) {
                 this.mob.tryAttack(target);
             } else {
                 throwCocoaBean(target);
@@ -326,15 +355,19 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
         @Override
         public boolean canStart() {
             int nearCapuchin = ((CapuchinEntity) this.mob).nearCapuchinCount(16);
-            boolean shouldAttack = ((nearCapuchin >= 3 && !((CapuchinEntity) this.mob).isTamed()) || this.mob.getLastAttacker() != null);
+            boolean shouldAttack = ((nearCapuchin >= 3 && !((CapuchinEntity) this.mob).isTamed()) || this.mob.getLastAttacker() != null) && Math.random() < 0.25;
 
             if (this.mob.getLastAttacker() != null) {
                 this.mob.setTarget(this.mob.getLastAttacker());
                 this.mob.getNavigation().startMovingTo(this.mob.getLastAttacker(), 1.0);
             }
 
-            if (shouldAttack && this.mob.getTarget() != null && Math.random() < 0.25) {
+
+            if (shouldAttack && this.mob.getTarget() != null) {
                 attack(this.mob.getTarget(), 4);
+                this.mob.setAttacking(true);
+            } else {
+                this.mob.setAttacking(false);
             }
 
 
@@ -352,7 +385,7 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
         protected boolean isInDanger() {
             int nearCapuchin = ((CapuchinEntity) this.mob).nearCapuchinCount(8);
 
-            return (nearCapuchin > 2 && !((CapuchinEntity) this.mob).isTamed());
+            return (nearCapuchin > 0 && nearCapuchin < 3 && !((CapuchinEntity) this.mob).isTamed());
         }
     }
 }
