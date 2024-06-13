@@ -7,9 +7,13 @@ import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.*;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.BlockStateRaycastContext;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 
@@ -20,8 +24,9 @@ public class MCUtil {
 
     /**
      * Get the world surface height (WORLD_SURFACE_WG, means that it counts the world as first being generated)  at the given position.
+     *
      * @param world The world where the position is located.
-     * @param pos Position of the surface we want to check.
+     * @param pos   Position of the surface we want to check.
      * @return The height of the world surface at the given position.
      */
     public static int getWorldSurface(World world, BlockPos pos) {
@@ -53,8 +58,8 @@ public class MCUtil {
     }
 
     public static boolean containsEffect(LivingEntity entity, StatusEffect statusEffect) {
-        for(StatusEffectInstance effect : entity.getStatusEffects()) {
-            if(effect.getEffectType().equals(statusEffect)) {
+        for (StatusEffectInstance effect : entity.getStatusEffects()) {
+            if (effect.getEffectType().equals(statusEffect)) {
                 return true;
             }
         }

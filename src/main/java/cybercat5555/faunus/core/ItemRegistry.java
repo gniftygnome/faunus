@@ -1,6 +1,8 @@
 package cybercat5555.faunus.core;
 
 import cybercat5555.faunus.Faunus;
+import cybercat5555.faunus.core.entity.livingEntity.variant.CrayfishVariant;
+import cybercat5555.faunus.core.item.Crayfish;
 import cybercat5555.faunus.core.item.QuetzalFeatherTrinket;
 import cybercat5555.faunus.util.FaunusID;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -62,8 +64,8 @@ public final class ItemRegistry {
 
     // Crayfish
     public static final Item CRAYFISH_SPAWN_EGG = new SpawnEggItem(EntityRegistry.CRAYFISH, 0xa0b030, 0xf0e030, new FabricItemSettings());
-    public static final Item CRAYFISH = new Item(new FabricItemSettings().food(FoodRegistry.CRAYFISH));
-    public static final Item BLUE_CRAYFISH = new Item(new FabricItemSettings().food(FoodRegistry.COOKED_CRAYFISH));
+    public static final Item CRAYFISH = new Crayfish(new FabricItemSettings().food(FoodRegistry.CRAYFISH), CrayfishVariant.DEFAULT);
+    public static final Item BLUE_CRAYFISH = new Crayfish(new FabricItemSettings().food(FoodRegistry.BLUE_CRAYFISH), CrayfishVariant.BLUE);
     public static final Item COOKED_CRAYFISH = new Item(new FabricItemSettings().food(FoodRegistry.COOKED_CRAYFISH));
 
 
