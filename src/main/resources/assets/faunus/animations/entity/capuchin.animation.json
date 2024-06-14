@@ -1085,6 +1085,9 @@
 				"monke": {
 					"rotation": {
 						"vector": [-90, "Math.sin(query.anim_time*180)*2", 0]
+					},
+					"position": {
+						"vector": [0, -6, 0]
 					}
 				},
 				"tail01": {
@@ -1135,6 +1138,9 @@
 				"monke": {
 					"rotation": {
 						"vector": ["-90+Math.sin(query.anim_time*360)*5", "Math.sin(query.anim_time*180)*2", 0]
+					},
+					"position": {
+						"vector": [0, -6, 0]
 					}
 				},
 				"tail01": {
