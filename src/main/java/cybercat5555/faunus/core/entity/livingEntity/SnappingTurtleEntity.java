@@ -76,7 +76,7 @@ public class SnappingTurtleEntity extends PathAwareEntity implements GeoEntity {
             event.setAnimation(isSubmergedInWater() ? SWIM_ANIM : WALK_ANIM);
         } else if(isAttacking()) {
             event.setAnimation(BITE_ANIM);
-        } else {
+        } else if(!event.isMoving()) {
             event.setAnimation(isBuried ? BURIED_ANIM : IDLE_ANIM);
         }
 
