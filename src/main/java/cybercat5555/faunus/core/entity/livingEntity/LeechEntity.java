@@ -24,6 +24,10 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 public class LeechEntity extends MobEntity implements GeoEntity, FeedableEntity {
 
     protected static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("idle");
+    protected static final RawAnimation SUCKING = RawAnimation.begin().thenLoop("sucking");
+    protected static final RawAnimation CRAWLING = RawAnimation.begin().thenLoop("crawling");
+    protected static final RawAnimation SWIMMING = RawAnimation.begin().thenLoop("swimming");
+    protected static final RawAnimation FULL = RawAnimation.begin().thenLoop("full");
 
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
     private boolean hasBeenFed = false;

@@ -25,11 +25,10 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class SnappingTurtleEntity extends PathAwareEntity implements GeoEntity {
     protected static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("idle");
+    protected static final RawAnimation BURIED_ANIM = RawAnimation.begin().thenLoop("buried");
     protected static final RawAnimation WALK_ANIM = RawAnimation.begin().thenLoop("walk");
     protected static final RawAnimation BITE_ANIM = RawAnimation.begin().thenLoop("bite");
     protected static final RawAnimation SWIM_ANIM = RawAnimation.begin().thenLoop("swimming");
-
-
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
 
     public SnappingTurtleEntity(EntityType<? extends PathAwareEntity> entityType, World world) {
@@ -71,12 +70,14 @@ public class SnappingTurtleEntity extends PathAwareEntity implements GeoEntity {
     }
 
     protected <E extends SnappingTurtleEntity> PlayState idleAnimController(final AnimationState<E> event) {
+        boolean isBuried = getWorld().getBlockState(getBlockPos()).isOf(Blocks.MUD);
+
         if (event.isMoving()) {
             event.setAnimation(isSubmergedInWater() ? SWIM_ANIM : WALK_ANIM);
         } else if(isAttacking()) {
             event.setAnimation(BITE_ANIM);
         } else {
-            event.setAnimation(IDLE_ANIM);
+            event.setAnimation(isBuried ? BURIED_ANIM : IDLE_ANIM);
         }
 
         return PlayState.CONTINUE;
