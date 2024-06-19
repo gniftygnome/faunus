@@ -2,6 +2,7 @@ package cybercat5555.faunus.core;
 
 import cybercat5555.faunus.Faunus;
 import cybercat5555.faunus.core.entity.livingEntity.variant.CrayfishVariant;
+import cybercat5555.faunus.core.item.BottledLeech;
 import cybercat5555.faunus.core.item.Crayfish;
 import cybercat5555.faunus.core.item.QuetzalFeatherTrinket;
 import cybercat5555.faunus.util.FaunusID;
@@ -71,7 +72,7 @@ public final class ItemRegistry {
 
     // Leech
     public static final Item LEECH_SPAWN_EGG = new SpawnEggItem(EntityRegistry.LEECH, 0x90a015, 0xfafa35, new FabricItemSettings());
-    public static final Item BOTTLED_LEECH = new Item(new FabricItemSettings());
+    public static final Item BOTTLED_LEECH = new BottledLeech(new FabricItemSettings());
 
 
     // Yacare

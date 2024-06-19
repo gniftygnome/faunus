@@ -4,7 +4,7 @@ import cybercat5555.faunus.core.EntityRegistry;
 import cybercat5555.faunus.renderer.entity.*;
 import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
 
-import static net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.*;
+import static net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register;
 
 public final class EntityRendererRegistry {
     private EntityRendererRegistry() {

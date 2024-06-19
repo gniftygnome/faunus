@@ -76,10 +76,13 @@ public final class EntityRegistry {
             .dimensions(EntityDimensions.fixed(3f, 1f))
             .build());
 
+    /* Projectile */
 
     public static final EntityType<CocoaBeanProjectile> COCOA_BEAN_PROJECTILE = register("cocoa_bean_projectile", FabricEntityTypeBuilder.<CocoaBeanProjectile>create(SpawnGroup.MISC, CocoaBeanProjectile::new)
             .dimensions(EntityDimensions.fixed(0.25F, 0.25F))
             .build());
+
+
 
     /**
      * Registers all entities.

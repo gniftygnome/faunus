@@ -1,5 +1,6 @@
 package cybercat5555.faunus.core.entity.livingEntity;
 
+import cybercat5555.faunus.core.ItemRegistry;
 import cybercat5555.faunus.core.entity.FeedableEntity;
 import cybercat5555.faunus.core.entity.ai.goals.HungerMeter;
 import cybercat5555.faunus.util.FaunusID;
@@ -13,6 +14,7 @@ import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.ActionResult;
@@ -69,6 +71,7 @@ public class LeechEntity extends PathAwareEntity implements GeoEntity, FeedableE
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack handItem = player.getStackInHand(hand);
         feedEntity(player, handItem);
+        captureOnBottle(player, handItem);
 
         return super.interactMob(player, hand);
     }
@@ -115,6 +118,19 @@ public class LeechEntity extends PathAwareEntity implements GeoEntity, FeedableE
             if (!player.isCreative() && !player.isSpectator()) {
                 stack.decrement(1);
             }
+        }
+    }
+
+    private void captureOnBottle(PlayerEntity player, ItemStack handItem) {
+        boolean itemIsBottle = handItem.getItem() == Items.GLASS_BOTTLE;
+
+        if (itemIsBottle) {
+            if (!player.isCreative() && !player.isSpectator()) {
+                handItem.decrement(1);
+            }
+
+            player.giveItemStack(ItemRegistry.BOTTLED_LEECH.getDefaultStack());
+            this.remove(RemovalReason.DISCARDED);
         }
     }
 

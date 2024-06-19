@@ -1,6 +1,7 @@
 package cybercat5555.faunus.core.entity.livingEntity;
 
 import cybercat5555.faunus.core.EntityRegistry;
+import cybercat5555.faunus.core.entity.livingEntity.variant.BirdPatterns;
 import cybercat5555.faunus.core.entity.livingEntity.variant.BirdVariant;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -14,27 +15,34 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.ParrotEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.EntityView;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager.ControllerRegistrar;
-import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.util.Optional;
+
 public class SongbirdEntity extends ParrotEntity implements GeoEntity {
+    private static final TrackedData<Integer> PATTERN = DataTracker.registerData(SongbirdEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> VARIANT = DataTracker.registerData(SongbirdEntity.class, TrackedDataHandlerRegistry.INTEGER);
+
 
     protected static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("idle");
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
+
     public SongbirdEntity(EntityType<? extends SongbirdEntity> entityType, World world) {
         super(entityType, world);
     }
@@ -42,6 +50,7 @@ public class SongbirdEntity extends ParrotEntity implements GeoEntity {
     @Override
     protected void initDataTracker() {
         super.initDataTracker();
+        this.dataTracker.startTracking(PATTERN, 0);
         this.dataTracker.startTracking(VARIANT, 0);
     }
 
@@ -77,16 +86,23 @@ public class SongbirdEntity extends ParrotEntity implements GeoEntity {
         return EntityRegistry.SONGBIRD.create(world);
     }
 
+    @Override
+    public EntityView method_48926() {
+        return null;
+    }
+
 
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-        nbt.putInt("Variant", getTypeVariant());
+        nbt.putInt("Pattern", getBirdPattern().getId());
+        nbt.putInt("Variant", getBirdVariant().getId());
     }
 
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
+        this.dataTracker.set(PATTERN, nbt.getInt("Pattern"));
         this.dataTracker.set(VARIANT, nbt.getInt("Variant"));
     }
 
@@ -94,25 +110,27 @@ public class SongbirdEntity extends ParrotEntity implements GeoEntity {
 
     @Override
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
-        setBirdVariant(BirdVariant.byId(random.nextInt(BirdVariant.values().length)));
+        Optional<RegistryKey<Biome>> biomeOptional = world.getBiome(this.getBlockPos()).getKey();
+        BirdVariant variant = biomeOptional.isPresent() ? BirdVariant.byBiome(biomeOptional.get().getValue()) : BirdVariant.VIOLACEOUS_EUPHONIA;
+
+        this.setVariant(variant);
+        this.setPattern(variant.getPattern());
 
         return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
-    public BirdVariant getBirdVariant() {
-        return BirdVariant.byId(getTypeVariant() & 255);
-    }
 
-    public void setBirdVariant(BirdVariant variant) {
+    public void setVariant(BirdVariant variant) {
         this.dataTracker.set(VARIANT, variant.getId());
     }
-
-    private int getTypeVariant() {
-        return this.dataTracker.get(VARIANT);
+    public void setPattern(BirdPatterns pattern) {
+        this.dataTracker.set(PATTERN, pattern.getId());
     }
 
-    @Override
-    public EntityView method_48926() {
-        return null;
+    public BirdPatterns getBirdPattern() {
+        return BirdPatterns.byId(this.dataTracker.get(PATTERN) & 255);
+    }
+    public BirdVariant getBirdVariant() {
+        return BirdVariant.byId(this.dataTracker.get(VARIANT) & 255);
     }
 }

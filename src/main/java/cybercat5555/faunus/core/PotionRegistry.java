@@ -19,6 +19,13 @@ public class PotionRegistry {
             new StatusEffectInstance(StatusEffects.HUNGER, 1200),
             new StatusEffectInstance(StatusEffects.WEAKNESS, 1200)));
 
+    public static final Potion THROWABLE_LEECHING = registerPotion("throwable_leeching", new Potion(
+            new StatusEffectInstance(EffectStatusRegistry.STOP_HEALING_EFFECT, 1200)));
+
+    public static final Potion DRINKABLE_LEECHING = registerPotion("drinkable_leeching", new Potion(
+            new StatusEffectInstance(EffectStatusRegistry.CLEAR_EFFECTS_EFFECT, 10)));
+
+
     public static Potion registerPotion(String name, Potion potion) {
         return Registry.register(Registries.POTION, new Identifier(MODID, name), potion);
     }
