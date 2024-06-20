@@ -1,11 +1,20 @@
 package cybercat5555.faunus.core.entity.livingEntity;
 
+import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Dynamic;
 import cybercat5555.faunus.core.entity.FeedableEntity;
+import cybercat5555.faunus.core.entity.ai.brain.HoatzinBrain;
 import cybercat5555.faunus.core.entity.control.move.FlightWalkMoveControl;
 import cybercat5555.faunus.core.entity.control.move.MoveType;
 import cybercat5555.faunus.util.FaunusID;
 import cybercat5555.faunus.util.MCUtil;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.brain.Brain;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.brain.sensor.Sensor;
+import net.minecraft.entity.ai.brain.sensor.SensorType;
+import net.minecraft.entity.passive.GoatBrain;
+import net.minecraft.entity.passive.GoatEntity;
 import net.minecraft.entity.passive.ParrotEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -27,6 +36,9 @@ import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class HoatzinEntity extends ParrotEntity implements GeoEntity, FeedableEntity {
+    protected static final ImmutableList<SensorType<? extends Sensor<? super GoatEntity>>> SENSORS = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.NEAREST_ITEMS, SensorType.NEAREST_ADULT, SensorType.HURT_BY, SensorType.GOAT_TEMPTATIONS);
+    protected static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(MemoryModuleType.LOOK_TARGET, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.PATH, MemoryModuleType.ATE_RECENTLY, MemoryModuleType.BREED_TARGET, MemoryModuleType.LONG_JUMP_COOLING_DOWN, MemoryModuleType.LONG_JUMP_MID_JUMP, MemoryModuleType.TEMPTING_PLAYER, MemoryModuleType.NEAREST_VISIBLE_ADULT, MemoryModuleType.TEMPTATION_COOLDOWN_TICKS, new MemoryModuleType[]{MemoryModuleType.IS_TEMPTED, MemoryModuleType.RAM_COOLDOWN_TICKS, MemoryModuleType.RAM_TARGET, MemoryModuleType.IS_PANICKING});
+
 
     protected static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("idle");
     protected static final RawAnimation WALKING_ANIM = RawAnimation.begin().thenLoop("walk");
@@ -42,6 +54,16 @@ public class HoatzinEntity extends ParrotEntity implements GeoEntity, FeedableEn
         moveControl = new FlightWalkMoveControl(this, 90, false);
         ((FlightWalkMoveControl) moveControl).changeMovementType(MoveType.WALK);
     }
+
+    protected Brain.Profile<GoatEntity> createBrainProfile() {
+        return Brain.createProfile(MEMORY_MODULES, SENSORS);
+    }
+
+    @Override
+    protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
+        return HoatzinBrain.create(this.createBrainProfile().deserialize(dynamic));
+    }
+
 
     @Override
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
@@ -62,7 +84,6 @@ public class HoatzinEntity extends ParrotEntity implements GeoEntity, FeedableEn
     }
 
     protected <E extends HoatzinEntity> PlayState idleAnimController(final AnimationState<E> state) {
-
         if (state.isMoving() && isOnGround()) {
             state.setAndContinue(WALKING_ANIM);
         } else if (!isOnGround()) {
