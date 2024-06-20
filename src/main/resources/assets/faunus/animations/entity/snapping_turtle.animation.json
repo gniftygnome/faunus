@@ -212,6 +212,7 @@
 			}
 		},
 		"bite": {
+			"loop": false,
 			"animation_length": 1,
 			"bones": {
 				"neck": {

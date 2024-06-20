@@ -1,19 +1,14 @@
 package cybercat5555.faunus.core.entity.livingEntity;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.serialization.Dynamic;
 import cybercat5555.faunus.core.entity.FeedableEntity;
-import cybercat5555.faunus.core.entity.ai.brain.HoatzinBrain;
 import cybercat5555.faunus.core.entity.control.move.FlightWalkMoveControl;
 import cybercat5555.faunus.core.entity.control.move.MoveType;
 import cybercat5555.faunus.util.FaunusID;
-import cybercat5555.faunus.util.MCUtil;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
-import net.minecraft.entity.passive.GoatBrain;
 import net.minecraft.entity.passive.GoatEntity;
 import net.minecraft.entity.passive.ParrotEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -54,16 +49,6 @@ public class HoatzinEntity extends ParrotEntity implements GeoEntity, FeedableEn
         moveControl = new FlightWalkMoveControl(this, 90, false);
         ((FlightWalkMoveControl) moveControl).changeMovementType(MoveType.WALK);
     }
-
-    protected Brain.Profile<GoatEntity> createBrainProfile() {
-        return Brain.createProfile(MEMORY_MODULES, SENSORS);
-    }
-
-    @Override
-    protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
-        return HoatzinBrain.create(this.createBrainProfile().deserialize(dynamic));
-    }
-
 
     @Override
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
@@ -117,11 +102,12 @@ public class HoatzinEntity extends ParrotEntity implements GeoEntity, FeedableEn
         if (canFedWithItem(stack)) {
             hasBeenFed = true;
 
-            if(!player.isCreative() && !player.isSpectator()){
+            if (!player.isCreative() && !player.isSpectator()) {
                 stack.decrement(1);
             }
         }
     }
+
     @Override
     public boolean canFedWithItem(ItemStack stack) {
         return stack.isIn(getBreedingItemsTag());

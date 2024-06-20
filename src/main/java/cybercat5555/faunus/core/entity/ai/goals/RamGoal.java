@@ -66,7 +66,7 @@ public class RamGoal extends MeleeAttackGoal {
 
     public boolean ramEntity(LivingEntity target, double distance) {
         if (target != null) {
-            mob.getNavigation().startMovingTo(target, speed);
+            mob.setVelocity(target.getX() - mob.getX(), target.getY() - mob.getY(), target.getZ() - mob.getZ());
 
             if (mob.squaredDistanceTo(target) <= distance) {
                 attack(target, distance);
@@ -97,7 +97,6 @@ public class RamGoal extends MeleeAttackGoal {
         if (mob.getLastAttacker() != null) {
             float chance = mob.getRandom().nextFloat();
             attacker = mob.getLastAttacker();
-            mob.setAttacker(null);
             ramming = chance < attackChance;
 
             return true;
