@@ -101,7 +101,7 @@ public class FlightWalkMoveControl extends MoveControl {
 
         if (type.equals(MoveType.FLY) && Math.abs(yDistance) > 9.999999747378752E-6 || Math.abs(distanceXZ) > 9.999999747378752E-6) {
             handlePitchRotation(yDistance, distanceXZ);
-            this.entity.setUpwardSpeed(yDistance > 0.0 ? speed : -speed);
+            this.entity.setUpwardSpeed(yDistance > 0.0 ? speed : -speed / 2);
         }
     }
 
@@ -123,7 +123,7 @@ public class FlightWalkMoveControl extends MoveControl {
         }
 
         if (distanceToGround > 0.5) {
-            this.entity.setUpwardSpeed(-0.5F);
+            this.entity.setUpwardSpeed(-0.25F);
         }
 
         if (yDistance > stepHeight && squaredDistance < entityWidth ||

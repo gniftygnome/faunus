@@ -81,13 +81,6 @@ public class HoatzinEntity extends ParrotEntity implements GeoEntity, FeedableEn
     }
 
     @Override
-    public boolean isOnGround() {
-        double distanceToGround = this.getY() - MCUtil.getWorldSurface(this.getWorld(), this.getBlockPos());
-
-        return distanceToGround <= 1.5;
-    }
-
-    @Override
     public boolean cannotDespawn() {
         return super.cannotDespawn() || hasBeenFed;
     }
