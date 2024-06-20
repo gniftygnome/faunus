@@ -111,8 +111,6 @@ public class SnappingTurtleEntity extends PathAwareEntity implements GeoEntity {
 
         @Override
         protected void attack(LivingEntity target, double squaredDistance) {
-            System.out.println(attackCooldown + " " + mob.isAttacking());
-
             if (this.mob instanceof SnappingTurtleEntity &&
                     this.attackCooldown-- <= 0 && squaredDistance < 2.0D) {
                 this.attackCooldown = ATTACK_COOLDOWN;
