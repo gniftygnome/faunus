@@ -4,15 +4,18 @@ import cybercat5555.faunus.core.EntityRegistry;
 import cybercat5555.faunus.core.ItemRegistry;
 import cybercat5555.faunus.core.entity.BreedableEntity;
 import cybercat5555.faunus.core.entity.FeedableEntity;
-import cybercat5555.faunus.core.entity.ai.goals.RamGoal;
 import cybercat5555.faunus.util.FaunusID;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ai.goal.EscapeDangerGoal;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.NoPenaltyTargeting;
+import net.minecraft.entity.ai.goal.FollowGroupLeaderGoal;
+import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.SwimAroundGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.passive.SchoolingFishEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
@@ -24,6 +27,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -57,8 +61,9 @@ public class ArapaimaEntity extends SchoolingFishEntity implements GeoEntity, Fe
 
     @Override
     protected void initGoals() {
-        super.initGoals();
-        goalSelector.add(1, new RamGoal(this, 2d, 0.3f));
+        this.goalSelector.add(1, new ArapaimaRamGoal(this, 10d, false));
+        this.goalSelector.add(4, new SwimAroundGoal(this, 1.0D, 65));
+        this.goalSelector.add(5, new FollowGroupLeaderGoal(this));
     }
 
 
@@ -132,7 +137,7 @@ public class ArapaimaEntity extends SchoolingFishEntity implements GeoEntity, Fe
             loveTicks += MAX_LOVE_TICKS;
             hasBeenFed = true;
 
-            if(!player.isCreative() && !player.isSpectator()){
+            if (!player.isCreative() && !player.isSpectator()) {
                 stack.decrement(1);
             }
         }
@@ -206,6 +211,69 @@ public class ArapaimaEntity extends SchoolingFishEntity implements GeoEntity, Fe
         if (child != null) {
             child.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
             this.getWorld().spawnEntity(child);
+        }
+    }
+
+
+    public static class ArapaimaRamGoal extends MeleeAttackGoal {
+        private final double speed;
+        private boolean mustFlee = false;
+
+
+        public ArapaimaRamGoal(PathAwareEntity mob, double speed, boolean pauseWhenMobIdle) {
+            super(mob, speed, pauseWhenMobIdle);
+            this.speed = speed;
+        }
+
+        @Override
+        public void tick() {
+            if (mustFlee) {
+                Vec3d vec3d = NoPenaltyTargeting.find(this.mob, 4, 1);
+
+                if (vec3d != null && this.mob.getNavigation().isIdle()) {
+                    this.mob.getNavigation().startMovingTo(vec3d.x, vec3d.y, vec3d.z, this.speed);
+                }
+            } else {
+                this.mob.getNavigation().startMovingTo(this.mob.getLastAttacker(), this.speed);
+                this.mob.setVelocity(this.mob.getVelocity().multiply(3));
+
+                if (attack(this.mob.getLastAttacker())) {
+                    mustFlee = true;
+                }
+            }
+
+            super.tick();
+        }
+
+        protected boolean attack(LivingEntity target) {
+            double squaredDistance = this.mob.getSquaredDistanceToAttackPosOf(this.mob.getLastAttacker());
+            double distance = this.getSquaredMaxAttackDistance(target);
+
+            if (squaredDistance <= distance) {
+                super.attack(target, squaredDistance);
+                return true;
+            }
+
+            return false;
+        }
+
+        @Override
+        public void start() {
+            if (Math.random() < 0.6F) {
+                this.mob.setTarget(this.mob.getLastAttacker());
+            } else {
+                mustFlee = true;
+            }
+        }
+
+        @Override
+        public boolean shouldContinue() {
+            return super.shouldContinue() || this.mob.getLastAttacker() != null;
+        }
+
+        @Override
+        public boolean canStart() {
+            return this.mob.getLastAttacker() != null;
         }
     }
 }

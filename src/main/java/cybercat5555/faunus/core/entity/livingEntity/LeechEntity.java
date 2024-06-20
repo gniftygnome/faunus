@@ -57,7 +57,7 @@ public class LeechEntity extends PathAwareEntity implements GeoEntity, FeedableE
     protected void initGoals() {
         this.goalSelector.add(0, new AttachToEntityGoal(this, 1.0D, false));
         this.goalSelector.add(1, new WanderAroundGoal(this, 1.0D));
-        this.goalSelector.add(2, new SwimAroundGoal(this, 1.0D, 120));
+        this.goalSelector.add(2, new SwimAroundGoal(this, 1.0D, 65));
         this.goalSelector.add(3, new LookAroundGoal(this));
 
         this.targetSelector.add(0, new RevengeGoal(this));
