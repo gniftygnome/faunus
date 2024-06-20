@@ -6,17 +6,24 @@ import cybercat5555.faunus.core.entity.ai.goals.HungerMeter;
 import cybercat5555.faunus.util.FaunusID;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.control.AquaticMoveControl;
 import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
+import net.minecraft.entity.mob.WaterCreatureEntity;
+import net.minecraft.entity.passive.FishEntity;
+import net.minecraft.entity.passive.FrogEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
@@ -42,26 +49,30 @@ public class LeechEntity extends PathAwareEntity implements GeoEntity, FeedableE
 
     public LeechEntity(EntityType<? extends PathAwareEntity> entityType, World world) {
         super(entityType, world);
+        this.moveControl = new AquaticMoveControl(this, 85, 10, 0.02F, 0.1F, true);
     }
 
     @Override
     protected void initGoals() {
         this.goalSelector.add(0, new AttachToEntityGoal(this, 1.0D, true));
-        this.goalSelector.add(1, new SwimGoal(this));
-        this.goalSelector.add(2, new WanderAroundGoal(this, 1.0D));
-        this.goalSelector.add(3, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
-        this.goalSelector.add(4, new LookAroundGoal(this));
+        this.goalSelector.add(1, new WanderAroundGoal(this, 1.0D));
+        this.goalSelector.add(2, new SwimAroundGoal(this, 1.0D, 120));
+        this.goalSelector.add(3, new LookAroundGoal(this));
 
         this.targetSelector.add(0, new RevengeGoal(this));
         this.targetSelector.add(1, new ActiveTargetGoal<>(this, LivingEntity.class, true,
                 target -> this.getWidth() < target.getWidth() && target.getHealth() > target.getMaxHealth() / 2));
     }
 
+    @Override
+    public boolean canBreatheInWater() {
+        return true;
+    }
 
     public static DefaultAttributeContainer.Builder createMobAttributes() {
         return MobEntity.createMobAttributes()
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 18f)
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.35f)
+                .add(EntityAttributes.GENERIC_MAX_HEALTH, 12f)
+                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25f)
                 .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 1f)
                 .add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 0.3f)
                 .add(EntityAttributes.GENERIC_ATTACK_SPEED, 1.2f);
@@ -130,6 +141,7 @@ public class LeechEntity extends PathAwareEntity implements GeoEntity, FeedableE
             }
 
             player.giveItemStack(ItemRegistry.BOTTLED_LEECH.getDefaultStack());
+            this.getWorld().playSound(player, player.getBlockPos(), SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.AMBIENT, 1.0F, 1.0F);
             this.remove(RemovalReason.DISCARDED);
         }
     }
