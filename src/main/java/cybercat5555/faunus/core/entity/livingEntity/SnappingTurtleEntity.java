@@ -6,7 +6,10 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.control.AquaticMoveControl;
-import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.entity.ai.goal.RevengeGoal;
+import net.minecraft.entity.ai.goal.SwimAroundGoal;
+import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -15,6 +18,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.world.World;
 import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager.ControllerRegistrar;
 import software.bernie.geckolib.core.animation.AnimationController;
@@ -33,9 +37,13 @@ public class SnappingTurtleEntity extends PathAwareEntity implements GeoEntity {
 
     public SnappingTurtleEntity(EntityType<? extends PathAwareEntity> entityType, World world) {
         super(entityType, world);
-        this.moveControl = new AquaticMoveControl(this, 85, 10, 1F, 0.5F, true);
+        this.moveControl = new AquaticMoveControl(this, 85, 10, 2F, 0.5F, true);
     }
 
+    @Override
+    public boolean canBreatheInWater() {
+        return true;
+    }
 
     public static DefaultAttributeContainer.Builder createMobAttributes() {
         return MobEntity.createMobAttributes()
@@ -53,31 +61,41 @@ public class SnappingTurtleEntity extends PathAwareEntity implements GeoEntity {
 
     @Override
     protected void initGoals() {
-        goalSelector.add(0, new SnappingTurtleAttack(this, 0.5D, false));
+        goalSelector.add(0, new SnappingTurtleAttack(this, 1.5D, false));
         goalSelector.add(1, new BuryIntoFloor(this, Blocks.MUD));
-        goalSelector.add(2, new SwimGoal(this));
-        goalSelector.add(2, new WanderAroundGoal(this, 0.25D, 120, true));
-        goalSelector.add(3, new MoveIntoWaterGoal(this));
+        goalSelector.add(2, new WanderAroundGoal(this, 1.0D));
+        goalSelector.add(3, new SwimAroundGoal(this, 1.0D, 10));
 
         targetSelector.add(0, new RevengeGoal(this));
-        targetSelector.add(1, new TerritorialSelectorGoal<>(this, LivingEntity.class, true, false,
-                target -> (this.squaredDistanceTo(target) < 4.0D)));
+        targetSelector.add(1, new TerritorialSelectorGoal<>(this, LivingEntity.class, true, true,
+                target -> (this.squaredDistanceTo(target) < 2.0D)));
     }
 
     @Override
     public void registerControllers(ControllerRegistrar controllers) {
-        controllers.add(new AnimationController<>(this, "idle", 5, this::idleAnimController));
+        controllers.add(new AnimationController<>(this, "movement", 5, this::idleAnimController));
+        controllers.add(new AnimationController<>(this, "attack", 5, this::attackAnimController));
+    }
+
+    private <T extends GeoAnimatable> PlayState attackAnimController(AnimationState<T> event) {
+        if (isAttacking()) {
+            event.setAnimation(BITE_ANIM);
+            return PlayState.CONTINUE;
+        }
+
+        return PlayState.STOP;
     }
 
     protected <E extends SnappingTurtleEntity> PlayState idleAnimController(final AnimationState<E> event) {
         boolean isBuried = getWorld().getBlockState(getBlockPos()).isOf(Blocks.MUD);
+        boolean isMoving = getVelocity().lengthSquared() > 0.0035D;
 
-        if (event.isMoving()) {
+        if (isMoving) {
             event.setAnimation(isSubmergedInWater() ? SWIM_ANIM : WALK_ANIM);
-        } else if(isAttacking()) {
-            event.setAnimation(BITE_ANIM);
-        } else if(!event.isMoving()) {
-            event.setAnimation(isBuried ? BURIED_ANIM : IDLE_ANIM);
+        } else if (isBuried) {
+            event.setAnimation(BURIED_ANIM);
+        } else {
+            event.setAnimation(IDLE_ANIM);
         }
 
         return PlayState.CONTINUE;
@@ -96,8 +114,12 @@ public class SnappingTurtleEntity extends PathAwareEntity implements GeoEntity {
             if (this.mob instanceof SnappingTurtleEntity &&
                     this.attackCooldown-- <= 0 && squaredDistance < 2.0D) {
                 this.attackCooldown = ATTACK_COOLDOWN;
-                this.mob.tryAttack(target);
                 target.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 60, 2));
+                this.mob.setAttacking(true);
+
+                super.attack(target, squaredDistance);
+            } else if(attackCooldown <= 10) {
+                this.mob.setAttacking(false);
             }
         }
     }

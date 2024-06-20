@@ -8,6 +8,7 @@ import cybercat5555.faunus.core.entity.ai.goals.RamGoal;
 import cybercat5555.faunus.util.FaunusID;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
+import net.minecraft.entity.ai.goal.SwimAroundGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -56,8 +57,8 @@ public class ArapaimaEntity extends SchoolingFishEntity implements GeoEntity, Fe
 
     @Override
     protected void initGoals() {
-        goalSelector.add(1, new RamGoal(this, 4d, 0.3f));
-        goalSelector.add(2, new EscapeDangerGoal(this, 1.25d));
+        super.initGoals();
+        goalSelector.add(1, new RamGoal(this, 2d, 0.3f));
     }
 
 
