@@ -4,18 +4,15 @@ import cybercat5555.faunus.core.ItemRegistry;
 import cybercat5555.faunus.core.entity.FeedableEntity;
 import cybercat5555.faunus.core.entity.ai.goals.HungerMeter;
 import cybercat5555.faunus.util.FaunusID;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.control.AquaticMoveControl;
 import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
-import net.minecraft.entity.mob.WaterCreatureEntity;
-import net.minecraft.entity.passive.FishEntity;
-import net.minecraft.entity.passive.FrogEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -26,6 +23,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -37,6 +35,11 @@ import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class LeechEntity extends PathAwareEntity implements GeoEntity, FeedableEntity {
+    private static final EntityType<?>[] BLACKLIST = new EntityType<?>[]{
+            EntityType.SKELETON,
+            EntityType.SKELETON_HORSE,
+            EntityType.WITHER_SKELETON
+    };
 
     protected static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("idle");
     protected static final RawAnimation CRAWLING = RawAnimation.begin().thenLoop("crawling");
@@ -61,7 +64,18 @@ public class LeechEntity extends PathAwareEntity implements GeoEntity, FeedableE
 
         this.targetSelector.add(0, new RevengeGoal(this));
         this.targetSelector.add(1, new ActiveTargetGoal<>(this, LivingEntity.class, true,
-                target -> this.getWidth() < target.getWidth() && target.getHealth() > target.getMaxHealth() / 2));
+                target -> this.getWidth() < target.getWidth() && target.getHealth() > target.getMaxHealth() / 2 &&
+                        !isInBlackList(target)));
+    }
+
+    private boolean isInBlackList(LivingEntity target) {
+        for (EntityType<?> entityType : BLACKLIST) {
+            if (target.getType() == entityType) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     @Override
@@ -144,6 +158,11 @@ public class LeechEntity extends PathAwareEntity implements GeoEntity, FeedableE
             this.getWorld().playSound(player, player.getBlockPos(), SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.AMBIENT, 1.0F, 1.0F);
             this.remove(RemovalReason.DISCARDED);
         }
+    }
+
+    @Override
+    protected void playStepSound(BlockPos pos, BlockState state) {
+        // We don't want to play step sounds
     }
 
     @Override
@@ -246,7 +265,8 @@ public class LeechEntity extends PathAwareEntity implements GeoEntity, FeedableE
             this.hunger = Math.max(0, Math.min(MAX_HUNGER, this.hunger + hunger));
         }
 
-        @Override @SuppressWarnings("all")
+        @Override
+        @SuppressWarnings("all")
         public boolean doesHaveHunger() {
             return hunger > (MAX_HUNGER / 2);
         }

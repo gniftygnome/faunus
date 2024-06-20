@@ -1,6 +1,5 @@
 package cybercat5555.faunus.mixin;
 
-import cybercat5555.faunus.core.entity.livingEntity.CapuchinEntity;
 import cybercat5555.faunus.core.entity.livingEntity.YacareManEaterEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -27,9 +26,6 @@ public abstract class PlayerMixin extends LivingEntity {
     @Override
     protected void updatePassengerPosition(Entity passenger, PositionUpdater positionUpdater) {
         super.updatePassengerPosition(passenger, positionUpdater);
-
-        if (passenger instanceof CapuchinEntity) {
-            positionUpdater.accept(passenger, this.getX(), this.getY() + this.getHeight() + 0.1D, this.getZ());
-        }
+        positionUpdater.accept(passenger, this.getX(), this.getY() + this.getHeight() + 0.1D, this.getZ());
     }
 }
