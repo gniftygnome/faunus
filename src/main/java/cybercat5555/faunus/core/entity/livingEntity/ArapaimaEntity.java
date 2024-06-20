@@ -56,7 +56,7 @@ public class ArapaimaEntity extends SchoolingFishEntity implements GeoEntity, Fe
 
     @Override
     protected void initGoals() {
-        goalSelector.add(1, new RamGoal(this, 2.5d, 0.3f));
+        goalSelector.add(1, new RamGoal(this, 4d, 0.3f));
         goalSelector.add(2, new EscapeDangerGoal(this, 1.25d));
     }
 

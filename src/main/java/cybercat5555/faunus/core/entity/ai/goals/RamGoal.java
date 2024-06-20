@@ -40,12 +40,12 @@ public class RamGoal extends MeleeAttackGoal {
      *
      * @param entity       The entity that will be performing the goal.
      * @param speed        The speed at which the entity will move. Being 1 means the entity will move at normal speed.
-     * @param attackChange The chance that the entity will attack the target. Being 0.1f means 10% chance. So in case of 0 it will never attack, and 1 will always attack.
+     * @param attackChance The chance that the entity will attack the target. Being 0.1f means 10% chance. So in case of 0 it will never attack, and 1 will always attack.
      */
-    public RamGoal(PathAwareEntity entity, double speed, float attackChange) {
+    public RamGoal(PathAwareEntity entity, double speed, float attackChance) {
         super(entity, speed, false);
         this.speed = speed;
-        this.attackChance = attackChange;
+        this.attackChance = attackChance;
     }
 
     @Override
