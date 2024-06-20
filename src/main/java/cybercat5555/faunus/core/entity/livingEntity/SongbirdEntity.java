@@ -1,8 +1,10 @@
 package cybercat5555.faunus.core.entity.livingEntity;
 
+import com.mojang.serialization.Codec;
 import cybercat5555.faunus.core.EntityRegistry;
 import cybercat5555.faunus.core.entity.livingEntity.variant.BirdPatterns;
 import cybercat5555.faunus.core.entity.livingEntity.variant.BirdVariant;
+import net.fabricmc.fabric.impl.biome.modification.BuiltInRegistryKeys;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -15,14 +17,23 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.ParrotEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.BuiltinRegistries;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.BiomeTags;
+import net.minecraft.registry.tag.TagKey;
+import net.minecraft.registry.tag.TagManagerLoader;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.EntityView;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.source.BiomeSource;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -110,8 +121,10 @@ public class SongbirdEntity extends ParrotEntity implements GeoEntity {
 
     @Override
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
-        Optional<RegistryKey<Biome>> biomeOptional = world.getBiome(this.getBlockPos()).getKey();
-        BirdVariant variant = biomeOptional.isPresent() ? BirdVariant.byBiome(biomeOptional.get().getValue()) : BirdVariant.VIOLACEOUS_EUPHONIA;
+        world.getBiome(this.getBlockPos()).isIn(BiomeTags.IS_JUNGLE);
+
+        RegistryEntry<Biome> biome = world.getBiome(this.getBlockPos());
+        BirdVariant variant = BirdVariant.byBiome(biome);
 
         this.setVariant(variant);
         this.setPattern(variant.getPattern());

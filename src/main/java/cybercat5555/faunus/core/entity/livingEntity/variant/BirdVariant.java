@@ -1,8 +1,10 @@
 package cybercat5555.faunus.core.entity.livingEntity.variant;
 
 import cybercat5555.faunus.util.FaunusColor;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.biome.BiomeKeys;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.BiomeTags;
+import net.minecraft.registry.tag.TagKey;
+import net.minecraft.world.biome.Biome;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -10,25 +12,25 @@ import java.util.List;
 import java.util.Random;
 
 public enum BirdVariant {
-    VIOLACEOUS_EUPHONIA(0, BirdPatterns.COUNTERSHADED, BiomeKeys.JUNGLE.getValue(), FaunusColor.PURPLE, FaunusColor.YELLOW, FaunusColor.NONE, false),
+    VIOLACEOUS_EUPHONIA(0, BirdPatterns.COUNTERSHADED, BiomeTags.IS_JUNGLE, FaunusColor.PURPLE, FaunusColor.YELLOW, FaunusColor.NONE, false),
 
-    WHITE_WINGED_COTINGA(1, BirdPatterns.CAPED, BiomeKeys.JUNGLE.getValue(), FaunusColor.PURPLE, FaunusColor.WHITE, FaunusColor.NONE, false),
+    WHITE_WINGED_COTINGA(1, BirdPatterns.CAPED, BiomeTags.IS_JUNGLE, FaunusColor.PURPLE, FaunusColor.WHITE, FaunusColor.NONE, false),
 
-    BLACK_HEADED_BERRYEATER(2, BirdPatterns.HOODED, BiomeKeys.JUNGLE.getValue(), FaunusColor.LIME, FaunusColor.DARK_GRAY, FaunusColor.NONE, false),
+    BLACK_HEADED_BERRYEATER(2, BirdPatterns.HOODED, BiomeTags.IS_JUNGLE, FaunusColor.LIME, FaunusColor.DARK_GRAY, FaunusColor.NONE, false),
 
-    YELLOW_WINGED_CACIQUE(3, BirdPatterns.CAPED, BiomeKeys.JUNGLE.getValue(), FaunusColor.DARK_GRAY, FaunusColor.YELLOW, FaunusColor.NONE, true),
+    YELLOW_WINGED_CACIQUE(3, BirdPatterns.CAPED, BiomeTags.IS_JUNGLE, FaunusColor.DARK_GRAY, FaunusColor.YELLOW, FaunusColor.NONE, true),
 
-    YUCATAN_JAY(4, BirdPatterns.CAPED, BiomeKeys.JUNGLE.getValue(), FaunusColor.DARK_GRAY, FaunusColor.CYAN, FaunusColor.NONE, true),
+    YUCATAN_JAY(4, BirdPatterns.CAPED, BiomeTags.IS_JUNGLE, FaunusColor.DARK_GRAY, FaunusColor.CYAN, FaunusColor.NONE, true),
 
-    ALTAMIRA_ORIOLE(5, BirdPatterns.CAPED, BiomeKeys.JUNGLE.getValue(), FaunusColor.ORANGE, FaunusColor.DARK_GRAY, FaunusColor.NONE, false),
+    ALTAMIRA_ORIOLE(5, BirdPatterns.CAPED, BiomeTags.IS_JUNGLE, FaunusColor.ORANGE, FaunusColor.DARK_GRAY, FaunusColor.NONE, false),
 
-    HONEYCREEPER(6, BirdPatterns.CAPED, BiomeKeys.JUNGLE.getValue(), FaunusColor.BLUE, FaunusColor.DARK_GRAY, FaunusColor.NONE, false),
+    HONEYCREEPER(6, BirdPatterns.CAPED, BiomeTags.IS_JUNGLE, FaunusColor.BLUE, FaunusColor.DARK_GRAY, FaunusColor.NONE, false),
 
-    FIERY_THROATED_FRUITEATER(7, BirdPatterns.COLLARED, BiomeKeys.JUNGLE.getValue(), FaunusColor.GREEN, FaunusColor.ORANGE, FaunusColor.NONE,false),
+    FIERY_THROATED_FRUITEATER(7, BirdPatterns.COLLARED, BiomeTags.IS_JUNGLE, FaunusColor.GREEN, FaunusColor.ORANGE, FaunusColor.NONE,false),
 
-    SCARLET_THROATED_TANGER(8, BirdPatterns.COLLARED, BiomeKeys.JUNGLE.getValue(), FaunusColor.DARK_GRAY, FaunusColor.RED, FaunusColor.NONE, false),
+    SCARLET_THROATED_TANGER(8, BirdPatterns.COLLARED, BiomeTags.IS_JUNGLE, FaunusColor.DARK_GRAY, FaunusColor.RED, FaunusColor.NONE, false),
 
-    CITROLIN_TROGON(9, BirdPatterns.COLLARED, BiomeKeys.JUNGLE.getValue(), FaunusColor.GRAY, FaunusColor.WHITE, FaunusColor.YELLOW, false);
+    CITROLIN_TROGON(9, BirdPatterns.COLLARED, BiomeTags.IS_JUNGLE, FaunusColor.GRAY, FaunusColor.WHITE, FaunusColor.YELLOW, false);
 
 
     private static final BirdVariant[] BY_ID = Arrays.stream(values()).
@@ -36,13 +38,13 @@ public enum BirdVariant {
 
     private final int id;
     private final BirdPatterns pattern;
-    private final Identifier biome;
+    private final TagKey<Biome> biome;
     private final int primaryColor;
     private final int secondaryColor;
     private final int bellyColor;
     private final boolean renderCrest;
 
-    private BirdVariant(int id, BirdPatterns pattern, Identifier biome, int primaryColor, int secondaryColor, int bellyColor, boolean renderCrest) {
+    private BirdVariant(int id, BirdPatterns pattern, TagKey<Biome> biome, int primaryColor, int secondaryColor, int bellyColor, boolean renderCrest) {
         this.id = id;
         this.pattern = pattern;
         this.biome = biome;
@@ -60,7 +62,7 @@ public enum BirdVariant {
         return pattern;
     }
 
-    public Identifier getBiome() {
+    public TagKey<Biome> getBiomeTag() {
         return biome;
     }
 
@@ -96,9 +98,9 @@ public enum BirdVariant {
         return bellyColor != 0;
     }
 
-    public static BirdVariant byBiome(Identifier biome) {
+    public static BirdVariant byBiome(RegistryEntry<Biome> biome) {
         List<BirdVariant> variantsInBiome = Arrays.stream(BirdVariant.values())
-                .filter(variant -> variant.getBiome().equals(biome))
+                .filter(variant -> biome.isIn(variant.getBiomeTag()))
                 .toList();
 
         if (variantsInBiome.isEmpty()) {
