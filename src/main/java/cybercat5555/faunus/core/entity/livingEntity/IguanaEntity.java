@@ -1,0 +1,191 @@
+package cybercat5555.faunus.core.entity.livingEntity;
+
+import cybercat5555.faunus.core.EntityRegistry;
+import cybercat5555.faunus.core.ItemRegistry;
+import cybercat5555.faunus.core.entity.FeedableEntity;
+import cybercat5555.faunus.util.FaunusID;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.PathAwareEntity;
+import net.minecraft.entity.passive.AnimalEntity;
+import net.minecraft.entity.passive.PassiveEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.AnimatableManager.ControllerRegistrar;
+import software.bernie.geckolib.core.animation.AnimationController;
+import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.util.GeckoLibUtil;
+
+public class IguanaEntity extends AnimalEntity implements GeoEntity, FeedableEntity {
+
+    private static final int GROW_TAIL_TIME = 24000;
+    protected static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("idle");
+    private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
+    private boolean hasBeenFed = false;
+    private boolean hasTail = true;
+    private int timeUntilGrowTail = 0;
+
+    public IguanaEntity(EntityType<? extends IguanaEntity> entityType, World world) {
+        super(entityType, world);
+    }
+
+    @Override
+    protected void initGoals() {
+        goalSelector.add(1, new IguanaFleeGoal(this, 2.5d));
+        goalSelector.add(2, new FollowParentGoal(this, 1.25d));
+        goalSelector.add(2, new WanderAroundGoal(this, 1.0));
+        goalSelector.add(3, new LookAroundGoal(this));
+        goalSelector.add(4, new LookAtEntityGoal(this, PlayerEntity.class, 3.0f));
+
+        targetSelector.add(1, new AnimalMateGoal(this, 1.0));
+    }
+
+    public static DefaultAttributeContainer.Builder createMobAttributes() {
+        return MobEntity.createMobAttributes()
+                .add(EntityAttributes.GENERIC_MAX_HEALTH, 12f)
+                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.4f);
+    }
+
+    @Override
+    public void tick() {
+        growTail();
+
+        super.tick();
+    }
+
+    private void growTail() {
+        if (!hasTail) {
+            timeUntilGrowTail++;
+
+            if (timeUntilGrowTail >= GROW_TAIL_TIME) {
+                hasTail = true;
+                timeUntilGrowTail = 0;
+            }
+        }
+    }
+
+    @Override
+    public ActionResult interactMob(PlayerEntity player, Hand hand) {
+        ItemStack handItem = player.getStackInHand(hand);
+        feedEntity(player, handItem);
+        shorn(player);
+
+        return super.interactMob(player, hand);
+    }
+
+    @Override
+    public void onDamaged(DamageSource damageSource) {
+        boolean dropTailChance = Math.random() < 0.1;
+
+        if (dropTailChance) {
+            dropTail();
+        }
+
+        super.onDamaged(damageSource);
+    }
+
+    private void dropTail() {
+        dropItem(ItemRegistry.IGUANA_RAW_TAIL);
+        hasTail = false;
+        timeUntilGrowTail = 0;
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return geoCache;
+    }
+
+    @Override
+    public void registerControllers(ControllerRegistrar controllers) {
+        controllers.add(new AnimationController<>(this, "idle", 5, this::idleAnimController));
+    }
+
+    protected <E extends IguanaEntity> PlayState idleAnimController(final AnimationState<E> event) {
+        return PlayState.CONTINUE;
+    }
+
+    @Override
+    public boolean cannotDespawn() {
+        return super.cannotDespawn() || hasBeenFed;
+    }
+
+    @Override
+    public void feedEntity(PlayerEntity player, ItemStack stack) {
+        if (canFedWithItem(stack)) {
+            hasBeenFed = true;
+
+            if (!player.isCreative() && !player.isSpectator()) {
+                stack.decrement(1);
+            }
+        }
+    }
+
+    private void shorn(PlayerEntity player) {
+        if (player.getStackInHand(Hand.MAIN_HAND).getItem() == Items.SHEARS && hasTail) {
+            dropTail();
+        }
+    }
+
+    @Override
+    public boolean canFedWithItem(ItemStack stack) {
+        return stack.isIn(getBreedingItemsTag());
+    }
+
+    @Override
+    public boolean hasBeenFed() {
+        return hasBeenFed;
+    }
+
+    public void setHasBeenFed(boolean hasBeenFed) {
+        this.hasBeenFed = hasBeenFed;
+    }
+
+    public boolean hasTail() {
+        return hasTail;
+    }
+
+    @Override
+    public TagKey<Item> getBreedingItemsTag() {
+        return TagKey.of(RegistryKeys.ITEM, FaunusID.content("crayfish_breeding_items"));
+    }
+
+    @Nullable
+    @Override
+    public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
+        return EntityRegistry.IGUANA.create(world);
+    }
+
+    public static class IguanaFleeGoal extends EscapeDangerGoal {
+        public IguanaFleeGoal(PathAwareEntity mob, double speed) {
+            super(mob, speed);
+        }
+
+        @Override
+        public void start() {
+            float attackDistance = 2.0f;
+
+            if (mob.distanceTo(mob.getLastAttacker()) < attackDistance) {
+                mob.tryAttack(mob.getLastAttacker());
+            }
+
+            super.start();
+        }
+    }
+}

@@ -20,6 +20,13 @@ public final class ItemRegistry {
     private ItemRegistry() {
     }
 
+    // Iguana
+    public static final Item IGUANA_SPAWN_EGG = new SpawnEggItem(EntityRegistry.IGUANA, 0x00ff00, 0x00aa00, new FabricItemSettings());
+    public static final Item IGUANA_RAW_TAIL = new Item(new FabricItemSettings().food(FoodRegistry.IGUANA_RAW_TAIL));
+    public static final Item IGUANA_TAIL_COOKED = new Item(new FabricItemSettings().food(FoodRegistry.IGUANA_COOKED_TAIL));
+    public static final Item IGUANA_RAW_MEAT = new Item(new FabricItemSettings().food(FoodRegistry.IGUANA_RAW_MEAT));
+    public static final Item IGUANA_COOKED_MEAT = new Item(new FabricItemSettings().food(FoodRegistry.IGUANA_COOKED_MEAT));
+
     // Songbird
     public static final Item SONGBIRD_SPAWN_EGG = new SpawnEggItem(EntityRegistry.SONGBIRD, 0xeeeeee, 0xaaaaaa, new FabricItemSettings());
 
@@ -108,6 +115,10 @@ public final class ItemRegistry {
                 entries.add(COOKED_CRAYFISH);
                 entries.add(COOKED_YACARE);
                 entries.add(RAW_YACARE);
+                entries.add(IGUANA_RAW_TAIL);
+                entries.add(IGUANA_TAIL_COOKED);
+                entries.add(IGUANA_RAW_MEAT);
+                entries.add(IGUANA_COOKED_MEAT);
                 // buckets
                 entries.add(PIRANHA_BUCKET);
                 entries.add(ARAPAIMA_BUCKET);
@@ -124,6 +135,7 @@ public final class ItemRegistry {
                 entries.add(CRAYFISH_SPAWN_EGG);
                 entries.add(LEECH_SPAWN_EGG);
                 entries.add(YACARE_SPAWN_EGG);
+                entries.add(IGUANA_SPAWN_EGG);
             })
             .build();
 
@@ -164,6 +176,11 @@ public final class ItemRegistry {
         register("cooked_crayfish", COOKED_CRAYFISH);
         register("yacare_filet_cooked", COOKED_YACARE);
         register("yacare_filet_raw", RAW_YACARE);
+        register("iguana_spawn_egg", IGUANA_SPAWN_EGG);
+        register("iguana_raw_tail", IGUANA_RAW_TAIL);
+        register("iguana_tail_cooked", IGUANA_TAIL_COOKED);
+        register("iguana_raw_meat", IGUANA_RAW_MEAT);
+        register("iguana_cooked_meat", IGUANA_COOKED_MEAT);
 
 
         Registry.register(Registries.ITEM_GROUP, FaunusID.content("item_group"), GROUP);

@@ -4,15 +4,21 @@ import cybercat5555.faunus.Faunus;
 import cybercat5555.faunus.core.entity.livingEntity.*;
 import cybercat5555.faunus.core.entity.projectile.CocoaBeanProjectile;
 import cybercat5555.faunus.util.FaunusID;
+import cybercat5555.faunus.util.MCUtil;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
+import net.fabricmc.fabric.api.biome.v1.BiomeSelectionContext;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.*;
 import net.minecraft.entity.passive.FishEntity;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
-import net.minecraft.registry.tag.BiomeTags;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeKeys;
+
+import static cybercat5555.faunus.common.config.MobSpawningConfig.*;
 
 public final class EntityRegistry {
     private EntityRegistry() {
@@ -20,6 +26,10 @@ public final class EntityRegistry {
 
     //-- Multiple --------------------------------------------------------------
     public static EntityType<SongbirdEntity> SONGBIRD = register("songbird", FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, SongbirdEntity::new)
+            .dimensions(EntityDimensions.fixed(0.5f, 0.65f))
+            .build());
+
+    public static EntityType<IguanaEntity> IGUANA = register("iguana", FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, IguanaEntity::new)
             .dimensions(EntityDimensions.fixed(0.5f, 0.65f))
             .build());
 
@@ -83,14 +93,12 @@ public final class EntityRegistry {
             .build());
 
 
-
-    /**
-     * Registers all entities.
-     */
+    @SuppressWarnings("all")
     public static void init() {
         Faunus.LOG.info("Registering entity's attributes for " + Faunus.MODID);
 
         FabricDefaultAttributeRegistry.register(SONGBIRD, SongbirdEntity.createSongbirdAttributes());
+        FabricDefaultAttributeRegistry.register(IGUANA, IguanaEntity.createMobAttributes());
         FabricDefaultAttributeRegistry.register(CAPUCHIN, CapuchinEntity.createMobAttributes());
         FabricDefaultAttributeRegistry.register(TAPIR, TapirEntity.createMobAttributes());
         FabricDefaultAttributeRegistry.register(CONSTRICTOR, ConstrictorEntity.createMobAttributes());
@@ -103,8 +111,6 @@ public final class EntityRegistry {
         FabricDefaultAttributeRegistry.register(LEECH, LeechEntity.createMobAttributes());
         FabricDefaultAttributeRegistry.register(YACARE, YacareEntity.createMobAttributes());
         FabricDefaultAttributeRegistry.register(YACARE_MANEATER, YacareManEaterEntity.createMobAttributes());
-
-        BiomeModifications.addSpawn(ctx -> ctx.hasTag(BiomeTags.IS_JUNGLE), SpawnGroup.WATER_CREATURE, PIRANHA, 12, 5, 8);
     }
 
     private static <T extends Entity> EntityType<T> register(String name, EntityType<T> type) {

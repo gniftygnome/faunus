@@ -1,5 +1,6 @@
 package cybercat5555.faunus.util;
 
+import net.fabricmc.fabric.api.biome.v1.BiomeSelectionContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.WitherEntity;
@@ -8,6 +9,9 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.*;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -16,6 +20,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockStateRaycastContext;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 
 import java.util.List;
 import java.util.Optional;
@@ -67,50 +72,17 @@ public class MCUtil {
         return false;
     }
 
+    public static boolean canSpawnInBiome(String biomeTag, BiomeSelectionContext ctx) {
+        if(biomeTag == null) return true;
 
-    public static Entity getEntityLookinAt(Entity rayTraceEntity, double distance) {
-        double playerRotX = rayTraceEntity.getRotationVector().getX();
-        double playerRotY = rayTraceEntity.getRotationVector().getY();
-        Vec3d startPos = rayTraceEntity.getEyePos();
-        double f2 = Math.cos(-playerRotY * ((float) Math.PI / 180F) - (float) Math.PI);
-        double f3 = Math.sin(-playerRotY * ((float) Math.PI / 180F) - (float) Math.PI);
-        double f4 = -Math.cos(-playerRotX * ((float) Math.PI / 180F));
-        double additionY = Math.sin(-playerRotX * ((float) Math.PI / 180F));
-        double additionX = f3 * f4;
-        double additionZ = f2 * f4;
-        double d0 = distance;
-        Vec3d endVec = startPos.add((additionX * d0), (additionY * d0), (additionZ * d0));
+        TagKey<Biome> biomeTagKey = MCUtil.biomeTagKeyOf(biomeTag);
+        boolean hasTag = ctx.hasTag(biomeTagKey);
+        boolean isBiome = ctx.getBiomeKey().getValue().getPath().contains(biomeTag);
 
-        Box startEndBox = new Box(startPos, endVec);
-        Entity entity = null;
+        return hasTag || isBiome;
+    }
 
-        for (Entity entity1 : rayTraceEntity.getWorld().getOtherEntities(rayTraceEntity, startEndBox, (val) -> true)) {
-            Box aabb = entity1.getBoundingBox().expand(5);
-            Optional<Vec3d> optional = aabb.raycast(startPos, endVec);
-            if (aabb.contains(startPos)) {
-                if (d0 >= 0.0D) {
-                    entity = entity1;
-                    startPos = optional.orElse(startPos);
-                    d0 = 0.0D;
-                }
-            } else if (optional.isPresent()) {
-                Vec3d vec31 = optional.get();
-                double d1 = startPos.distanceTo(vec31);
-                if (d1 < d0 || d0 == 0.0D) {
-                    if (entity1.getRootVehicle() == rayTraceEntity.getRootVehicle()) {
-                        if (d0 == 0.0D) {
-                            entity = entity1;
-                            startPos = vec31;
-                        }
-                    } else {
-                        entity = entity1;
-                        startPos = vec31;
-                        d0 = d1;
-                    }
-                }
-            }
-        }
-
-        return entity;
+    public static TagKey<Biome> biomeTagKeyOf(String id) {
+        return id != null ? TagKey.of(RegistryKeys.BIOME, new Identifier(id)) : null;
     }
 }

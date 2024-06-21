@@ -25,5 +25,6 @@ public final class EntityRendererRegistry {
         register(EntityRegistry.YACARE, YacareEntityRenderer::new);
         register(EntityRegistry.YACARE_MANEATER, YacareManEaterEntityRenderer::new);
         register(EntityRegistry.COCOA_BEAN_PROJECTILE, FlyingItemEntityRenderer::new);
+        register(EntityRegistry.IGUANA, IguanaEntityRenderer::new);
     }
 }

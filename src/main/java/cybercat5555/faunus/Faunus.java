@@ -3,7 +3,6 @@ package cybercat5555.faunus;
 import cybercat5555.faunus.common.EventManager;
 import cybercat5555.faunus.core.*;
 import net.fabricmc.api.ModInitializer;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,5 +23,6 @@ public class Faunus implements ModInitializer {
 
     public void eventHandler() {
         EventManager.onAttack();
+        EventManager.onServerStart();
     }
 }

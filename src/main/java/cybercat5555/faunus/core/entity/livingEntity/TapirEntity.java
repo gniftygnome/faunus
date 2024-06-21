@@ -105,6 +105,7 @@ public class TapirEntity extends AnimalEntity implements GeoEntity, SmartBrainOw
     public final void initGoals() {
         goalSelector.add(1, new EscapeDangerGoal(this, 2.5d));
         goalSelector.add(2, new FollowParentGoal(this, 1.25d));
+        goalSelector.add(2, new WanderAroundGoal(this, 1.0));
         goalSelector.add(3, new LookAroundGoal(this));
         goalSelector.add(4, new LookAtEntityGoal(this, PlayerEntity.class, 3.0f));
 
