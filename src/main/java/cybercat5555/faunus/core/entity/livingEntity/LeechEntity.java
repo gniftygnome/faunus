@@ -7,7 +7,6 @@ import cybercat5555.faunus.util.FaunusID;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.control.AquaticMoveControl;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -52,30 +51,30 @@ public class LeechEntity extends PathAwareEntity implements GeoEntity, FeedableE
 
     public LeechEntity(EntityType<? extends PathAwareEntity> entityType, World world) {
         super(entityType, world);
-        this.moveControl = new AquaticMoveControl(this, 85, 10, 0.02F, 0.1F, true);
     }
 
     @Override
     protected void initGoals() {
-        this.goalSelector.add(0, new AttachToEntityGoal(this, 1.0D, true));
+        this.goalSelector.add(0, new AttachToEntityGoal(this, 1.0D, false));
         this.goalSelector.add(1, new WanderAroundGoal(this, 1.0D));
-        this.goalSelector.add(2, new SwimAroundGoal(this, 1.0D, 120));
+        this.goalSelector.add(2, new SwimAroundGoal(this, 1.0D, 65));
         this.goalSelector.add(3, new LookAroundGoal(this));
 
         this.targetSelector.add(0, new RevengeGoal(this));
         this.targetSelector.add(1, new ActiveTargetGoal<>(this, LivingEntity.class, true,
-                target -> this.getWidth() < target.getWidth() && target.getHealth() > target.getMaxHealth() / 2 &&
+                target -> this.getBoundingBox().getAverageSideLength() < target.getBoundingBox().getAverageSideLength()
+                        && target.getHealth() > target.getMaxHealth() / 2 &&
                         !isInBlackList(target)));
     }
 
     private boolean isInBlackList(LivingEntity target) {
         for (EntityType<?> entityType : BLACKLIST) {
             if (target.getType() == entityType) {
-                return false;
+                return true;
             }
         }
 
-        return true;
+        return false;
     }
 
     @Override
@@ -187,17 +186,19 @@ public class LeechEntity extends PathAwareEntity implements GeoEntity, FeedableE
         private float hunger = MAX_HUNGER;
         private int timeToLeave = 0;
         private int timeToAttackAgain = 0;
+        private LivingEntity target;
 
         public AttachToEntityGoal(LeechEntity mob, double speed, boolean pauseWhenMobIdle) {
             super(mob, speed, pauseWhenMobIdle);
             this.speed = speed;
+
         }
 
 
         @Override
         public void tick() {
-            if (this.mob.getTarget() != null) {
-                boolean isCloseEnough = this.mob.squaredDistanceTo(this.mob.getTarget()) < 1.5D;
+            if (target != null) {
+                boolean isCloseEnough = this.mob.squaredDistanceTo(target) < 1.5D;
 
                 if (isCloseEnough) {
                     this.rideEntity();
@@ -207,16 +208,13 @@ public class LeechEntity extends PathAwareEntity implements GeoEntity, FeedableE
         }
 
         private void rideEntity() {
-            LivingEntity target = this.mob.getTarget();
-            if (target != null && this.mob.getTarget().getPassengerList().size() == 0) {
-                this.mob.startRiding(target, true);
-            }
+            mob.startRiding(target, true);
         }
 
         @SuppressWarnings("ConstantConditions")
         private void suckBlood() {
             int attackSpeed = (int) (mob.getAttributeValue(EntityAttributes.GENERIC_ATTACK_SPEED) * 40.0);
-            boolean targetIsHalfHealth = mob.getTarget().getHealth() < mob.getTarget().getMaxHealth() / 2;
+            boolean targetIsHalfHealth = mob.getTarget().getHealth() < target.getMaxHealth() / 2;
 
             if (timeToAttackAgain++ > attackSpeed && !targetIsHalfHealth) {
                 mob.tryAttack(mob.getTarget());
@@ -226,7 +224,7 @@ public class LeechEntity extends PathAwareEntity implements GeoEntity, FeedableE
 
         @Override
         public boolean shouldContinue() {
-            return super.shouldContinue() && doesHaveHunger() && !enoughTimePassedSuckingBlood();
+            return mob.getTarget() != null && doesHaveHunger() && !enoughTimePassedSuckingBlood();
         }
 
         @Override
@@ -240,7 +238,7 @@ public class LeechEntity extends PathAwareEntity implements GeoEntity, FeedableE
 
         @Override
         public void start() {
-            this.mob.getNavigation().startMovingTo(this.mob.getTarget(), this.speed);
+            this.mob.getNavigation().startMovingTo(target, this.speed);
             this.timeToLeave = 0;
 
             super.start();
@@ -253,6 +251,7 @@ public class LeechEntity extends PathAwareEntity implements GeoEntity, FeedableE
             if (this.mob.getTarget() != null) {
                 boolean isBiggerThanMob = this.mob.getWidth() < this.mob.getTarget().getWidth();
                 boolean hasEnoughHealth = this.mob.getTarget().getHealth() > this.mob.getTarget().getMaxHealth() / 2;
+                this.target = this.mob.getTarget();
 
                 return super.canStart() && doesHaveHunger() && isBiggerThanMob && hasEnoughHealth;
             }

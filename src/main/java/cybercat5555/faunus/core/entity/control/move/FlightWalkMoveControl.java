@@ -43,6 +43,11 @@ public class FlightWalkMoveControl extends MoveControl {
         } else {
             handleOtherStates();
         }
+
+        // Randomly perform a high jump
+        if(this.state == State.MOVE_TO && Math.random() < 0.01) {
+            this.entity.setVelocity(this.entity.getVelocity().add(0, 0.25, 0));
+        }
     }
 
     private void handleMoveState() {
