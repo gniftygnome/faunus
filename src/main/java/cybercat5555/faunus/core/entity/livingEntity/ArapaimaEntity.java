@@ -1,14 +1,15 @@
 package cybercat5555.faunus.core.entity.livingEntity;
 
-import cybercat5555.faunus.core.EntityRegistry;
 import cybercat5555.faunus.core.ItemRegistry;
-import cybercat5555.faunus.core.entity.BreedableEntity;
 import cybercat5555.faunus.core.entity.FeedableEntity;
+import cybercat5555.faunus.core.entity.MateEntity;
+import cybercat5555.faunus.core.entity.ai.goals.MateGoal;
 import cybercat5555.faunus.util.FaunusID;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.NoPenaltyTargeting;
-import net.minecraft.entity.ai.goal.FollowGroupLeaderGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.SwimAroundGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -16,18 +17,20 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
-import net.minecraft.entity.passive.SchoolingFishEntity;
+import net.minecraft.entity.passive.FishEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -38,34 +41,30 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.util.ArrayList;
-
-public class ArapaimaEntity extends SchoolingFishEntity implements GeoEntity, FeedableEntity, BreedableEntity {
+public class ArapaimaEntity extends FishEntity implements GeoEntity, FeedableEntity, MateEntity {
     protected static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("idle");
     protected static final RawAnimation SWIM_ANIM = RawAnimation.begin().thenLoop("swimming");
     protected static final RawAnimation FLOP_ANIM = RawAnimation.begin().thenLoop("flopping");
     protected static final RawAnimation ATTACK_ANIM = RawAnimation.begin().thenLoop("attack");
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
 
+
     private static final int MAX_LOVE_TICKS = 600;
-    private static final int MAX_BREED_COOLDOWN = 2400;
-
-    private int loveTicks;
     private boolean hasBeenFed;
-    private int breedCooldown;
+    private int loveTicks;
 
 
-    public ArapaimaEntity(EntityType<? extends SchoolingFishEntity> entityType, World world) {
+    public ArapaimaEntity(EntityType<? extends FishEntity> entityType, World world) {
         super(entityType, world);
     }
 
     @Override
     protected void initGoals() {
         this.goalSelector.add(1, new ArapaimaRamGoal(this, 10d, false));
+        goalSelector.add(2, new MateGoal(this, 1.0D));
         this.goalSelector.add(4, new SwimAroundGoal(this, 1.0D, 65));
-        this.goalSelector.add(5, new FollowGroupLeaderGoal(this));
+        super.initGoals();
     }
-
 
     public static DefaultAttributeContainer.Builder createMobAttributes() {
         return MobEntity.createMobAttributes()
@@ -82,6 +81,33 @@ public class ArapaimaEntity extends SchoolingFishEntity implements GeoEntity, Fe
         feedEntity(player, handItem);
 
         return super.interactMob(player, hand);
+    }
+
+    @Override
+    public void feedEntity(PlayerEntity player, ItemStack stack) {
+        if (canFedWithItem(stack)) {
+            hasBeenFed = true;
+            setInLove(MAX_LOVE_TICKS);
+
+            if (!player.isCreative() && !player.isSpectator()) {
+                stack.decrement(1);
+            }
+        }
+    }
+
+    @Override
+    public boolean canFedWithItem(ItemStack stack) {
+        return stack.isIn(getBreedingItemsTag());
+    }
+
+    @Override
+    public boolean hasBeenFed() {
+        return hasBeenFed;
+    }
+
+    @Override
+    public TagKey<Item> getBreedingItemsTag() {
+        return TagKey.of(RegistryKeys.ITEM, FaunusID.content("arapaima_breeding_items"));
     }
 
     @Override
@@ -126,94 +152,59 @@ public class ArapaimaEntity extends SchoolingFishEntity implements GeoEntity, Fe
     }
 
     @Override
-    public void tick() {
-        super.tick();
-        breed();
-    }
-
-    @Override
-    public void feedEntity(PlayerEntity player, ItemStack stack) {
-        if (canFedWithItem(stack)) {
-            loveTicks += MAX_LOVE_TICKS;
-            hasBeenFed = true;
-
-            if (!player.isCreative() && !player.isSpectator()) {
-                stack.decrement(1);
-            }
-        }
-    }
-
-    @Override
-    public boolean canFedWithItem(ItemStack stack) {
-        return stack.isIn(getBreedingItemsTag());
-    }
-
-    @Override
-    public boolean hasBeenFed() {
-        return hasBeenFed;
-    }
-
-    @Override
-    public TagKey<Item> getBreedingItemsTag() {
-        return TagKey.of(RegistryKeys.ITEM, FaunusID.content("arapaima_breeding_items"));
-    }
-
-    @Override
-    public void breed() {
-        if (breedCooldown > 0) {
-            breedCooldown--;
-        }
-
-        if (loveTicks >= 0 && breedCooldown <= 0) {
-            loveTicks--;
-            findMate();
-
-            if (isNearMate()) {
-                createChild();
-                breedCooldown = MAX_BREED_COOLDOWN;
-            }
-        }
-    }
-
-    @Override
     public boolean isInLove() {
-        return loveTicks > 0;
+        return this.loveTicks > 0;
     }
 
     @Override
-    public void findMate() {
-        ArrayList<ArapaimaEntity> entities = (ArrayList<ArapaimaEntity>) this.getWorld().getEntitiesByClass(
-                ArapaimaEntity.class,
-                this.getBoundingBox().expand(8.0D),
-                entity -> entity != this && entity.loveTicks > 0
-        );
+    public void setInLove(int ticks) {
+        this.loveTicks = Math.min(MAX_LOVE_TICKS, ticks);
+    }
 
-        if (!entities.isEmpty() && !this.isNearMate() && this.getNavigation().getCurrentPath() == null) {
-            this.getNavigation().startMovingTo(entities.get(0), 1.0D);
+    @Override
+    public void resetLoveTicks() {
+        this.loveTicks = 0;
+    }
+
+    @Override
+    public boolean canBreedWith(LivingEntity mate) {
+        if (mate == this || !(mate instanceof MateEntity)) {
+            return false;
+        }
+
+        return this.isInLove() && ((MateEntity) mate).isInLove();
+    }
+
+    @Override
+    public void breed(ServerWorld world, LivingEntity other) {
+        MobEntity passiveEntity = this.createChild(world, other);
+        if (passiveEntity == null) {
+            return;
+        }
+
+        passiveEntity.setBaby(true);
+        passiveEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0.0f, 0.0f);
+        this.breed(world, other, passiveEntity);
+        world.spawnEntityAndPassengers(passiveEntity);
+    }
+
+    @Override
+    public void breed(ServerWorld world, LivingEntity other, LivingEntity baby) {
+        this.resetLoveTicks();
+        ((MateEntity) other).resetLoveTicks();
+        world.sendEntityStatus(this, EntityStatuses.ADD_BREEDING_PARTICLES);
+        if (world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
+            world.spawnEntity(new ExperienceOrbEntity(world, this.getX(), this.getY(), this.getZ(), this.getRandom().nextInt(7) + 1));
         }
     }
 
     @Override
-    public boolean isNearMate() {
-        ArrayList<ArapaimaEntity> entities = (ArrayList<ArapaimaEntity>) this.getWorld().getEntitiesByClass(
-                ArapaimaEntity.class,
-                this.getBoundingBox().expand(2.0D),
-                entity -> entity != this && entity.loveTicks > 0
-        );
+    public MobEntity createChild(ServerWorld world, LivingEntity other) {
+        EntityType<?> entityType = this.getType();
+        ((MateEntity) other).resetLoveTicks();
 
-        return entities.size() > 0;
+        return (MobEntity) entityType.create(world);
     }
-
-    @Override
-    public void createChild() {
-        ArapaimaEntity child = EntityRegistry.ARAPAIMA.create(this.getWorld());
-
-        if (child != null) {
-            child.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
-            this.getWorld().spawnEntity(child);
-        }
-    }
-
 
     public static class ArapaimaRamGoal extends MeleeAttackGoal {
         private final double speed;

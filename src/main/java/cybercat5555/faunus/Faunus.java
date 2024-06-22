@@ -14,6 +14,7 @@ public class Faunus implements ModInitializer {
     public void onInitialize() {
         EntityRegistry.init();
         ItemRegistry.init();
+        BlockRegistry.init();
         SoundRegistry.init();
         EffectStatusRegistry.init();
         PotionRegistry.init();

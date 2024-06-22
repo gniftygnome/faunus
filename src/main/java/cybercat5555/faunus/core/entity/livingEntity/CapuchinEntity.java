@@ -1,9 +1,9 @@
 package cybercat5555.faunus.core.entity.livingEntity;
 
 import cybercat5555.faunus.core.EntityRegistry;
-import cybercat5555.faunus.core.entity.BreedableEntity;
 import cybercat5555.faunus.core.entity.FeedableEntity;
 import cybercat5555.faunus.core.entity.ai.goals.HangTreeGoal;
+import cybercat5555.faunus.core.entity.ai.goals.MateGoal;
 import cybercat5555.faunus.core.entity.projectile.CocoaBeanProjectile;
 import cybercat5555.faunus.util.FaunusID;
 import net.minecraft.entity.EntityType;
@@ -28,6 +28,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.EntityView;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager.ControllerRegistrar;
@@ -39,7 +40,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.ArrayList;
 
-public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity, FeedableEntity, BreedableEntity {
+public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity, FeedableEntity {
     protected static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("idle");
     protected static final RawAnimation HANGING_TAIL_IDLE_ANIM = RawAnimation.begin().thenLoop("hanging_tail_idle");
     protected static final RawAnimation SITTING_ANIM = RawAnimation.begin().thenLoop("sitting_idle");
@@ -52,24 +53,15 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
     protected static final RawAnimation HANGING_HANDS_IDLE_ANIM = RawAnimation.begin().thenLoop("hanging_hands_idle");
     protected static final RawAnimation HANGING_MOVEMENT_ANIM = RawAnimation.begin().thenLoop("hanging_movement");
     protected static final RawAnimation SITTING_GROOMING_FLARE_ANIM = RawAnimation.begin().thenLoop("sitting_grooming_flare");
+    private static final int MAX_LOVE_TICKS = 600;
+
 
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
-
-    private static final int MAX_LOVE_TICKS = 600;
-    private static final int MAX_BREED_COOLDOWN = 2400;
-
-    private int loveTicks;
     private boolean hasBeenFed;
-    private int breedCooldown;
 
     public CapuchinEntity(EntityType<? extends CapuchinEntity> entityType, World world) {
         super(entityType, world);
         this.setNoGravity(false);
-    }
-
-    @Override
-    public PassiveEntity createChild(ServerWorld world, PassiveEntity other) {
-        return EntityRegistry.CAPUCHIN.create(world);
     }
 
     public static DefaultAttributeContainer.Builder createMobAttributes() {
@@ -83,11 +75,12 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
 
     @Override
     protected void initGoals() {
-        this.goalSelector.add(0, new RunAwayCapuchinGoal(this, 1.25));
-        this.goalSelector.add(1, new MeleeCapuchinGoal(this, 1.0, false));
-        this.goalSelector.add(1, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
-        this.goalSelector.add(2, new HangTreeGoal(this, 1.0));
-        this.goalSelector.add(3, new FollowOwnerGoal(this, 1.0, 5.0f, 1.0f, true));
+        this.goalSelector.add(0, new AnimalMateGoal(this, 1.0D));
+        this.goalSelector.add(1, new RunAwayCapuchinGoal(this, 1.25));
+        this.goalSelector.add(2, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
+        this.goalSelector.add(2, new MeleeCapuchinGoal(this, 1.0, false));
+        this.goalSelector.add(3, new HangTreeGoal(this, 1.0));
+        this.goalSelector.add(4, new FollowOwnerGoal(this, 1.0, 5.0f, 1.0f, true));
 
         targetSelector.add(1, new RevengeGoal(this));
         targetSelector.add(2, new ActiveTargetGoal<>(this, LivingEntity.class, true,
@@ -171,8 +164,6 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
         if (isSitting()) {
             this.getNavigation().stop();
         }
-
-        breed();
     }
 
     @Override
@@ -192,66 +183,10 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
     }
 
     @Override
-    public void breed() {
-        if (breedCooldown > 0) {
-            breedCooldown--;
-        }
-
-        if (loveTicks >= 0 && breedCooldown <= 0) {
-            loveTicks--;
-            findMate();
-
-            if (isNearMate()) {
-                createChild();
-                breedCooldown = MAX_BREED_COOLDOWN;
-            }
-        }
-    }
-
-    @Override
-    public boolean isInLove() {
-        return loveTicks > 0;
-    }
-
-    @Override
-    public void findMate() {
-        ArrayList<CapuchinEntity> entities = (ArrayList<CapuchinEntity>) this.getWorld().getEntitiesByClass(
-                CapuchinEntity.class,
-                this.getBoundingBox().expand(8.0D),
-                entity -> entity != this && entity.loveTicks > 0
-        );
-
-        if (!entities.isEmpty() && !this.isNearMate() && this.getNavigation().getCurrentPath() == null) {
-            this.getNavigation().startMovingTo(entities.get(0), 1.0D);
-        }
-    }
-
-    @Override
-    public boolean isNearMate() {
-        ArrayList<CapuchinEntity> entities = (ArrayList<CapuchinEntity>) this.getWorld().getEntitiesByClass(
-                CapuchinEntity.class,
-                this.getBoundingBox().expand(2.0D),
-                entity -> entity != this && entity.loveTicks > 0
-        );
-
-        return entities.size() > 0;
-    }
-
-    @Override
-    public void createChild() {
-        CapuchinEntity child = EntityRegistry.CAPUCHIN.create(this.getWorld());
-
-        if (child != null) {
-            child.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
-            this.getWorld().spawnEntity(child);
-        }
-    }
-
-    @Override
     public void feedEntity(PlayerEntity player, ItemStack stack) {
         if (canFedWithItem(stack)) {
-            loveTicks = MAX_LOVE_TICKS;
             hasBeenFed = true;
+            setLoveTicks(MAX_LOVE_TICKS);
 
             if (!this.isTamed()) {
                 double changeToTame = Math.random();
@@ -324,6 +259,12 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
         BlockPos blockPos = new BlockPos((int) pos.x, (int) pos.y, (int) pos.z);
 
         return getWorld().getBlockState(blockPos).getBlock().getTranslationKey().contains("leave");
+    }
+
+    @Nullable
+    @Override
+    public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
+        return EntityRegistry.CAPUCHIN.create(world);
     }
 
     static class MeleeCapuchinGoal extends MeleeAttackGoal {

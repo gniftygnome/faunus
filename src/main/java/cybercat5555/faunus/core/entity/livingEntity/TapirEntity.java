@@ -3,6 +3,7 @@ package cybercat5555.faunus.core.entity.livingEntity;
 import cybercat5555.faunus.core.EffectStatusRegistry;
 import cybercat5555.faunus.core.EntityRegistry;
 import cybercat5555.faunus.core.ItemRegistry;
+import cybercat5555.faunus.core.entity.FeedableEntity;
 import cybercat5555.faunus.util.FaunusID;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.entity.EntityType;
@@ -57,8 +58,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
 
-public class TapirEntity extends AnimalEntity implements GeoEntity, SmartBrainOwner<TapirEntity> {
-    public static final TagKey<Item> BREED_ITEMS = TagKey.of(RegistryKeys.ITEM, FaunusID.content("tapir_breeding_items"));
+public class TapirEntity extends AnimalEntity implements GeoEntity, SmartBrainOwner<TapirEntity>, FeedableEntity {
 
     protected static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("idle");
     protected static final RawAnimation WALKING_ANIM = RawAnimation.begin().thenLoop("walking");
@@ -90,6 +90,8 @@ public class TapirEntity extends AnimalEntity implements GeoEntity, SmartBrainOw
     protected int tempInt = 0;
     protected EarTwitchMode earMode = EarTwitchMode.NONE;
 
+    private boolean hasBeenFed;
+
     public TapirEntity(EntityType<? extends TapirEntity> entityType, World world) {
         super(entityType, world);
     }
@@ -104,12 +106,18 @@ public class TapirEntity extends AnimalEntity implements GeoEntity, SmartBrainOw
     @Override
     public final void initGoals() {
         goalSelector.add(1, new EscapeDangerGoal(this, 2.5d));
+        goalSelector.add(1, new AnimalMateGoal(this, 1.0));
         goalSelector.add(2, new FollowParentGoal(this, 1.25d));
         goalSelector.add(2, new WanderAroundGoal(this, 1.0));
         goalSelector.add(3, new LookAroundGoal(this));
         goalSelector.add(4, new LookAtEntityGoal(this, PlayerEntity.class, 3.0f));
 
         targetSelector.add(1, new AnimalMateGoal(this, 1.0));
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
     }
 
     @Override
@@ -124,13 +132,33 @@ public class TapirEntity extends AnimalEntity implements GeoEntity, SmartBrainOw
     /**
      * Breeds the tapir with the player if the player is holding the breeding item and the tapir is not a baby.
      *
-     * @param player   The player that is interacting with the tapir.
-     * @param handItem The item that the player is holding. Must be a tapir breeding item.
+     * @param player The player that is interacting with the tapir.
+     * @param stack  The item that the player is holding. Must be a tapir breeding item.
      */
-    private void feedEntity(PlayerEntity player, ItemStack handItem) {
-        if (isBreedingItem(handItem) && !this.isBaby()) {
-            this.lovePlayer(player);
+    public void feedEntity(PlayerEntity player, ItemStack stack) {
+        if (canFedWithItem(stack)) {
+            hasBeenFed = true;
+
+            if (!player.isCreative() && !player.isSpectator()) {
+                stack.decrement(1);
+            }
         }
+    }
+
+
+    @Override
+    public boolean canFedWithItem(ItemStack stack) {
+        return stack.isIn(getBreedingItemsTag());
+    }
+
+    @Override
+    public boolean hasBeenFed() {
+        return hasBeenFed;
+    }
+
+    @Override
+    public TagKey<Item> getBreedingItemsTag() {
+        return TagKey.of(RegistryKeys.ITEM, FaunusID.content("tapir_breeding_items"));
     }
 
     /**
@@ -170,11 +198,6 @@ public class TapirEntity extends AnimalEntity implements GeoEntity, SmartBrainOw
         }
     }
 
-
-    @Override
-    public boolean isBreedingItem(ItemStack stack) {
-        return stack.isIn(BREED_ITEMS);
-    }
 
     private boolean canGetMilked() {
         return stinkyRecharge >= STINKY_RECHARGE_TIME;
