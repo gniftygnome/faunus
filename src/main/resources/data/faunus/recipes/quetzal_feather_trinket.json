@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "boat",
+  "pattern": [
+    "qqq",
+    "hgh",
+    "qqq"
+  ],
+  "key": {
+    "q": {
+      "item": "faunus:quetzal_feather"
+    },
+    "h": {
+      "item": "faunus:hoatzin_feather"
+    },
+    "g": {
+      "item": "minecraft:gold_ingot"
+    }
+  },
+  "result": {
+    "id": "faunus:quetzal_feather_trinket",
+    "count": 1
+  }
+}
