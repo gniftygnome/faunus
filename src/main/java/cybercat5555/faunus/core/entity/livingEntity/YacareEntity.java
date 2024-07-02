@@ -303,7 +303,7 @@ public class YacareEntity extends AnimalEntity implements GeoEntity, FeedableEnt
                 return false;
             }
 
-            return YacareEggBlock.isSand(world, pos);
+            return !world.getBlockState(pos).isOf(Blocks.WATER);
         }
     }
 }

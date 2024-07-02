@@ -8,6 +8,7 @@ import cybercat5555.faunus.core.item.QuetzalFeatherTrinket;
 import cybercat5555.faunus.util.FaunusID;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.minecraft.block.TurtleEggBlock;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
@@ -19,6 +20,7 @@ import net.minecraft.util.Rarity;
 public final class ItemRegistry {
     private ItemRegistry() {
     }
+
 
     // Iguana
     public static final Item IGUANA_SPAWN_EGG = new SpawnEggItem(EntityRegistry.IGUANA, 0x00ff00, 0x00aa00, new FabricItemSettings());
@@ -86,6 +88,7 @@ public final class ItemRegistry {
     public static final Item YACARE_SPAWN_EGG = new SpawnEggItem(EntityRegistry.YACARE, 0x108030, 0x80f0a0, new FabricItemSettings());
     public static final Item COOKED_YACARE = new Item(new FabricItemSettings().food(FoodRegistry.COOKED_YACARE));
     public static final Item RAW_YACARE = new Item(new FabricItemSettings().food(FoodRegistry.RAW_YACARE));
+    public static final Item YACARE_EGG = new BlockItem(BlockRegistry.YACARE_EGG, new FabricItemSettings());
 
 
     /**
@@ -126,7 +129,6 @@ public final class ItemRegistry {
                 entries.add(SONGBIRD_SPAWN_EGG);
                 entries.add(CAPUCHIN_SPAWN_EGG);
                 entries.add(TAPIR_SPAWN_EGG);
-                entries.add(CONSTRICTOR_SPAWN_EGG);
                 entries.add(QUETZAL_SPAWN_EGG);
                 entries.add(HOATZIN_SPAWN_EGG);
                 entries.add(PIRANHA_SPAWN_EGG);
@@ -181,7 +183,7 @@ public final class ItemRegistry {
         register("iguana_tail_cooked", IGUANA_TAIL_COOKED);
         register("iguana_raw_meat", IGUANA_RAW_MEAT);
         register("iguana_cooked_meat", IGUANA_COOKED_MEAT);
-
+        register("yacare_egg", YACARE_EGG);
 
         Registry.register(Registries.ITEM_GROUP, FaunusID.content("item_group"), GROUP);
     }

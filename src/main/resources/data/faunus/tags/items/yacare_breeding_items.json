@@ -15,6 +15,15 @@
 		"minecraft:mutton",
 		"minecraft:cooked_mutton",
 		"minecraft:rabbit",
-		"minecraft:cooked_rabbit"
+		"minecraft:cooked_rabbit",
+		"faunus:piranha",
+		"faunus:cooked_piranha",
+		"faunus:crayfish",
+		"faunus:cooked_crayfish",
+		"faunus:blue_crayfish",
+		"faunus:iguana_raw_tail",
+		"faunus:iguana_tail_cooked",
+		"faunus:iguana_raw_meat",
+		"faunus:iguana_cooked_meat"
 	]
 }
