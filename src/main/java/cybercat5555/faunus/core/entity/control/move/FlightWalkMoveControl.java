@@ -14,17 +14,15 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 
-import java.util.Random;
-
 public class FlightWalkMoveControl extends MoveControl {
-    private final int maxPitchChange;
     private final boolean noGravity;
     private MoveType type;
     private State previousState;
+    private float timeUntilNextJump = 400.0F;
+    private float timeSinceLastJump = 0.0F;
 
     public FlightWalkMoveControl(MobEntity entity, int maxPitchChange, boolean noGravity) {
         super(entity);
-        this.maxPitchChange = maxPitchChange;
         this.noGravity = noGravity;
     }
 
@@ -45,9 +43,13 @@ public class FlightWalkMoveControl extends MoveControl {
         }
 
         // Randomly perform a high jump
-        if(this.state == State.MOVE_TO && Math.random() < 0.01) {
-            this.entity.setVelocity(this.entity.getVelocity().add(0, 0.25, 0));
+        if (timeSinceLastJump > timeUntilNextJump && this.entity.isOnGround()){
+            timeSinceLastJump = 0.0F;
+            timeUntilNextJump = this.entity.getRandom().nextInt(200) + 400;
+            this.entity.setVelocity(this.entity.getVelocity().add(0, 2, 0));
         }
+
+        timeSinceLastJump++;
     }
 
     private void handleMoveState() {
@@ -68,8 +70,10 @@ public class FlightWalkMoveControl extends MoveControl {
 
         if (type.equals(MoveType.WALK)) {
             handleWalkMovement(squaredDistance, yDistance);
-        } else if (type.equals(MoveType.FLY)) {
-            handleFlyMovement(xDistance, yDistance, zDistance);
+        }
+
+        if (!this.entity.isOnGround()) {
+            this.entity.setUpwardSpeed(-8F);
         }
     }
 
@@ -91,31 +95,12 @@ public class FlightWalkMoveControl extends MoveControl {
         }
     }
 
-    private void handlePitchRotation(double yDistance, double distanceXZ) {
-        float newPitch = (float) (-(MathHelper.atan2(yDistance, distanceXZ) * 57.2957763671875));
-        this.entity.setPitch(this.wrapDegrees(this.entity.getPitch(), newPitch, (float) this.maxPitchChange));
-    }
-
-    private void handleFlyMovement(double xDistance, double yDistance, double zDistance) {
-        double distanceXZ = Math.sqrt(xDistance * xDistance + zDistance * zDistance);
-        float speed = (float) (entity.isOnGround() ?
-                this.speed * entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) :
-                this.speed * entity.getAttributeValue(EntityAttributes.GENERIC_FLYING_SPEED));
-
-        this.entity.setMovementSpeed(speed);
-
-        if (type.equals(MoveType.FLY) && Math.abs(yDistance) > 9.999999747378752E-6 || Math.abs(distanceXZ) > 9.999999747378752E-6) {
-            handlePitchRotation(yDistance, distanceXZ);
-            this.entity.setUpwardSpeed(yDistance > 0.0 ? speed : -speed / 2);
-        }
-    }
 
     private void handleWalkMovement(double squaredDistance, double yDistance) {
         this.state = MoveControl.State.WAIT;
         BlockPos blockPos = this.entity.getBlockPos();
         BlockState blockState = this.entity.getWorld().getBlockState(blockPos);
         VoxelShape voxelShape = blockState.getCollisionShape(this.entity.getWorld(), blockPos);
-        double distanceToGround = this.entity.getY() - MCUtil.getWorldSurface(this.entity.getWorld(), this.entity.getBlockPos());
         double stepHeight = this.entity.getStepHeight();
         double entityWidth = Math.max(1.0F, this.entity.getWidth());
         double maxY = voxelShape.getMax(Direction.Axis.Y) + (double) blockPos.getY();
@@ -125,10 +110,6 @@ public class FlightWalkMoveControl extends MoveControl {
         if (!this.isPosWalkable((float) targetX, (float) targetZ)) {
             this.forwardMovement = 1.0F;
             this.sidewaysMovement = 0.0F;
-        }
-
-        if (distanceToGround > 0.5) {
-            this.entity.setUpwardSpeed(-0.25F);
         }
 
         if (yDistance > stepHeight && squaredDistance < entityWidth ||
@@ -143,6 +124,7 @@ public class FlightWalkMoveControl extends MoveControl {
         EntityNavigation entityNavigation = this.entity.getNavigation();
         if (entityNavigation != null) {
             PathNodeMaker pathNodeMaker = entityNavigation.getNodeMaker();
+
             if (pathNodeMaker != null && pathNodeMaker.getDefaultNodeType(this.entity.getWorld(), MathHelper.floor(this.entity.getX() + (double) x), this.entity.getBlockY(), MathHelper.floor(this.entity.getZ() + (double) z)) != PathNodeType.WALKABLE) {
                 return false;
             }
@@ -152,9 +134,9 @@ public class FlightWalkMoveControl extends MoveControl {
     }
 
     private void startMovement() {
-        boolean mustFly = new Random().nextFloat() < 0.01F;
+        double distanceToSurface = this.entity.getY() - MCUtil.getWorldSurface(this.entity.getWorld(), this.entity.getBlockPos());
 
-        MoveType type = mustFly ? MoveType.FLY : MoveType.WALK;
+        MoveType type = distanceToSurface > 5 ? MoveType.FLY : MoveType.WALK;
         changeMovementType(type);
     }
 

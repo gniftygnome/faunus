@@ -1,0 +1,55 @@
+{
+  "variants": {
+    "hatch=0": [
+      {
+        "model": "faunus:block/yacare_egg_block"
+      },
+      {
+        "model": "faunus:block/yacare_egg_block",
+        "y": 90
+      },
+      {
+        "model": "faunus:block/yacare_egg_block",
+        "y": 180
+      },
+      {
+        "model": "faunus:block/yacare_egg_block",
+        "y": 270
+      }
+    ],
+    "hatch=1": [
+      {
+        "model": "faunus:block/slightly_cracked_yacare_egg_block"
+      },
+      {
+        "model": "faunus:block/slightly_cracked_yacare_egg_block",
+        "y": 90
+      },
+      {
+        "model": "faunus:block/slightly_cracked_yacare_egg_block",
+        "y": 180
+      },
+      {
+        "model": "faunus:block/slightly_cracked_yacare_egg_block",
+        "y": 270
+      }
+    ],
+    "hatch=2": [
+      {
+        "model": "faunus:block/very_cracked_yacare_egg_block"
+      },
+      {
+        "model": "faunus:block/very_cracked_yacare_egg_block",
+        "y": 90
+      },
+      {
+        "model": "faunus:block/very_cracked_yacare_egg_block",
+        "y": 180
+      },
+      {
+        "model": "faunus:block/very_cracked_yacare_egg_block",
+        "y": 270
+      }
+    ]
+  }
+}

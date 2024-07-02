@@ -5,6 +5,7 @@ import cybercat5555.faunus.core.entity.FeedableEntity;
 import cybercat5555.faunus.core.entity.control.move.FlightWalkMoveControl;
 import cybercat5555.faunus.core.entity.control.move.MoveType;
 import cybercat5555.faunus.util.FaunusID;
+import cybercat5555.faunus.util.MCUtil;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
@@ -80,6 +81,10 @@ public class HoatzinEntity extends ParrotEntity implements GeoEntity, FeedableEn
         return PlayState.CONTINUE;
     }
 
+    @Override
+    public boolean isOnGround() {
+        return !this.getWorld().getBlockState(getBlockPos().down()).isAir();
+    }
 
     @Override
     protected void addFlapEffects() {
