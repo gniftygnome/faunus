@@ -169,7 +169,6 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
         if (isOwner(player) && hand.equals(Hand.MAIN_HAND)) {
             if (player.isSneaking()) {
                 startRiding(player, true);
-
             } else if (getVehicle() == null && (isOnGround() || isSitting())) {
                 setSitting(!isSitting());
             }
@@ -320,8 +319,6 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
 
         @Override
         protected boolean isInDanger() {
-            if (((CapuchinEntity) mob).isSitting()) return false;
-
             int nearCapuchin = ((CapuchinEntity) this.mob).nearCapuchinCount(8);
             return (nearCapuchin > 0 && nearCapuchin < 3 && !((CapuchinEntity) this.mob).isTamed());
         }

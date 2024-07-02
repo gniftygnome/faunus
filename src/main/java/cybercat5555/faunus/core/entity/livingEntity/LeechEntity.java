@@ -16,8 +16,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
@@ -199,7 +201,7 @@ public class LeechEntity extends PathAwareEntity implements GeoEntity, FeedableE
         @Override
         public void tick() {
             if (target != null) {
-                boolean isCloseEnough = this.mob.squaredDistanceTo(target) < 1.5D;
+                boolean isCloseEnough = this.mob.squaredDistanceTo(target) < 2D;
 
                 if (isCloseEnough) {
                     this.rideEntity();
@@ -209,11 +211,10 @@ public class LeechEntity extends PathAwareEntity implements GeoEntity, FeedableE
         }
 
         private void rideEntity() {
+            mob.startRiding(target, true);
 
-            if (target instanceof PlayerEntity) {
-                attack(target, 1.0F);
-            } else {
-                mob.startRiding(target, true);
+            if (target instanceof ServerPlayerEntity player) {
+                player.networkHandler.sendPacket(new EntityPassengersSetS2CPacket(player));
             }
         }
 
@@ -236,7 +237,7 @@ public class LeechEntity extends PathAwareEntity implements GeoEntity, FeedableE
         @Override
         public void stop() {
             this.mob.setTarget(null);
-            //this.mob.stopRiding();
+            this.mob.stopRiding();
             this.increaseHunger(-MAX_HUNGER);
 
             super.stop();

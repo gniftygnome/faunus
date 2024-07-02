@@ -9,12 +9,10 @@ import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.biome.v1.ModificationPhase;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
-import net.fabricmc.fabric.api.event.server.ServerStartCallback;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -26,7 +24,6 @@ import java.nio.file.Path;
 
 import static cybercat5555.faunus.common.config.MobSpawningConfig.*;
 import static cybercat5555.faunus.core.EntityRegistry.*;
-import static cybercat5555.faunus.util.MCUtil.canSpawnInBiome;
 
 public class EventManager {
 
@@ -50,6 +47,7 @@ public class EventManager {
     }
 
     private static void applyConfig() {
+
         BiomeModifications.create(FaunusID.content("arapaima_spawn")).add(
                 ModificationPhase.ADDITIONS,
                 BiomeSelectors.tag(MCUtil.biomeTagKeyOf(ARAPAIMA_BIOME_TAG)),

@@ -1,5 +1,6 @@
 package cybercat5555.faunus.core.entity.ai.goals;
 
+import cybercat5555.faunus.core.entity.livingEntity.CapuchinEntity;
 import net.minecraft.entity.ai.NoPenaltyTargeting;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.mob.PathAwareEntity;
@@ -19,7 +20,7 @@ public class HangTreeGoal extends WanderAroundGoal {
     @Override
     public boolean canStart() {
         Vec3d vec3d;
-        if (this.mob.hasPassengers()) {
+        if (this.mob.hasPassengers() || ((CapuchinEntity) this.mob).isSitting()) {
             return false;
         }
         if (!this.ignoringChance) {
@@ -196,6 +197,6 @@ public class HangTreeGoal extends WanderAroundGoal {
 
     @Override
     public boolean shouldContinue() {
-        return true;
+        return !((CapuchinEntity) this.mob).isSitting();
     }
 }
