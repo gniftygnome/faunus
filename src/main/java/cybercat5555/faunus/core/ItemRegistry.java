@@ -8,7 +8,6 @@ import cybercat5555.faunus.core.item.QuetzalFeatherTrinket;
 import cybercat5555.faunus.util.FaunusID;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
-import net.minecraft.block.TurtleEggBlock;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
@@ -20,6 +19,7 @@ import net.minecraft.util.Rarity;
 public final class ItemRegistry {
     private ItemRegistry() {
     }
+
 
 
     // Iguana
@@ -64,13 +64,13 @@ public final class ItemRegistry {
     // Arapaima
     public static final Item ARAPAIMA_SPAWN_EGG = new SpawnEggItem(EntityRegistry.ARAPAIMA, 0x80a080, 0xee3030, new FabricItemSettings());
     public static final Item ARAPAIMA = new Item(new FabricItemSettings().food(FoodRegistry.ARAPAIMA));
+    public static final Item ARAPAIMA_EGG = new BlockItem(BlockRegistry.ARAPAIMA_EGG, new FabricItemSettings());
     public static final Item COOKED_ARAPAIMA = new Item(new FabricItemSettings().food(FoodRegistry.COOKED_ARAPAIMA));
     public static final Item ARAPAIMA_SCALE = new Item(new FabricItemSettings().rarity(Rarity.RARE));
     public static final Item ARAPAIMA_BUCKET = new EntityBucketItem(EntityRegistry.ARAPAIMA, Fluids.WATER, SoundEvents.ITEM_BUCKET_EMPTY_FISH, new FabricItemSettings().recipeRemainder(Items.BUCKET));
 
     // Snapping Turtle
     public static final Item SNAPPING_TURTLE_SPAWN_EGG = new SpawnEggItem(EntityRegistry.SNAPPING_TURTLE, 0x302010, 0xc0b0a0, new FabricItemSettings());
-    //TODO: spiky scute
 
     // Crayfish
     public static final Item CRAYFISH_SPAWN_EGG = new SpawnEggItem(EntityRegistry.CRAYFISH, 0xa0b030, 0xf0e030, new FabricItemSettings());
@@ -184,6 +184,7 @@ public final class ItemRegistry {
         register("iguana_raw_meat", IGUANA_RAW_MEAT);
         register("iguana_cooked_meat", IGUANA_COOKED_MEAT);
         register("yacare_egg", YACARE_EGG);
+        register("arapaima_egg", ARAPAIMA_EGG);
 
         Registry.register(Registries.ITEM_GROUP, FaunusID.content("item_group"), GROUP);
     }

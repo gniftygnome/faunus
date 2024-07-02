@@ -46,7 +46,7 @@ public class FlightWalkMoveControl extends MoveControl {
         if (timeSinceLastJump > timeUntilNextJump && this.entity.isOnGround()){
             timeSinceLastJump = 0.0F;
             timeUntilNextJump = this.entity.getRandom().nextInt(200) + 400;
-            this.entity.setVelocity(this.entity.getVelocity().add(0, 2, 0));
+            this.entity.setVelocity(this.entity.getVelocity().add(0, 1, 0));
         }
 
         timeSinceLastJump++;

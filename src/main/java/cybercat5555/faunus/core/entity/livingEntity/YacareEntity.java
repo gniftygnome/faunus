@@ -2,7 +2,6 @@ package cybercat5555.faunus.core.entity.livingEntity;
 
 import cybercat5555.faunus.core.BlockRegistry;
 import cybercat5555.faunus.core.EntityRegistry;
-import cybercat5555.faunus.core.block.YacareEggBlock;
 import cybercat5555.faunus.core.entity.FeedableEntity;
 import cybercat5555.faunus.core.entity.ai.goals.MeleeHungryGoal;
 import cybercat5555.faunus.core.entity.ai.goals.WanderInWaterGoal;
@@ -12,7 +11,6 @@ import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.TurtleEggBlock;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.LivingEntity;
@@ -26,7 +24,6 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.PassiveEntity;
-import net.minecraft.entity.passive.TurtleEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -64,7 +61,8 @@ public class YacareEntity extends AnimalEntity implements GeoEntity, FeedableEnt
     protected static final RawAnimation RUSH_WATER_ANIM = RawAnimation.begin().thenLoop("rush_water");
     protected static final RawAnimation WALK_ANIM = RawAnimation.begin().thenLoop("walk");
     protected static final RawAnimation RUSH_LAND_ANIM = RawAnimation.begin().thenLoop("rush_land");
-    protected static final RawAnimation DEATH_ROLL_ANIM = RawAnimation.begin().thenLoop("WIP death roll3").thenLoop("idle_land");
+    protected static final RawAnimation DEATH_ROLL_ANIM = RawAnimation.begin().thenLoop("death_roll").thenLoop("idle_land");
+    protected static final RawAnimation ATTACK_ANIM = RawAnimation.begin().thenLoop("attack").thenLoop("idle_water");
     private boolean hasBeenFed;
 
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
@@ -154,13 +152,19 @@ public class YacareEntity extends AnimalEntity implements GeoEntity, FeedableEnt
     }
 
     protected <E extends YacareEntity> PlayState idleAnimController(final AnimationState<E> event) {
+        boolean hasTarget = getTarget() != null;
         boolean isAttacking = isAttacking();
         boolean isMoving = event.isMoving();
 
+        if (isAttacking) {
+            event.setAndContinue(ATTACK_ANIM);
+            return PlayState.CONTINUE;
+        }
+
         if (isSubmergedInWater()) {
-            event.setAndContinue(isMoving && isAttacking ? RUSH_WATER_ANIM : isMoving ? SWIM_ANIM : IDLE_WATER_ANIM);
+            event.setAndContinue(isMoving && hasTarget ? RUSH_WATER_ANIM : isMoving ? SWIM_ANIM : IDLE_WATER_ANIM);
         } else {
-            event.setAndContinue(isMoving && isAttacking ? RUSH_LAND_ANIM : isMoving ? WALK_ANIM : IDLE_LAND_ANIM);
+            event.setAndContinue(isMoving && hasTarget ? RUSH_LAND_ANIM : isMoving ? WALK_ANIM : IDLE_LAND_ANIM);
         }
 
         return PlayState.CONTINUE;

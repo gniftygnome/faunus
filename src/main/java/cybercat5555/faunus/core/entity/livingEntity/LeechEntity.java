@@ -25,6 +25,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager.ControllerRegistrar;
 import software.bernie.geckolib.core.animation.AnimationController;
@@ -110,7 +111,7 @@ public class LeechEntity extends PathAwareEntity implements GeoEntity, FeedableE
         controllers.add(new AnimationController<>(this, "idle", 5, this::idleAnimController));
     }
 
-    protected <E extends LeechEntity> PlayState idleAnimController(final AnimationState<E> event) {
+    public <T extends GeoAnimatable> PlayState idleAnimController(AnimationState<T> event) {
         boolean isMoving = event.isMoving();
         boolean isMovingInWater = isMoving && this.isTouchingWater();
         boolean isSucking = this.getVehicle() != null;
@@ -208,7 +209,12 @@ public class LeechEntity extends PathAwareEntity implements GeoEntity, FeedableE
         }
 
         private void rideEntity() {
-            mob.startRiding(target, true);
+
+            if (target instanceof PlayerEntity) {
+                attack(target, 1.0F);
+            } else {
+                mob.startRiding(target, true);
+            }
         }
 
         @SuppressWarnings("ConstantConditions")
@@ -230,7 +236,7 @@ public class LeechEntity extends PathAwareEntity implements GeoEntity, FeedableE
         @Override
         public void stop() {
             this.mob.setTarget(null);
-            this.mob.stopRiding();
+            //this.mob.stopRiding();
             this.increaseHunger(-MAX_HUNGER);
 
             super.stop();

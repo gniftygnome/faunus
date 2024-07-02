@@ -3,7 +3,6 @@ package cybercat5555.faunus.core.entity.livingEntity;
 import cybercat5555.faunus.core.EntityRegistry;
 import cybercat5555.faunus.core.entity.FeedableEntity;
 import cybercat5555.faunus.core.entity.ai.goals.HangTreeGoal;
-import cybercat5555.faunus.core.entity.ai.goals.MateGoal;
 import cybercat5555.faunus.core.entity.projectile.CocoaBeanProjectile;
 import cybercat5555.faunus.util.FaunusID;
 import net.minecraft.entity.EntityType;
@@ -160,10 +159,6 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
         if (getVehicle() != null && getVehicle() instanceof PlayerEntity player && !player.isOnGround()) {
             stopRiding();
         }
-
-        if (isSitting()) {
-            this.getNavigation().stop();
-        }
     }
 
     @Override
@@ -174,7 +169,8 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
         if (isOwner(player) && hand.equals(Hand.MAIN_HAND)) {
             if (player.isSneaking()) {
                 startRiding(player, true);
-            } else if (getVehicle() == null) {
+
+            } else if (getVehicle() == null && (isOnGround() || isSitting())) {
                 setSitting(!isSitting());
             }
         }
@@ -324,8 +320,9 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
 
         @Override
         protected boolean isInDanger() {
-            int nearCapuchin = ((CapuchinEntity) this.mob).nearCapuchinCount(8);
+            if (((CapuchinEntity) mob).isSitting()) return false;
 
+            int nearCapuchin = ((CapuchinEntity) this.mob).nearCapuchinCount(8);
             return (nearCapuchin > 0 && nearCapuchin < 3 && !((CapuchinEntity) this.mob).isTamed());
         }
     }

@@ -1,6 +1,5 @@
 package cybercat5555.faunus.core.entity.livingEntity;
 
-import cybercat5555.faunus.core.EntityRegistry;
 import cybercat5555.faunus.core.ItemRegistry;
 import cybercat5555.faunus.core.entity.FeedableEntity;
 import cybercat5555.faunus.util.FaunusID;
@@ -25,8 +24,9 @@ import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager.ControllerRegistrar;
+import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.animation.RawAnimation;
@@ -34,21 +34,25 @@ import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class IguanaEntity extends AnimalEntity implements GeoEntity, FeedableEntity {
-
     private static final int GROW_TAIL_TIME = 24000;
     protected static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("idle");
+    protected static final RawAnimation WALK_ANIM = RawAnimation.begin().thenLoop("walk");
+    protected static final RawAnimation SWIM_ANIM = RawAnimation.begin().thenLoop("swimming");
+    protected static final RawAnimation HEADBOB_ANIM = RawAnimation.begin().thenLoop("headbob");
+    private boolean isHeadBobbing = false;
+
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
     private boolean hasBeenFed = false;
     private boolean hasTail = true;
     private int timeUntilGrowTail = 0;
 
-    public IguanaEntity(EntityType<? extends IguanaEntity> entityType, World world) {
+    public IguanaEntity(EntityType<? extends AnimalEntity> entityType, World world) {
         super(entityType, world);
     }
 
     @Override
     protected void initGoals() {
-        goalSelector.add(1, new IguanaFleeGoal(this, 2.5d));
+        goalSelector.add(1, new IguanaFleeGoal(this, 1.5d));
         goalSelector.add(2, new FollowParentGoal(this, 1.25d));
         goalSelector.add(2, new WanderAroundGoal(this, 1.0));
         goalSelector.add(3, new LookAroundGoal(this));
@@ -60,7 +64,8 @@ public class IguanaEntity extends AnimalEntity implements GeoEntity, FeedableEnt
     public static DefaultAttributeContainer.Builder createMobAttributes() {
         return MobEntity.createMobAttributes()
                 .add(EntityAttributes.GENERIC_MAX_HEALTH, 12f)
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.4f);
+                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.4f)
+                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 4.0);
     }
 
     @Override
@@ -92,7 +97,7 @@ public class IguanaEntity extends AnimalEntity implements GeoEntity, FeedableEnt
 
     @Override
     public void onDamaged(DamageSource damageSource) {
-        boolean dropTailChance = Math.random() < 0.1;
+        boolean dropTailChance = Math.random() < 0.05;
 
         if (dropTailChance) {
             dropTail();
@@ -103,6 +108,7 @@ public class IguanaEntity extends AnimalEntity implements GeoEntity, FeedableEnt
 
     private void dropTail() {
         dropItem(ItemRegistry.IGUANA_RAW_TAIL);
+
         hasTail = false;
         timeUntilGrowTail = 0;
     }
@@ -113,13 +119,41 @@ public class IguanaEntity extends AnimalEntity implements GeoEntity, FeedableEnt
     }
 
     @Override
-    public void registerControllers(ControllerRegistrar controllers) {
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(new AnimationController<>(this, "idle", 5, this::idleAnimController));
+        controllers.add(new AnimationController<>(this, "headbob", 5, this::headBobAnimController));
     }
 
-    protected <E extends IguanaEntity> PlayState idleAnimController(final AnimationState<E> event) {
+    private <T extends GeoAnimatable> PlayState headBobAnimController(AnimationState<T> event) {
+        if (event.getController().hasAnimationFinished()) {
+            isHeadBobbing = false;
+        }
+
+        if (!isHeadBobbing) {
+            float random = (float) Math.random();
+
+            if (random < 0.1f) {
+                event.setAnimation(HEADBOB_ANIM);
+                isHeadBobbing = true;
+            }
+        }
+
+        return isHeadBobbing ? PlayState.CONTINUE : PlayState.STOP;
+    }
+
+    private <T extends GeoAnimatable> PlayState idleAnimController(AnimationState<T> event) {
+        boolean isMoving = event.isMoving();
+        boolean isSwimming = !isSwimming();
+
+        if (!isMoving) {
+            event.setAnimation(IDLE_ANIM);
+        } else {
+            event.setAnimation(isSwimming ? WALK_ANIM : SWIM_ANIM);
+        }
+
         return PlayState.CONTINUE;
     }
+
 
     @Override
     public boolean cannotDespawn() {
@@ -166,10 +200,11 @@ public class IguanaEntity extends AnimalEntity implements GeoEntity, FeedableEnt
         return TagKey.of(RegistryKeys.ITEM, FaunusID.content("crayfish_breeding_items"));
     }
 
+
     @Nullable
     @Override
     public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
-        return EntityRegistry.IGUANA.create(world);
+        return null;
     }
 
     public static class IguanaFleeGoal extends EscapeDangerGoal {

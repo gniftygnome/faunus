@@ -7,6 +7,7 @@ import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 public class LeechEntityRenderer extends GeoEntityRenderer<LeechEntity> {
+
     public LeechEntityRenderer(Context renderManager) {
         super(renderManager, new DefaultedEntityGeoModel<>(FaunusID.content("leech"), false));
     }

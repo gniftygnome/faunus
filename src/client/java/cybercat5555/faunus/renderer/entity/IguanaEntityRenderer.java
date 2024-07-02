@@ -11,6 +11,7 @@ import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
+
 public class IguanaEntityRenderer extends GeoEntityRenderer<IguanaEntity> {
     public IguanaEntityRenderer(Context renderManager) {
         super(renderManager, new DefaultedEntityGeoModel<>(FaunusID.content("iguana"), true));
