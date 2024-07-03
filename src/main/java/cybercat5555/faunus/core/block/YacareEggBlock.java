@@ -59,22 +59,21 @@ public class YacareEggBlock extends TurtleEggBlock {
 
     @Override
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        if (TurtleEggBlock.isSandBelow(world, pos)) {
-            int i = state.get(HATCH);
-            if (i < 2) {
-                world.playSound(null, pos, SoundEvents.ENTITY_TURTLE_EGG_CRACK, SoundCategory.BLOCKS, 0.7f, 0.9f + random.nextFloat() * 0.2f);
-                world.setBlockState(pos, state.with(HATCH, i + 1), Block.NOTIFY_LISTENERS);
-            } else {
-                world.playSound(null, pos, SoundEvents.ENTITY_TURTLE_EGG_HATCH, SoundCategory.BLOCKS, 0.7f, 0.9f + random.nextFloat() * 0.2f);
-                world.removeBlock(pos, false);
-                world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(state));
-                YacareEntity yacare = EntityRegistry.YACARE.create(world);
-                if (yacare == null) return;
+        int hatchState = state.get(HATCH);
 
-                yacare.setBreedingAge(-24000);
-                yacare.refreshPositionAndAngles((double) pos.getX() + 0.3 + 0.2, pos.getY(), (double) pos.getZ() + 0.3, 0.0f, 0.0f);
-                world.spawnEntity(yacare);
-            }
+        if (hatchState < 2) {
+            world.playSound(null, pos, SoundEvents.ENTITY_TURTLE_EGG_CRACK, SoundCategory.BLOCKS, 0.7f, 0.9f + random.nextFloat() * 0.2f);
+            world.setBlockState(pos, state.with(HATCH, hatchState + 1), Block.NOTIFY_LISTENERS);
+        } else {
+            world.playSound(null, pos, SoundEvents.ENTITY_TURTLE_EGG_HATCH, SoundCategory.BLOCKS, 0.7f, 0.9f + random.nextFloat() * 0.2f);
+            world.removeBlock(pos, false);
+            world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(state));
+            YacareEntity yacare = EntityRegistry.YACARE.create(world);
+            if (yacare == null) return;
+
+            yacare.setBreedingAge(-24000);
+            yacare.refreshPositionAndAngles((double) pos.getX() + 0.3 + 0.2, pos.getY(), (double) pos.getZ() + 0.3, 0.0f, 0.0f);
+            world.spawnEntity(yacare);
         }
     }
 

@@ -2,6 +2,7 @@ package cybercat5555.faunus.core;
 
 import cybercat5555.faunus.Faunus;
 import cybercat5555.faunus.core.block.ArapaimaEggBlock;
+import cybercat5555.faunus.core.block.YacareEggBlock;
 import cybercat5555.faunus.util.FaunusID;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
@@ -16,7 +17,7 @@ public class BlockRegistry {
 
 
 
-    public static final Block YACARE_EGG = new ArapaimaEggBlock(FabricBlockSettings.copyOf(Blocks.TURTLE_EGG)
+    public static final Block YACARE_EGG = new YacareEggBlock(FabricBlockSettings.copyOf(Blocks.TURTLE_EGG)
             .ticksRandomly()
             .breakInstantly()
             .nonOpaque()
