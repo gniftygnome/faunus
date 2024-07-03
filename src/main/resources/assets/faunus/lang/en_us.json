@@ -29,8 +29,13 @@
   "item.faunus.cooked_crayfish": "Cooked Crayfish",
   "item.faunus.yacare_filet_cooked": "Yacare Cooked Filet",
   "item.faunus.yacare_filet_raw": "Yacare Raw Filet",
+  "item.faunus.iguana_raw_tail": "Raw Iguana Tail",
+  "item.faunus.iguana_raw_cooked": "Cooked Iguana Tail",
+  "item.faunus.iguana_raw_meat": "Raw Iguana",
+  "item.faunus.iguana_cooked_meat": "Barbecued Iguana",
   "item.faunus.leech_spawn_egg": "Leech Spawn Egg",
   "item.faunus.yacare_spawn_egg": "Yacaré Spawn Egg",
+  "item.faunus.iguana_spawn_egg": "Iguana Spawn Egg",
   "item.minecraft.potion.effect.swamp_crawler": "Swamp Crawler Potion",
   "item.minecraft.splash_potion.effect.swamp_crawler": "Splash Swamp Crawler Potion",
   "item.minecraft.lingering_potion.effect.swamp_crawler": "Lingering Swamp Crawler Potion",
@@ -55,5 +60,6 @@
   "entity.faunus.songbird": "Songbird",
   "entity.faunus.tapir": "Tapir",
   "entity.faunus.yacare": "Yacare",
-  "entity.faunus.yacare_maneater": "Yacare Maneater"
+  "entity.faunus.yacare_maneater": "Yacare Maneater",
+  "entity.faunus.iguana": "Iguana"
 }
