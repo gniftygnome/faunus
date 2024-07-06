@@ -4,8 +4,6 @@ import cybercat5555.faunus.core.BlockRegistry;
 import cybercat5555.faunus.core.EntityRegistry;
 import cybercat5555.faunus.core.entity.FeedableEntity;
 import cybercat5555.faunus.core.entity.ai.goals.MeleeHungryGoal;
-import cybercat5555.faunus.core.entity.ai.goals.WanderInWaterGoal;
-import cybercat5555.faunus.core.entity.control.move.YacareMoveControl;
 import cybercat5555.faunus.util.FaunusID;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
@@ -14,7 +12,10 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.ai.goal.ActiveTargetGoal;
+import net.minecraft.entity.ai.goal.AnimalMateGoal;
+import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
+import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.data.DataTracker;
@@ -22,8 +23,8 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.WaterCreatureEntity;
-import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.PassiveEntity;
+import net.minecraft.entity.passive.TurtleEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -52,7 +53,7 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class YacareEntity extends AnimalEntity implements GeoEntity, FeedableEntity {
+public class YacareEntity extends TurtleEntity implements GeoEntity, FeedableEntity {
     private static final TrackedData<Boolean> HAS_EGG = DataTracker.registerData(YacareEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
     protected static final RawAnimation IDLE_LAND_ANIM = RawAnimation.begin().thenLoop("idle_land");
@@ -67,9 +68,8 @@ public class YacareEntity extends AnimalEntity implements GeoEntity, FeedableEnt
 
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
 
-    public YacareEntity(EntityType<? extends AnimalEntity> entityType, World world) {
+    public YacareEntity(EntityType<? extends TurtleEntity> entityType, World world) {
         super(entityType, world);
-        this.moveControl = new YacareMoveControl(this);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class YacareEntity extends AnimalEntity implements GeoEntity, FeedableEnt
     public static DefaultAttributeContainer.Builder createMobAttributes() {
         return MobEntity.createMobAttributes()
                 .add(EntityAttributes.GENERIC_MAX_HEALTH, 24f)
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.35f)
+                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.45f)
                 .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6f)
                 .add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 0.3f)
                 .add(EntityAttributes.GENERIC_ATTACK_SPEED, 1f);
@@ -91,13 +91,12 @@ public class YacareEntity extends AnimalEntity implements GeoEntity, FeedableEnt
         this.goalSelector.add(0, new YacareEntity.MateGoal(this, 1.0));
         this.goalSelector.add(0, new YacareEntity.LayEggGoal(this, 1.0));
         this.goalSelector.add(1, new MeleeHungryGoal(this, isSubmergedInWater() ? 3 : 1.35f, false));
-        this.goalSelector.add(2, new LookAroundGoal(this));
-        this.goalSelector.add(3, new WanderAroundGoal(this, 0.7D));
-        this.goalSelector.add(4, new WanderInWaterGoal(this, 1.0D));
 
         this.targetSelector.add(1, new RevengeGoal(this));
         this.targetSelector.add(2, new ActiveTargetGoal<>(this, LivingEntity.class, true,
                 target -> target instanceof WaterCreatureEntity && target.getBoundingBox().getAverageSideLength() < getBoundingBox().getAverageSideLength()));
+
+        super.initGoals();
     }
 
     @Override
@@ -109,7 +108,6 @@ public class YacareEntity extends AnimalEntity implements GeoEntity, FeedableEnt
     @Override
     public void tick() {
         setAir(getMaxAir());
-
         super.tick();
     }
 
@@ -161,7 +159,7 @@ public class YacareEntity extends AnimalEntity implements GeoEntity, FeedableEnt
             return PlayState.CONTINUE;
         }
 
-        if (isSubmergedInWater()) {
+        if (isTouchingWater()) {
             event.setAndContinue(isMoving && hasTarget ? RUSH_WATER_ANIM : isMoving ? SWIM_ANIM : IDLE_WATER_ANIM);
         } else {
             event.setAndContinue(isMoving && hasTarget ? RUSH_LAND_ANIM : isMoving ? WALK_ANIM : IDLE_LAND_ANIM);

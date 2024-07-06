@@ -12,6 +12,7 @@ import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 
 public class FlightWalkMoveControl extends MoveControl {
@@ -43,10 +44,16 @@ public class FlightWalkMoveControl extends MoveControl {
         }
 
         // Randomly perform a high jump
-        if (timeSinceLastJump > timeUntilNextJump && this.entity.isOnGround()){
+        if (timeSinceLastJump > timeUntilNextJump && this.entity.isOnGround()) {
             timeSinceLastJump = 0.0F;
             timeUntilNextJump = this.entity.getRandom().nextInt(200) + 400;
-            this.entity.setVelocity(this.entity.getVelocity().add(0, 1, 0));
+
+            Vec3d lookVec = this.entity.getRotationVector();
+            this.entity.setVelocity(
+                    this.entity.getVelocity()
+                            .add(0, 1, 0)
+                            .add(lookVec.x * 0.5, 0, lookVec.z * 0.5)
+            );
         }
 
         timeSinceLastJump++;
@@ -105,7 +112,7 @@ public class FlightWalkMoveControl extends MoveControl {
         double entityWidth = Math.max(1.0F, this.entity.getWidth());
         double maxY = voxelShape.getMax(Direction.Axis.Y) + (double) blockPos.getY();
 
-        this.entity.setMovementSpeed((float) (this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)));
+        this.entity.setMovementSpeed((float) (this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)));
 
         if (!this.isPosWalkable((float) targetX, (float) targetZ)) {
             this.forwardMovement = 1.0F;

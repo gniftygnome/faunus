@@ -4,6 +4,7 @@ import cybercat5555.faunus.core.ItemRegistry;
 import cybercat5555.faunus.core.entity.FeedableEntity;
 import cybercat5555.faunus.util.FaunusID;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.control.AquaticMoveControl;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -48,6 +49,7 @@ public class IguanaEntity extends AnimalEntity implements GeoEntity, FeedableEnt
 
     public IguanaEntity(EntityType<? extends AnimalEntity> entityType, World world) {
         super(entityType, world);
+        this.moveControl = new AquaticMoveControl(this, 85, 10, 1F, 1F, true);
     }
 
     @Override
@@ -55,6 +57,8 @@ public class IguanaEntity extends AnimalEntity implements GeoEntity, FeedableEnt
         goalSelector.add(1, new IguanaFleeGoal(this, 1.5d));
         goalSelector.add(2, new FollowParentGoal(this, 1.25d));
         goalSelector.add(2, new WanderAroundGoal(this, 1.0));
+        goalSelector.add(3, new SwimAroundGoal(this, 1.0f, 120));
+        goalSelector.add(3, new SwimGoal(this));
         goalSelector.add(3, new LookAroundGoal(this));
         goalSelector.add(4, new LookAtEntityGoal(this, PlayerEntity.class, 3.0f));
 

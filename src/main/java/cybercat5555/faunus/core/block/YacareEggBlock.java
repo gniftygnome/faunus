@@ -71,7 +71,7 @@ public class YacareEggBlock extends TurtleEggBlock {
             YacareEntity yacare = EntityRegistry.YACARE.create(world);
             if (yacare == null) return;
 
-            yacare.setBreedingAge(-24000);
+            yacare.setBreedingAge(-48000);
             yacare.refreshPositionAndAngles((double) pos.getX() + 0.3 + 0.2, pos.getY(), (double) pos.getZ() + 0.3, 0.0f, 0.0f);
             world.spawnEntity(yacare);
         }

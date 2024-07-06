@@ -13,6 +13,7 @@ import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.mob.IllagerEntity;
 import net.minecraft.entity.passive.AnimalEntity;
+import net.minecraft.entity.passive.TurtleEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -25,13 +26,13 @@ public class YacareManEaterEntity extends YacareEntity implements GeoEntity, Bit
     protected boolean isGrabbing;
     protected boolean isPerformingDeathRoll;
 
-    public YacareManEaterEntity(EntityType<? extends AnimalEntity> entityType, World world) {
+    public YacareManEaterEntity(EntityType<? extends TurtleEntity> entityType, World world) {
         super(entityType, world);
-        this.moveControl = new AquaticMoveControl(this, 85, 10, 2F, 1F, true);
     }
 
     @Override
     protected void initGoals() {
+        super.initGoals();
 
         goalSelector.add(1, new BiteGrabGoal(this));
         goalSelector.add(2, new LookAroundGoal(this));

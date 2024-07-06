@@ -5,11 +5,13 @@ import cybercat5555.faunus.core.entity.FeedableEntity;
 import cybercat5555.faunus.core.entity.control.move.FlightWalkMoveControl;
 import cybercat5555.faunus.core.entity.control.move.MoveType;
 import cybercat5555.faunus.util.FaunusID;
-import cybercat5555.faunus.util.MCUtil;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.GoatEntity;
 import net.minecraft.entity.passive.ParrotEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -79,6 +81,14 @@ public class HoatzinEntity extends ParrotEntity implements GeoEntity, FeedableEn
         }
 
         return PlayState.CONTINUE;
+    }
+
+
+    public static DefaultAttributeContainer.Builder createMobAttributes() {
+        return MobEntity.createMobAttributes()
+                .add(EntityAttributes.GENERIC_MAX_HEALTH, 6.0)
+                .add(EntityAttributes.GENERIC_FLYING_SPEED, 0.4f)
+                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.6f);
     }
 
     @Override

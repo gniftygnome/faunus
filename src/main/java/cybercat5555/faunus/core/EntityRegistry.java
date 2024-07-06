@@ -58,7 +58,6 @@ public final class EntityRegistry {
             .spawnGroup(SpawnGroup.WATER_CREATURE)
             .entityFactory(PiranhaEntity::new)
             .dimensions(EntityDimensions.fixed(0.5f, 0.675f))
-            .spawnRestriction(SpawnRestriction.Location.IN_WATER, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, FishEntity::canSpawn)
             .build());
 
     //-- Swamps ----------------------------------------------------------------

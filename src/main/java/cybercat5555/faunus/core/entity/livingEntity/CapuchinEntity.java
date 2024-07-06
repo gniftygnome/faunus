@@ -1,6 +1,7 @@
 package cybercat5555.faunus.core.entity.livingEntity;
 
 import cybercat5555.faunus.core.EntityRegistry;
+import cybercat5555.faunus.core.SoundRegistry;
 import cybercat5555.faunus.core.entity.FeedableEntity;
 import cybercat5555.faunus.core.entity.ai.goals.HangTreeGoal;
 import cybercat5555.faunus.core.entity.projectile.CocoaBeanProjectile;
@@ -10,6 +11,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.passive.PassiveEntity;
@@ -21,6 +23,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -145,6 +148,38 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
         }
 
         return PlayState.CONTINUE;
+    }
+
+    @Nullable
+    @Override
+    @SuppressWarnings("ConstantConditions")
+    public SoundEvent getAmbientSound() {
+        boolean isAngry = this.getTarget() != null;
+        boolean isTamed = this.isTamed();
+
+        if (isAngry) {
+            return SOUND.fromInt(this.random.nextBetween(1, 3)).getSoundEvent();
+        } else if (isTamed) {
+            return SOUND.fromInt(this.random.nextBetween(31, 34)).getSoundEvent();
+        } else {
+            return SOUND.fromInt(this.random.nextBetween(21, 22)).getSoundEvent();
+        }
+    }
+
+    @Override
+    public void playAmbientSound() {
+        SoundEvent soundEvent = this.getAmbientSound();
+
+        if (soundEvent != null && this.random.nextFloat() <= 0.2) {
+            this.playSound(soundEvent, this.getSoundVolume(), this.getSoundPitch());
+        }
+    }
+
+    @Nullable
+    @Override
+    @SuppressWarnings("ConstantConditions")
+    protected SoundEvent getHurtSound(DamageSource source) {
+        return SOUND.fromInt(this.random.nextBetween(11, 13)).getSoundEvent();
     }
 
     @Override
@@ -321,6 +356,43 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
         protected boolean isInDanger() {
             int nearCapuchin = ((CapuchinEntity) this.mob).nearCapuchinCount(8);
             return (nearCapuchin > 0 && nearCapuchin < 3 && !((CapuchinEntity) this.mob).isTamed());
+        }
+    }
+
+    enum SOUND {
+        ANGRY_1(1, SoundRegistry.CAPUCHIN_ANGRY_1),
+        ANGRY_2(2, SoundRegistry.CAPUCHIN_ANGRY_2),
+        ANGRY_3(3, SoundRegistry.CAPUCHIN_ANGRY_3),
+        HURT_1(11, SoundRegistry.CAPUCHIN_HURT_1),
+        HURT_2(12, SoundRegistry.CAPUCHIN_HURT_2),
+        HURT_3(13, SoundRegistry.CAPUCHIN_HURT_3),
+        IDLE_1(21, SoundRegistry.CAPUCHIN_IDLE_1),
+        IDLE_2(22, SoundRegistry.CAPUCHIN_IDLE_2),
+        TAMED_IDLE_1(31, SoundRegistry.CAPUCHIN_TAMED_IDLE_1),
+        TAMED_IDLE_2(32, SoundRegistry.CAPUCHIN_TAMED_IDLE_2),
+        TAMED_IDLE_3(33, SoundRegistry.CAPUCHIN_TAMED_IDLE_3),
+        TAMED_IDLE_4(34, SoundRegistry.CAPUCHIN_TAMED_IDLE_4);
+
+        private final int intValue;
+        private final SoundEvent soundEvent;
+
+        SOUND(int intValue, SoundEvent soundEvent) {
+            this.intValue = intValue;
+            this.soundEvent = soundEvent;
+        }
+
+        public static SOUND fromInt(int intValue) {
+            for (SOUND sound : values()) {
+                if (sound.intValue == intValue) {
+                    return sound;
+                }
+            }
+
+            return null;
+        }
+
+        public SoundEvent getSoundEvent() {
+            return soundEvent;
         }
     }
 }
