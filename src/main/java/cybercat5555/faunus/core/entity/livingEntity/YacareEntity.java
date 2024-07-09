@@ -94,7 +94,9 @@ public class YacareEntity extends TurtleEntity implements GeoEntity, FeedableEnt
 
         this.targetSelector.add(1, new RevengeGoal(this));
         this.targetSelector.add(2, new ActiveTargetGoal<>(this, LivingEntity.class, true,
-                target -> target instanceof WaterCreatureEntity && target.getBoundingBox().getAverageSideLength() < getBoundingBox().getAverageSideLength()));
+                target ->
+                        (target instanceof WaterCreatureEntity && target.getBoundingBox().getAverageSideLength() < getBoundingBox().getAverageSideLength())
+                                || target instanceof IguanaEntity || target instanceof CrayfishEntity));
 
         super.initGoals();
     }
@@ -147,19 +149,25 @@ public class YacareEntity extends TurtleEntity implements GeoEntity, FeedableEnt
     @Override
     public void registerControllers(ControllerRegistrar controllers) {
         controllers.add(new AnimationController<>(this, "idle", 5, this::idleAnimController));
+        controllers.add(new AnimationController<>(this, "attack", 5, this::attackAnimController));
     }
 
-    protected <E extends YacareEntity> PlayState idleAnimController(final AnimationState<E> event) {
-        boolean hasTarget = getTarget() != null;
+    private PlayState attackAnimController(AnimationState<YacareEntity> event) {
         boolean isAttacking = isAttacking();
-        boolean isMoving = event.isMoving();
 
         if (isAttacking) {
             event.setAndContinue(ATTACK_ANIM);
             return PlayState.CONTINUE;
         }
 
-        if (isTouchingWater()) {
+        return PlayState.STOP;
+    }
+
+    protected <E extends YacareEntity> PlayState idleAnimController(final AnimationState<E> event) {
+        boolean hasTarget = getTarget() != null;
+        boolean isMoving = event.isMoving();
+
+        if (touchingWater) {
             event.setAndContinue(isMoving && hasTarget ? RUSH_WATER_ANIM : isMoving ? SWIM_ANIM : IDLE_WATER_ANIM);
         } else {
             event.setAndContinue(isMoving && hasTarget ? RUSH_LAND_ANIM : isMoving ? WALK_ANIM : IDLE_LAND_ANIM);

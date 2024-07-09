@@ -14,29 +14,29 @@ public class SoundRegistry {
     public static final SoundEvent QUETZAL_IDLE_S1 = register("entity.quetzal.idle_short_1");
     public static final SoundEvent QUETZAL_IDLE_S2 = register("entity.quetzal.idle_short_2");
 
-    public static final SoundEvent CAPUCHIN_ANGRY_1 = register("entity.capuchin.Capuchin_angry_1");
-    public static final SoundEvent CAPUCHIN_ANGRY_2 = register("entity.capuchin.Capuchin_angry_2");
-    public static final SoundEvent CAPUCHIN_ANGRY_3 = register("entity.capuchin.Capuchin_angry_3");
-    public static final SoundEvent CAPUCHIN_HURT_1 = register("entity.capuchin.Capuchin_hurt_1");
-    public static final SoundEvent CAPUCHIN_HURT_2 = register("entity.capuchin.Capuchin_hurt_2");
-    public static final SoundEvent CAPUCHIN_HURT_3 = register("entity.capuchin.Capuchin_hurt_3");
-    public static final SoundEvent CAPUCHIN_IDLE_1 = register("entity.capuchin.Capuchin_idle_1");
-    public static final SoundEvent CAPUCHIN_IDLE_2 = register("entity.capuchin.Capuchin_idle_2");
-    public static final SoundEvent CAPUCHIN_TAMED_IDLE_1 = register("entity.capuchin.Capuchin_tamed_idle_1");
-    public static final SoundEvent CAPUCHIN_TAMED_IDLE_2 = register("entity.capuchin.Capuchin_tamed_idle_2");
-    public static final SoundEvent CAPUCHIN_TAMED_IDLE_3 = register("entity.capuchin.Capuchin_tamed_idle_3");
-    public static final SoundEvent CAPUCHIN_TAMED_IDLE_4 = register("entity.capuchin.Capuchin_tamed_idle_4");
+    public static final SoundEvent CAPUCHIN_ANGRY_1 = register("entity.capuchin.capuchin_angry_1");
+    public static final SoundEvent CAPUCHIN_ANGRY_2 = register("entity.capuchin.capuchin_angry_2");
+    public static final SoundEvent CAPUCHIN_ANGRY_3 = register("entity.capuchin.capuchin_angry_3");
+    public static final SoundEvent CAPUCHIN_HURT_1 = register("entity.capuchin.capuchin_hurt_1");
+    public static final SoundEvent CAPUCHIN_HURT_2 = register("entity.capuchin.capuchin_hurt_2");
+    public static final SoundEvent CAPUCHIN_HURT_3 = register("entity.capuchin.capuchin_hurt_3");
+    public static final SoundEvent CAPUCHIN_IDLE_1 = register("entity.capuchin.capuchin_idle_1");
+    public static final SoundEvent CAPUCHIN_IDLE_2 = register("entity.capuchin.capuchin_idle_2");
+    public static final SoundEvent CAPUCHIN_TAMED_IDLE_1 = register("entity.capuchin.capuchin_tamed_idle_1");
+    public static final SoundEvent CAPUCHIN_TAMED_IDLE_2 = register("entity.capuchin.capuchin_tamed_idle_2");
+    public static final SoundEvent CAPUCHIN_TAMED_IDLE_3 = register("entity.capuchin.capuchin_tamed_idle_3");
+    public static final SoundEvent CAPUCHIN_TAMED_IDLE_4 = register("entity.capuchin.capuchin_tamed_idle_4");
 
-    public static final SoundEvent TROPICAL_BIRD_AMBIANCE_1 = register("entity.tropical_bird.Tropical_Bird_Ambiance_1");
-    public static final SoundEvent TROPICAL_BIRD_AMBIANCE_2 = register("entity.tropical_bird.Tropical_Bird_Ambiance_2");
-    public static final SoundEvent TROPICAL_BIRD_AMBIANCE_3 = register("entity.tropical_bird.Tropical_Bird_Ambiance_3");
-    public static final SoundEvent TROPICAL_BIRD_AMBIANCE_4 = register("entity.tropical_bird.Tropical_Bird_Ambiance_4");
-    public static final SoundEvent TROPICAL_BIRD_AMBIANCE_5 = register("entity.tropical_bird.Tropical_Bird_Ambiance_5");
-    public static final SoundEvent TROPICAL_BIRD_AMBIANCE_6 = register("entity.tropical_bird.Tropical_Bird_Ambiance_6");
-    public static final SoundEvent TROPICAL_BIRD_AMBIANCE_7 = register("entity.tropical_bird.Tropical_Bird_Ambiance_7");
-    public static final SoundEvent TROPICAL_BIRD_AMBIANCE_8 = register("entity.tropical_bird.Tropical_Bird_Ambiance_8");
-    public static final SoundEvent TROPICAL_BIRD_HURT_1 = register("entity.tropical_bird.Tropical_Bird_Hurt_1");
-    public static final SoundEvent TROPICAL_BIRD_HURT_2 = register("entity.tropical_bird.Tropical_Bird_Hurt_2");
+    public static final SoundEvent TROPICAL_BIRD_AMBIANCE_1 = register("entity.tropical_bird.tropical_bird_ambiance_1");
+    public static final SoundEvent TROPICAL_BIRD_AMBIANCE_2 = register("entity.tropical_bird.tropical_bird_ambiance_2");
+    public static final SoundEvent TROPICAL_BIRD_AMBIANCE_3 = register("entity.tropical_bird.tropical_bird_ambiance_3");
+    public static final SoundEvent TROPICAL_BIRD_AMBIANCE_4 = register("entity.tropical_bird.tropical_bird_ambiance_4");
+    public static final SoundEvent TROPICAL_BIRD_AMBIANCE_5 = register("entity.tropical_bird.tropical_bird_ambiance_5");
+    public static final SoundEvent TROPICAL_BIRD_AMBIANCE_6 = register("entity.tropical_bird.tropical_bird_ambiance_6");
+    public static final SoundEvent TROPICAL_BIRD_AMBIANCE_7 = register("entity.tropical_bird.tropical_bird_ambiance_7");
+    public static final SoundEvent TROPICAL_BIRD_AMBIANCE_8 = register("entity.tropical_bird.tropical_bird_ambiance_8");
+    public static final SoundEvent TROPICAL_BIRD_HURT_1 = register("entity.tropical_bird.tropical_bird_hurt_1");
+    public static final SoundEvent TROPICAL_BIRD_HURT_2 = register("entity.tropical_bird.tropical_bird_hurt_2");
 
 
     /**

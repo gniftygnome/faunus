@@ -48,6 +48,8 @@ public class CrayfishEntity extends AnimalEntity implements GeoEntity, FeedableE
     private static final TrackedData<Integer> VARIANT = DataTracker.registerData(CrayfishEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
     protected static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("idle");
+    protected static final RawAnimation WALK_ANIM = RawAnimation.begin().thenLoop("walk");
+    protected static final RawAnimation SWIM_ANIM = RawAnimation.begin().thenLoop("swim");
 
 
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
@@ -101,6 +103,15 @@ public class CrayfishEntity extends AnimalEntity implements GeoEntity, FeedableE
     }
 
     protected <E extends CrayfishEntity> PlayState idleAnimController(final AnimationState<E> event) {
+        boolean isInWater = touchingWater;
+        boolean isWalking = !isInWater && event.isMoving();
+
+        if (isInWater) {
+            event.setAnimation(SWIM_ANIM);
+        } else {
+            event.setAnimation(isWalking ? WALK_ANIM : IDLE_ANIM);
+        }
+
         return PlayState.CONTINUE;
     }
 

@@ -183,6 +183,11 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
     }
 
     @Override
+    protected int computeFallDamage(float fallDistance, float damageMultiplier) {
+        return (int) (super.computeFallDamage(fallDistance, damageMultiplier) * 0.8f);
+    }
+
+    @Override
     public EntityView method_48926() {
         return getWorld();
     }
