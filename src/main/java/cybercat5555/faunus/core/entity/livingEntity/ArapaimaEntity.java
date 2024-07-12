@@ -14,7 +14,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.NoPenaltyTargeting;
-import net.minecraft.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
 import net.minecraft.entity.ai.goal.SwimAroundGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -75,7 +75,7 @@ public class ArapaimaEntity extends FishEntity implements GeoEntity, FeedableEnt
 
     @Override
     protected void initGoals() {
-        this.goalSelector.add(1, new ArapaimaRamGoal(this, 10d, false));
+        this.goalSelector.add(1, new ArapaimaRamGoal(this, 10d));
         this.goalSelector.add(2, new ArapaimaMateGoal(this, 1.0D));
         this.goalSelector.add(3, new LayEggGoal(this, 1.0D));
         this.goalSelector.add(4, new SwimAroundGoal(this, 1.0D, 65));
@@ -321,13 +321,14 @@ public class ArapaimaEntity extends FishEntity implements GeoEntity, FeedableEnt
         }
     }
 
-    public static class ArapaimaRamGoal extends MeleeAttackGoal {
+    public static class ArapaimaRamGoal extends Goal {
         private final double speed;
+        private final PathAwareEntity mob;
         private boolean mustFlee = false;
 
 
-        public ArapaimaRamGoal(PathAwareEntity mob, double speed, boolean pauseWhenMobIdle) {
-            super(mob, speed, pauseWhenMobIdle);
+        public ArapaimaRamGoal(PathAwareEntity mob, double speed) {
+            this.mob = mob;
             this.speed = speed;
         }
 
@@ -338,6 +339,7 @@ public class ArapaimaEntity extends FishEntity implements GeoEntity, FeedableEnt
 
                 if (vec3d != null && this.mob.getNavigation().isIdle()) {
                     this.mob.getNavigation().startMovingTo(vec3d.x, vec3d.y, vec3d.z, this.speed);
+                    stop();
                 }
             } else {
                 this.mob.getNavigation().startMovingTo(this.mob.getLastAttacker(), this.speed);
@@ -353,10 +355,10 @@ public class ArapaimaEntity extends FishEntity implements GeoEntity, FeedableEnt
 
         protected boolean attack(LivingEntity target) {
             double squaredDistance = this.mob.getSquaredDistanceToAttackPosOf(this.mob.getLastAttacker());
-            double distance = this.getSquaredMaxAttackDistance(target);
+            double distance = this.mob.getSquaredDistanceToAttackPosOf(target);
 
             if (squaredDistance <= distance) {
-                super.attack(target, squaredDistance);
+                this.mob.tryAttack(target);
                 return true;
             }
 
@@ -370,11 +372,18 @@ public class ArapaimaEntity extends FishEntity implements GeoEntity, FeedableEnt
             } else {
                 mustFlee = true;
             }
+
+            super.start();
         }
 
         @Override
         public boolean shouldContinue() {
-            return super.shouldContinue() || this.mob.getLastAttacker() != null;
+            return super.shouldContinue();
+        }
+
+        @Override
+        public void stop() {
+            super.stop();
         }
 
         @Override

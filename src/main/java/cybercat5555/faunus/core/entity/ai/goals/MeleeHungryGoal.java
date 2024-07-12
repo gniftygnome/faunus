@@ -17,7 +17,6 @@ public class MeleeHungryGoal extends MeleeAttackGoal implements HungerMeter {
         increaseHunger(0.2f);
 
         if (this.mob.getTarget() != null) {
-            System.out.println(this.mob.distanceTo(this.mob.getTarget()));
             this.mob.setAttacking(this.mob.distanceTo(this.mob.getTarget()) < 3f);
         }
 
