@@ -14,19 +14,7 @@
 				{
 					"name": "littlebird",
 					"pivot": [0, 3.25, -3],
-					"rotation": [-12.5, 0, 0],
-					"cubes": [
-						{"origin": [-1.5, 2.25, -4], "size": [3, 3, 5], "uv": [0, 0]}
-					]
-				},
-				{
-					"name": "tailFeathers",
-					"parent": "littlebird",
-					"pivot": [0, 4.25, 0.75],
-					"cubes": [
-						{"origin": [-2.5, 4, -0.25], "size": [5, 0, 6], "uv": [-6, 11]},
-						{"origin": [-2.5, 3.99, -0.25], "size": [5, 0, 6], "uv": [-6, 24]}
-					]
+					"rotation": [-12.5, 0, 0]
 				},
 				{
 					"name": "lLeg",
@@ -47,8 +35,30 @@
 					]
 				},
 				{
-					"name": "head",
+					"name": "body",
 					"parent": "littlebird",
+					"pivot": [0, 3.25, -3]
+				},
+				{
+					"name": "breathingrig",
+					"parent": "body",
+					"pivot": [0, 3.25, -3],
+					"cubes": [
+						{"origin": [-1.5, 2.25, -4], "size": [3, 3, 5], "uv": [0, 0]}
+					]
+				},
+				{
+					"name": "tailFeathers",
+					"parent": "body",
+					"pivot": [0, 4.25, 0.75],
+					"cubes": [
+						{"origin": [-2.5, 4, -0.25], "size": [5, 0, 6], "uv": [-6, 11]},
+						{"origin": [-2.5, 3.99, -0.25], "size": [5, 0, 6], "uv": [-6, 24]}
+					]
+				},
+				{
+					"name": "head",
+					"parent": "body",
 					"pivot": [0, 4.30133, -4.03316],
 					"rotation": [12.5, 0, 0],
 					"cubes": [
@@ -66,7 +76,7 @@
 				},
 				{
 					"name": "lWing",
-					"parent": "littlebird",
+					"parent": "body",
 					"pivot": [1.5, 4.25, -3],
 					"cubes": [
 						{"origin": [1.5, 3.75, -4], "size": [3, 1, 2], "uv": [14, 11]}
@@ -83,7 +93,7 @@
 				},
 				{
 					"name": "rWing",
-					"parent": "littlebird",
+					"parent": "body",
 					"pivot": [-1.5, 4.25, -3],
 					"cubes": [
 						{"origin": [-4.5, 3.75, -4], "size": [3, 1, 2], "uv": [14, 11], "mirror": true}
