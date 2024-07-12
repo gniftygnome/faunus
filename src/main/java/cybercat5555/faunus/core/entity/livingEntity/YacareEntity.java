@@ -80,7 +80,7 @@ public class YacareEntity extends TurtleEntity implements GeoEntity, FeedableEnt
     public static DefaultAttributeContainer.Builder createMobAttributes() {
         return MobEntity.createMobAttributes()
                 .add(EntityAttributes.GENERIC_MAX_HEALTH, 24f)
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.45f)
+                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 1f)
                 .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6f)
                 .add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 0.3f)
                 .add(EntityAttributes.GENERIC_ATTACK_SPEED, 1f);
@@ -91,6 +91,7 @@ public class YacareEntity extends TurtleEntity implements GeoEntity, FeedableEnt
         this.goalSelector.add(0, new YacareEntity.MateGoal(this, 1.0));
         this.goalSelector.add(0, new YacareEntity.LayEggGoal(this, 1.0));
         this.goalSelector.add(1, new MeleeHungryGoal(this, isSubmergedInWater() ? 3 : 1.35f, false));
+        this.goalSelector.add(2, new TravelGoal(this, 0.2));
 
         this.targetSelector.add(1, new RevengeGoal(this));
         this.targetSelector.add(2, new ActiveTargetGoal<>(this, LivingEntity.class, true,
@@ -98,7 +99,6 @@ public class YacareEntity extends TurtleEntity implements GeoEntity, FeedableEnt
                         (target instanceof WaterCreatureEntity && target.getBoundingBox().getAverageSideLength() < getBoundingBox().getAverageSideLength())
                                 || target instanceof IguanaEntity || target instanceof CrayfishEntity));
 
-        super.initGoals();
     }
 
     @Override
@@ -165,7 +165,7 @@ public class YacareEntity extends TurtleEntity implements GeoEntity, FeedableEnt
 
     protected <E extends YacareEntity> PlayState idleAnimController(final AnimationState<E> event) {
         boolean hasTarget = getTarget() != null;
-        boolean isMoving = event.isMoving();
+        boolean isMoving = getVelocity().lengthSquared() > 0.006f;
 
         if (touchingWater) {
             event.setAndContinue(isMoving && hasTarget ? RUSH_WATER_ANIM : isMoving ? SWIM_ANIM : IDLE_WATER_ANIM);
@@ -316,4 +316,5 @@ public class YacareEntity extends TurtleEntity implements GeoEntity, FeedableEnt
             return !world.getBlockState(pos).isOf(Blocks.WATER);
         }
     }
+
 }
