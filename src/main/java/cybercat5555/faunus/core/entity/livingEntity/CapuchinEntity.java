@@ -78,9 +78,9 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
     @Override
     protected void initGoals() {
         this.goalSelector.add(0, new AnimalMateGoal(this, 1.0D));
-        this.goalSelector.add(1, new RunAwayCapuchinGoal(this, 1.25));
+        this.goalSelector.add(1, new RunAwayCapuchinGoal(this, 1.5));
         this.goalSelector.add(2, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
-        this.goalSelector.add(2, new MeleeCapuchinGoal(this, 1.0, false));
+        this.goalSelector.add(2, new MeleeCapuchinGoal(this, 1.5, false));
         this.goalSelector.add(3, new HangTreeGoal(this, 1.0));
         this.goalSelector.add(4, new FollowOwnerGoal(this, 1.0, 5.0f, 1.0f, true));
 
@@ -102,11 +102,11 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
 
     protected <E extends CapuchinEntity> PlayState movementAnimController(final AnimationState<E> event) {
         boolean isMoving = event.isMoving();
-        boolean isRunning = this.getVelocity().lengthSquared() > 0.001;
+        boolean isRunning = this.getVelocity().lengthSquared() > 0.02;
         boolean isSitting = this.isSitting();
         boolean isSittingInPlayerShoulder = this.getVehicle() instanceof PlayerEntity;
         boolean isNear2Capuchin = this.nearCapuchinCount(16) >= 2;
-        boolean isHangingTree = isHangingTree(this.getPos().add(0, 1, 0));
+        boolean isHangingTree = isHangingTree(this.getPos().add(0, 1, 0)) && getWorld().getBlockState(getBlockPos().down()).isAir();
         boolean isAlreadyPlayingHangingAnim = event.getController().getCurrentRawAnimation() == HANGING_HANDS_IDLE_ANIM || event.getController().getCurrentRawAnimation() == HANGING_TAIL_IDLE_ANIM;
 
 
@@ -158,11 +158,11 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
         boolean isTamed = this.isTamed();
 
         if (isAngry) {
-            return SOUND.fromInt(this.random.nextBetween(1, 3)).getSoundEvent();
+            return SoundRegistry.CAPUCHIN_ANGRY;
         } else if (isTamed) {
-            return SOUND.fromInt(this.random.nextBetween(31, 34)).getSoundEvent();
+            return SoundRegistry.CAPUCHIN_TAMED_IDLE;
         } else {
-            return SOUND.fromInt(this.random.nextBetween(21, 22)).getSoundEvent();
+            return SoundRegistry.CAPUCHIN_IDLE;
         }
     }
 
@@ -170,8 +170,8 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
     public void playAmbientSound() {
         SoundEvent soundEvent = this.getAmbientSound();
 
-        if (soundEvent != null && this.random.nextFloat() <= 0.2) {
-            this.playSound(soundEvent, this.getSoundVolume(), this.getSoundPitch());
+        if (soundEvent != null && this.random.nextFloat() <= 0.1) {
+            this.getWorld().playSoundFromEntity(null, this, soundEvent, this.getSoundCategory(), this.getSoundVolume(), this.getPitch());
         }
     }
 
@@ -179,7 +179,12 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
     @Override
     @SuppressWarnings("ConstantConditions")
     protected SoundEvent getHurtSound(DamageSource source) {
-        return SOUND.fromInt(this.random.nextBetween(11, 13)).getSoundEvent();
+        return SoundRegistry.CAPUCHIN_HURT;
+    }
+
+    @Override
+    protected void playHurtSound(DamageSource source) {
+        super.playHurtSound(source);
     }
 
     @Override
@@ -349,6 +354,13 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
 
             return false;
         }
+
+        @Override
+        public boolean shouldContinue() {
+            if(this.mob.getTarget() instanceof PlayerEntity player && !player.isCreative()) return false;
+
+            return super.shouldContinue();
+        }
     }
 
     static class RunAwayCapuchinGoal extends EscapeDangerGoal {
@@ -361,43 +373,6 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
         protected boolean isInDanger() {
             int nearCapuchin = ((CapuchinEntity) this.mob).nearCapuchinCount(8);
             return (nearCapuchin > 0 && nearCapuchin < 3 && !((CapuchinEntity) this.mob).isTamed());
-        }
-    }
-
-    enum SOUND {
-        ANGRY_1(1, SoundRegistry.CAPUCHIN_ANGRY_1),
-        ANGRY_2(2, SoundRegistry.CAPUCHIN_ANGRY_2),
-        ANGRY_3(3, SoundRegistry.CAPUCHIN_ANGRY_3),
-        HURT_1(11, SoundRegistry.CAPUCHIN_HURT_1),
-        HURT_2(12, SoundRegistry.CAPUCHIN_HURT_2),
-        HURT_3(13, SoundRegistry.CAPUCHIN_HURT_3),
-        IDLE_1(21, SoundRegistry.CAPUCHIN_IDLE_1),
-        IDLE_2(22, SoundRegistry.CAPUCHIN_IDLE_2),
-        TAMED_IDLE_1(31, SoundRegistry.CAPUCHIN_TAMED_IDLE_1),
-        TAMED_IDLE_2(32, SoundRegistry.CAPUCHIN_TAMED_IDLE_2),
-        TAMED_IDLE_3(33, SoundRegistry.CAPUCHIN_TAMED_IDLE_3),
-        TAMED_IDLE_4(34, SoundRegistry.CAPUCHIN_TAMED_IDLE_4);
-
-        private final int intValue;
-        private final SoundEvent soundEvent;
-
-        SOUND(int intValue, SoundEvent soundEvent) {
-            this.intValue = intValue;
-            this.soundEvent = soundEvent;
-        }
-
-        public static SOUND fromInt(int intValue) {
-            for (SOUND sound : values()) {
-                if (sound.intValue == intValue) {
-                    return sound;
-                }
-            }
-
-            return null;
-        }
-
-        public SoundEvent getSoundEvent() {
-            return soundEvent;
         }
     }
 }

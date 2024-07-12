@@ -45,7 +45,7 @@ public class QuetzalEntity extends ParrotEntity implements GeoEntity {
     @Nullable
     @Override
     public SoundEvent getAmbientSound() {
-        return SOUND.fromInt(this.random.nextBetween(1, 6)).getSoundEvent();
+        return SoundRegistry.QUETZAL_IDLE;
     }
 
     @Override
@@ -96,36 +96,5 @@ public class QuetzalEntity extends ParrotEntity implements GeoEntity {
     @Override
     public EntityView method_48926() {
         return getWorld();
-    }
-
-    enum SOUND {
-        QUETZAL_IDLE_L1(1, SoundRegistry.QUETZAL_IDLE_L1),
-        QUETZAL_IDLE_L2(2, SoundRegistry.QUETZAL_IDLE_L2),
-        QUETZAL_IDLE_M1(3, SoundRegistry.QUETZAL_IDLE_M1),
-        QUETZAL_IDLE_M2(4, SoundRegistry.QUETZAL_IDLE_M2),
-        QUETZAL_IDLE_S1(5, SoundRegistry.QUETZAL_IDLE_S1),
-        QUETZAL_IDLE_S2(6, SoundRegistry.QUETZAL_IDLE_S2);
-
-        private final int intValue;
-        private final SoundEvent soundEvent;
-
-        SOUND(int intValue, SoundEvent soundEvent) {
-            this.intValue = intValue;
-            this.soundEvent = soundEvent;
-        }
-
-        public static SOUND fromInt(int intValue) {
-            for (SOUND sound : values()) {
-                if (sound.intValue == intValue) {
-                    return sound;
-                }
-            }
-
-            return QUETZAL_IDLE_L1;
-        }
-
-        public SoundEvent getSoundEvent() {
-            return soundEvent;
-        }
     }
 }

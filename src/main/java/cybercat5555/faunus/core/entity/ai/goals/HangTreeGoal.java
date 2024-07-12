@@ -154,9 +154,13 @@ public class HangTreeGoal extends WanderAroundGoal {
 
         if (treePos != null) {
             Vec3d treeVec = treePos.toCenterPos();
-            this.mob.getNavigation().startMovingTo(treeVec.x, treeVec.y, treeVec.z, 1.0);
+            boolean hasTwoBlockSpace = this.mob.getWorld().getBlockState(treePos.down(2)).isAir();
+            boolean isHigherThanMob = treeVec.y > this.mob.getY();
 
-            hangingSpot = treePos;
+            if (hasTwoBlockSpace && isHigherThanMob) {
+                this.mob.getNavigation().startMovingTo(treeVec.x, treeVec.y, treeVec.z, 1.0);
+                hangingSpot = treePos;
+            }
         } else {
             hangingSpot = null;
         }

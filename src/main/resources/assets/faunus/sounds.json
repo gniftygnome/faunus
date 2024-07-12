@@ -10,5 +10,57 @@
       "faunus:entity/quetzal/idle_short_2",
       "faunus:entity/quetzal/idle_short_3"
     ]
+  },
+  "entity.capuchin.angry": {
+    "subtitle": "Capuchin: *Angry*",
+    "sounds": [
+      "faunus:entity/capuchin/capuchin_angry_1",
+      "faunus:entity/capuchin/capuchin_angry_2",
+      "faunus:entity/capuchin/capuchin_angry_3"
+    ]
+  },
+  "entity.capuchin.hurt": {
+    "subtitle": "Capuchin: *Hurt*",
+    "sounds": [
+      "faunus:entity/capuchin/capuchin_hurt_1",
+      "faunus:entity/capuchin/capuchin_hurt_2",
+      "faunus:entity/capuchin/capuchin_hurt_3"
+    ]
+  },
+  "entity.capuchin.idle": {
+    "subtitle": "Capuchin: *Idle*",
+    "sounds": [
+      "faunus:entity/capuchin/capuchin_idle_1",
+      "faunus:entity/capuchin/capuchin_idle_2"
+    ]
+  },
+  "entity.capuchin.tamed_idle": {
+    "subtitle": "Capuchin: *Idle*",
+    "sounds": [
+      "faunus:entity/capuchin/capuchin_tamed_idle_1",
+      "faunus:entity/capuchin/capuchin_tamed_idle_2",
+      "faunus:entity/capuchin/capuchin_tamed_idle_3",
+      "faunus:entity/capuchin/capuchin_tamed_idle_4"
+    ]
+  },
+  "entity.tropical_bird.ambiance": {
+    "subtitle": "Tropical Bird: *Ambiance*",
+    "sounds": [
+      "faunus:entity/tropical_bird/tropical_bird_ambiance_1",
+      "faunus:entity/tropical_bird/tropical_bird_ambiance_2",
+      "faunus:entity/tropical_bird/tropical_bird_ambiance_3",
+      "faunus:entity/tropical_bird/tropical_bird_ambiance_4",
+      "faunus:entity/tropical_bird/tropical_bird_ambiance_5",
+      "faunus:entity/tropical_bird/tropical_bird_ambiance_6",
+      "faunus:entity/tropical_bird/tropical_bird_ambiance_7",
+      "faunus:entity/tropical_bird/tropical_bird_ambiance_8"
+    ]
+  },
+  "entity.tropical_bird.hurt": {
+    "subtitle": "Tropical Bird: *Hurt*",
+    "sounds": [
+      "faunus:entity/tropical_bird/tropical_bird_hurt_1",
+      "faunus:entity/tropical_bird/tropical_bird_hurt_2"
+    ]
   }
 }

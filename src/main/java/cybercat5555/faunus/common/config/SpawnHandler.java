@@ -17,14 +17,6 @@ import static cybercat5555.faunus.common.config.MobSpawningConfig.*;
 public class SpawnHandler {
 
     public static void addSpawn() {
-        for (String s : CAPUCHIN_BIOME_TAG) {
-            System.out.println(s);
-        }
-
-        for (String s : CONSTRICTOR_BIOME_TAG) {
-            System.out.println(s);
-        }
-
         /* ARAPAIMA */
         Predicate<BiomeSelectionContext> arapaimaSpawnPredicate = BiomeSelectors.includeByKey(MCUtil.getBiomeKeys(ARAPAIMA_BIOME_TAG));
 

@@ -43,6 +43,9 @@ public class SongbirdEntity extends ParrotEntity implements GeoEntity {
 
 
     protected static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("idle");
+    protected static final RawAnimation FLY_ANIM = RawAnimation.begin().thenLoop("flight");
+    protected static final RawAnimation WALK_ANIM = RawAnimation.begin().thenLoop("walk");
+
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
 
     public SongbirdEntity(EntityType<? extends SongbirdEntity> entityType, World world) {
@@ -79,7 +82,7 @@ public class SongbirdEntity extends ParrotEntity implements GeoEntity {
     @Override
     @SuppressWarnings("ConstantConditions")
     public SoundEvent getAmbientSound() {
-        return SOUND.fromInt(this.random.nextBetween(1, 8)).getSoundEvent();
+        return SoundRegistry.TROPICAL_BIRD_AMBIANCE;
     }
 
     @Override
@@ -95,7 +98,7 @@ public class SongbirdEntity extends ParrotEntity implements GeoEntity {
     @Override
     @SuppressWarnings("ConstantConditions")
     protected SoundEvent getHurtSound(DamageSource source) {
-        return SOUND.fromInt(this.random.nextBetween(21, 22)).getSoundEvent();
+        return SoundRegistry.TROPICAL_BIRD_HURT;
     }
 
 
@@ -104,7 +107,18 @@ public class SongbirdEntity extends ParrotEntity implements GeoEntity {
         controllers.add(new AnimationController<>(this, "idle", 5, this::idleAnimController));
     }
 
-    protected <E extends SongbirdEntity> PlayState idleAnimController(final AnimationState<E> state) {
+    protected <E extends SongbirdEntity> PlayState idleAnimController(final AnimationState<E> event) {
+        boolean isMoving = event.isMoving();
+        boolean isFlying = isInAir();
+
+        if(isMoving && isFlying) {
+            event.setAnimation(FLY_ANIM);
+        } else if(isMoving) {
+            event.setAnimation(WALK_ANIM);
+        } else {
+            event.setAnimation(IDLE_ANIM);
+        }
+
         return PlayState.CONTINUE;
     }
 
@@ -163,41 +177,5 @@ public class SongbirdEntity extends ParrotEntity implements GeoEntity {
 
     public BirdVariant getBirdVariant() {
         return BirdVariant.byId(this.dataTracker.get(VARIANT) & 255);
-    }
-
-
-    enum SOUND {
-        TROPICAL_BIRD_AMBIANCE_1(1, SoundRegistry.TROPICAL_BIRD_AMBIANCE_1),
-        TROPICAL_BIRD_AMBIANCE_2(2, SoundRegistry.TROPICAL_BIRD_AMBIANCE_2),
-        TROPICAL_BIRD_AMBIANCE_3(3, SoundRegistry.TROPICAL_BIRD_AMBIANCE_3),
-        TROPICAL_BIRD_AMBIANCE_4(4, SoundRegistry.TROPICAL_BIRD_AMBIANCE_4),
-        TROPICAL_BIRD_AMBIANCE_5(5, SoundRegistry.TROPICAL_BIRD_AMBIANCE_5),
-        TROPICAL_BIRD_AMBIANCE_6(6, SoundRegistry.TROPICAL_BIRD_AMBIANCE_6),
-        TROPICAL_BIRD_AMBIANCE_7(7, SoundRegistry.TROPICAL_BIRD_AMBIANCE_7),
-        TROPICAL_BIRD_AMBIANCE_8(8, SoundRegistry.TROPICAL_BIRD_AMBIANCE_8),
-        TROPICAL_BIRD_HURT_1(21, SoundRegistry.TROPICAL_BIRD_HURT_1),
-        TROPICAL_BIRD_HURT_2(22, SoundRegistry.TROPICAL_BIRD_HURT_2);
-
-        private final int intValue;
-        private final SoundEvent soundEvent;
-
-        SOUND(int intValue, SoundEvent soundEvent) {
-            this.intValue = intValue;
-            this.soundEvent = soundEvent;
-        }
-
-        public static SOUND fromInt(int intValue) {
-            for (SOUND sound : values()) {
-                if (sound.intValue == intValue) {
-                    return sound;
-                }
-            }
-
-            return null;
-        }
-
-        public SoundEvent getSoundEvent() {
-            return soundEvent;
-        }
     }
 }

@@ -81,8 +81,6 @@ public class ArapaimaEggBlock extends TurtleEggBlock implements Waterloggable {
         }
 
         int hatchState = state.get(HATCH);
-        System.out.println("Hatch state: " + hatchState + " for arapaima");
-
         if (hatchState < 2) {
             world.playSound(null, pos, SoundEvents.ENTITY_TURTLE_EGG_CRACK, SoundCategory.BLOCKS, 0.7f, 0.9f + random.nextFloat() * 0.2f);
             world.setBlockState(pos, state.with(HATCH, hatchState + 1), Block.NOTIFY_LISTENERS);
