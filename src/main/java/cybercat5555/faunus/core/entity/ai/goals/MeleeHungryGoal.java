@@ -25,10 +25,12 @@ public class MeleeHungryGoal extends MeleeAttackGoal implements HungerMeter {
 
     @Override
     protected void attack(LivingEntity target, double squaredDistance) {
-        super.attack(target, squaredDistance);
+        if (isCooledDown()) {
+            super.attack(target, squaredDistance);
 
-        if (!target.isAlive()) {
-            increaseHunger(-(MAX_HUNGER / 10));
+            if (!target.isAlive()) {
+                increaseHunger(-(MAX_HUNGER / 3));
+            }
         }
     }
 
@@ -42,7 +44,13 @@ public class MeleeHungryGoal extends MeleeAttackGoal implements HungerMeter {
             return false;
         }
 
+
         return super.canStart();
+    }
+
+    @Override
+    public void stop() {
+        super.stop();
     }
 
     @Override
