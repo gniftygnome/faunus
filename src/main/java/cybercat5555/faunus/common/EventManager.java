@@ -25,7 +25,8 @@ public class EventManager {
     public static void onAttackEntity() {
         AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
             if (player.getVehicle() != null && player.getVehicle() instanceof YacareManEaterEntity && player.isAlive()) {
-                entity.damage(player.getDamageSources().playerAttack(player), 4);
+                float damage = player.getMainHandStack().isEmpty() ? 2 : player.getMainHandStack().getDamage();
+                entity.damage(player.getDamageSources().playerAttack(player), damage);
             }
 
             return ActionResult.PASS;
