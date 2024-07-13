@@ -80,7 +80,7 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
         this.goalSelector.add(0, new AnimalMateGoal(this, 1.0D));
         this.goalSelector.add(1, new RunAwayCapuchinGoal(this, 1.5));
         this.goalSelector.add(2, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
-        this.goalSelector.add(2, new MeleeCapuchinGoal(this, 1.5, false));
+        this.goalSelector.add(2, new AttackCapuchinGoal(this, 1.5, false));
         this.goalSelector.add(3, new HangTreeGoal(this, 1.0));
         this.goalSelector.add(4, new FollowOwnerGoal(this, 1.0, 5.0f, 1.0f, true));
 
@@ -138,8 +138,9 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
 
     protected <E extends CapuchinEntity> PlayState attackAnimController(final AnimationState<E> event) {
         boolean isAlreadyPlayingAttackAnim = event.getController().getCurrentRawAnimation() == ATTACK_LEFT_ANIM || event.getController().getCurrentRawAnimation() == ATTACK_RIGHT_ANIM;
+        boolean isAttacking = event.getLimbSwingAmount() > 0.001f;
 
-        if (isAttacking()) {
+        if (isAttacking) {
             if (isAlreadyPlayingAttackAnim) {
                 return PlayState.CONTINUE;
             }
@@ -147,7 +148,7 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
             event.setAnimation(Math.random() < 0.5 ? ATTACK_LEFT_ANIM : ATTACK_RIGHT_ANIM);
         }
 
-        return PlayState.CONTINUE;
+        return PlayState.STOP;
     }
 
     @Nullable
@@ -307,9 +308,9 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
         return EntityRegistry.CAPUCHIN.create(world);
     }
 
-    static class MeleeCapuchinGoal extends MeleeAttackGoal {
+    static class AttackCapuchinGoal extends MeleeAttackGoal {
 
-        public MeleeCapuchinGoal(CapuchinEntity mob, double speed, boolean pauseWhenMobIdle) {
+        public AttackCapuchinGoal(CapuchinEntity mob, double speed, boolean pauseWhenMobIdle) {
             super(mob, speed, pauseWhenMobIdle);
         }
 
@@ -317,8 +318,9 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
         protected void attack(LivingEntity target, double squaredDistance) {
             if (this.mob.isInAttackRange(target)) {
                 this.mob.tryAttack(target);
-            } else {
+            } else if(isCooledDown()) {
                 throwCocoaBean(target);
+                resetCooldown();
             }
         }
 
@@ -347,12 +349,20 @@ public class CapuchinEntity extends TameableShoulderEntity implements GeoEntity,
             if (shouldAttack && this.mob.getTarget() != null) {
                 attack(this.mob.getTarget(), 4);
                 this.mob.setAttacking(true);
+
+                return !(this.mob.getTarget() instanceof PlayerEntity player) || !player.isCreative();
             } else {
                 this.mob.setAttacking(false);
             }
 
 
             return false;
+        }
+
+        @Override
+        public void stop() {
+            this.mob.setAttacking(false);
+            super.stop();
         }
 
         @Override

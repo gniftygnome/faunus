@@ -30,7 +30,8 @@ public class Faunus implements ModInitializer {
     }
 
     public void eventHandler() {
-        EventManager.onAttack();
+        EventManager.onAttackBlock();
+        EventManager.onAttackEntity();
     }
 
     public void configHandler() {
