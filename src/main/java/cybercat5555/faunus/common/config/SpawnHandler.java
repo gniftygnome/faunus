@@ -6,8 +6,12 @@ import cybercat5555.faunus.util.MCUtil;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectionContext;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
+import net.fabricmc.fabric.api.biome.v1.ModificationPhase;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.SpawnRestriction;
+import net.minecraft.registry.tag.BiomeTags;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.Heightmap;
 
 import java.util.function.Predicate;
@@ -15,6 +19,29 @@ import java.util.function.Predicate;
 import static cybercat5555.faunus.common.config.MobSpawningConfig.*;
 
 public class SpawnHandler {
+
+    public static void removeSpawn() {
+        /* PIG */
+        BiomeModifications.create(new Identifier("remove_pig_spawn"))
+                .add(
+                        ModificationPhase.REMOVALS,
+                        BiomeSelectors.tag(BiomeTags.IS_JUNGLE),
+                        context -> context.getSpawnSettings().removeSpawns((spawnGroup, spawnEntry) -> spawnEntry.type == EntityType.PIG));
+
+        /* COW */
+        BiomeModifications.create(new Identifier("remove_cow_spawn"))
+                .add(
+                        ModificationPhase.REMOVALS,
+                        BiomeSelectors.tag(BiomeTags.IS_JUNGLE),
+                        context -> context.getSpawnSettings().removeSpawns((spawnGroup, spawnEntry) -> spawnEntry.type == EntityType.COW));
+
+        /* SHEEP */
+        BiomeModifications.create(new Identifier("remove_sheep_spawn"))
+                .add(
+                        ModificationPhase.REMOVALS,
+                        BiomeSelectors.tag(BiomeTags.IS_JUNGLE),
+                        context -> context.getSpawnSettings().removeSpawns((spawnGroup, spawnEntry) -> spawnEntry.type == EntityType.SHEEP));
+    }
 
     public static void addSpawn() {
         /* ARAPAIMA */

@@ -84,7 +84,7 @@ public class MobSpawningConfig {
         configRegistry.addPairData(new Pair<>("hoatzin_spawn_weight", 5), "Hoatzin spawn weight");
         configRegistry.addPairData(new Pair<>("hoatzin_spawn_min_group", 1), "Hoatzin spawn min group");
         configRegistry.addPairData(new Pair<>("hoatzin_spawn_max_group", 3), "Hoatzin spawn max group");
-        configRegistry.addPairData(new Pair<>("hoatzin_biome_tag", "[jungle, bamboo_jungle, sparse_jungle]"), "Hoatzin biome tag");
+        configRegistry.addPairData(new Pair<>("hoatzin_biome_tag", "[jungle, bamboo_jungle, sparse_jungle, mangrove_swamp]"), "Hoatzin biome tag");
 
         configRegistry.addComment("Leech");
         configRegistry.addPairData(new Pair<>("leech_spawn_weight", 5), "Leech spawn weight");
@@ -96,7 +96,7 @@ public class MobSpawningConfig {
         configRegistry.addPairData(new Pair<>("piranha_spawn_weight", 5), "Piranha spawn weight");
         configRegistry.addPairData(new Pair<>("piranha_spawn_min_group", 1), "Piranha spawn min group");
         configRegistry.addPairData(new Pair<>("piranha_spawn_max_group", 3), "Piranha spawn max group");
-        configRegistry.addPairData(new Pair<>("piranha_biome_tag", "[river]"), "Piranha biome tag");
+        configRegistry.addPairData(new Pair<>("piranha_biome_tag", "[river, jungle, bamboo_jungle, sparse_jungle]"), "Piranha biome tag");
 
         configRegistry.addComment("Quetzal");
         configRegistry.addPairData(new Pair<>("quetzal_spawn_weight", 5), "Quetzal spawn weight");
@@ -120,7 +120,7 @@ public class MobSpawningConfig {
         configRegistry.addPairData(new Pair<>("tapir_spawn_weight", 5), "Tapir spawn weight");
         configRegistry.addPairData(new Pair<>("tapir_spawn_min_group", 1), "Tapir spawn min group");
         configRegistry.addPairData(new Pair<>("tapir_spawn_max_group", 3), "Tapir spawn max group");
-        configRegistry.addPairData(new Pair<>("tapir_biome_tag", "[]"), "Tapir biome tag");
+        configRegistry.addPairData(new Pair<>("tapir_biome_tag", "[jungle, bamboo_jungle, sparse_jungle]"), "Tapir biome tag");
 
         configRegistry.addComment("Tarantula");
         configRegistry.addPairData(new Pair<>("tarantula_spawn_weight", 5), "Tarantula spawn weight");
