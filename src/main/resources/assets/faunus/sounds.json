@@ -62,5 +62,57 @@
       "faunus:entity/tropical_bird/tropical_bird_hurt_1",
       "faunus:entity/tropical_bird/tropical_bird_hurt_2"
     ]
+  },
+  "entity.tapir.death": {
+    "subtitle": "Tapir: *Death*",
+    "sounds": [
+      "faunus:entity/tapir/tapir_death"
+    ]
+  },
+  "entity.tapir.hurt": {
+    "subtitle": "Tapir: *Hurt*",
+    "sounds": [
+      "faunus:entity/tapir/tapir_hurt_1",
+      "faunus:entity/tapir/tapir_hurt_2",
+      "faunus:entity/tapir/tapir_hurt_3",
+      "faunus:entity/tapir/tapir_hurt_4"
+    ]
+  },
+  "entity.tapir.idle": {
+    "subtitle": "Tapir: *Idle*",
+    "sounds": [
+      "faunus:entity/tapir/tapir_idle_1",
+      "faunus:entity/tapir/tapir_idle_2",
+      "faunus:entity/tapir/tapir_idle_3",
+      "faunus:entity/tapir/tapir_idle_4"
+    ]
+  },
+  "entity.yacare.baby": {
+    "subtitle": "Yacare: *Baby*",
+    "sounds": [
+      "faunus:entity/yacare/yacare_baby_1",
+      "faunus:entity/yacare/yacare_baby_2",
+      "faunus:entity/yacare/yacare_baby_3",
+      "faunus:entity/yacare/yacare_baby_4"
+    ]
+  },
+  "entity.yacare.hurt": {
+    "subtitle": "Yacare: *Hurt*",
+    "sounds": [
+      "faunus:entity/yacare/yacare_hurt"
+    ]
+  },
+  "entity.yacare.idle": {
+    "subtitle": "Yacare: *Idle*",
+    "sounds": [
+      "faunus:entity/yacare/yacare_idle_1",
+      "faunus:entity/yacare/yacare_idle_2"
+    ]
+  },
+  "entity.yacare.death": {
+    "subtitle": "Yacare: *Death*",
+    "sounds": [
+      "faunus:entity/yacare/yacare_death"
+    ]
   }
 }

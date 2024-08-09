@@ -17,6 +17,15 @@ public class SoundRegistry {
     public static final SoundEvent TROPICAL_BIRD_AMBIANCE = register("entity.tropical_bird.ambiance");
     public static final SoundEvent TROPICAL_BIRD_HURT = register("entity.tropical_bird.hurt");
 
+    public static final SoundEvent TAPIR_DEATH = register("entity.tapir.death");
+    public static final SoundEvent TAPIR_HURT = register("entity.tapir.hurt");
+    public static final SoundEvent TAPIR_IDLE = register("entity.tapir.idle");
+
+    public static final SoundEvent YACARE_BABY = register("entity.yacare.baby");
+    public static final SoundEvent YACARE_DEATH = register("entity.yacare.death");
+    public static final SoundEvent YACARE_HURT = register("entity.yacare.hurt");
+    public static final SoundEvent YACARE_IDLE = register("entity.yacare.idle");
+
 
     /**
      * Register a sound event with the given name.

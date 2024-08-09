@@ -2,6 +2,7 @@ package cybercat5555.faunus.core.entity.livingEntity;
 
 import cybercat5555.faunus.core.BlockRegistry;
 import cybercat5555.faunus.core.EntityRegistry;
+import cybercat5555.faunus.core.SoundRegistry;
 import cybercat5555.faunus.core.entity.FeedableEntity;
 import cybercat5555.faunus.core.entity.ai.goals.MeleeHungryGoal;
 import cybercat5555.faunus.util.FaunusID;
@@ -18,6 +19,7 @@ import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -34,6 +36,7 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
@@ -44,6 +47,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager.ControllerRegistrar;
@@ -176,6 +180,30 @@ public class YacareEntity extends TurtleEntity implements GeoEntity, FeedableEnt
         return PlayState.CONTINUE;
     }
 
+    @Nullable
+    @Override
+    @SuppressWarnings("ConstantConditions")
+    public SoundEvent getAmbientSound() {
+        boolean isBaby = isBaby();
+
+        if(isBaby){
+            return SoundRegistry.YACARE_BABY;
+        } else {
+            return SoundRegistry.YACARE_IDLE;
+        }
+    }
+
+    @Nullable
+    @Override
+    protected SoundEvent getDeathSound() {
+        return SoundRegistry.YACARE_DEATH;
+    }
+
+    @Nullable
+    @Override
+    protected SoundEvent getHurtSound(DamageSource source) {
+        return SoundRegistry.YACARE_HURT;
+    }
 
     @Override
     public void feedEntity(PlayerEntity player, ItemStack stack) {

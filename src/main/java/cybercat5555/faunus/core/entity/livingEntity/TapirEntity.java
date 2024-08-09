@@ -3,6 +3,7 @@ package cybercat5555.faunus.core.entity.livingEntity;
 import cybercat5555.faunus.core.EffectStatusRegistry;
 import cybercat5555.faunus.core.EntityRegistry;
 import cybercat5555.faunus.core.ItemRegistry;
+import cybercat5555.faunus.core.SoundRegistry;
 import cybercat5555.faunus.core.entity.FeedableEntity;
 import cybercat5555.faunus.util.FaunusID;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -25,6 +26,7 @@ import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -47,6 +49,7 @@ import net.tslat.smartbrainlib.api.core.sensor.vanilla.HurtBySensor;
 import net.tslat.smartbrainlib.api.core.sensor.vanilla.ItemTemptingSensor;
 import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyLivingEntitySensor;
 import net.tslat.smartbrainlib.api.core.sensor.vanilla.NearbyPlayersSensor;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager.ControllerRegistrar;
@@ -291,6 +294,25 @@ public class TapirEntity extends AnimalEntity implements GeoEntity, SmartBrainOw
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return geoCache;
+    }
+
+    @Nullable
+    @Override
+    @SuppressWarnings("ConstantConditions")
+    public SoundEvent getAmbientSound() {
+        return SoundRegistry.TAPIR_IDLE;
+    }
+
+    @Nullable
+    @Override
+    protected SoundEvent getDeathSound() {
+        return SoundRegistry.TAPIR_DEATH;
+    }
+
+    @Nullable
+    @Override
+    protected SoundEvent getHurtSound(DamageSource source) {
+        return SoundRegistry.TAPIR_HURT;
     }
 
     protected enum EarTwitchMode {
