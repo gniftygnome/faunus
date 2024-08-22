@@ -60,7 +60,7 @@ public class MobSpawningConfig {
         configRegistry.addPairData(new Pair<>("arapaima_spawn_weight", 5), "Arapaima spawn weight");
         configRegistry.addPairData(new Pair<>("arapaima_spawn_min_group", 1), "Arapaima spawn min group");
         configRegistry.addPairData(new Pair<>("arapaima_spawn_max_group", 3), "Arapaima spawn max group");
-        configRegistry.addPairData(new Pair<>("arapaima_biome_tag", "[river]"), "Arapaima biome tag");
+        configRegistry.addPairData(new Pair<>("arapaima_biome_tag", "[river, swamp, mangrove_swamp]"), "Arapaima biome tag");
 
         configRegistry.addComment("Capuchin");
         configRegistry.addPairData(new Pair<>("capuchin_spawn_weight", 5), "Capuchin spawn weight");
@@ -96,13 +96,13 @@ public class MobSpawningConfig {
         configRegistry.addPairData(new Pair<>("piranha_spawn_weight", 5), "Piranha spawn weight");
         configRegistry.addPairData(new Pair<>("piranha_spawn_min_group", 1), "Piranha spawn min group");
         configRegistry.addPairData(new Pair<>("piranha_spawn_max_group", 3), "Piranha spawn max group");
-        configRegistry.addPairData(new Pair<>("piranha_biome_tag", "[river, jungle, bamboo_jungle, sparse_jungle]"), "Piranha biome tag");
+        configRegistry.addPairData(new Pair<>("piranha_biome_tag", "[mangrove_swamp, jungle, bamboo_jungle, sparse_jungle]"), "Piranha biome tag");
 
         configRegistry.addComment("Quetzal");
         configRegistry.addPairData(new Pair<>("quetzal_spawn_weight", 5), "Quetzal spawn weight");
         configRegistry.addPairData(new Pair<>("quetzal_spawn_min_group", 1), "Quetzal spawn min group");
         configRegistry.addPairData(new Pair<>("quetzal_spawn_max_group", 3), "Quetzal spawn max group");
-        configRegistry.addPairData(new Pair<>("quetzal_biome_tag", "[]"), "Quetzal biome tag");
+        configRegistry.addPairData(new Pair<>("quetzal_biome_tag", "[jungle, bamboo_jungle, sparse_jungle]"), "Quetzal biome tag");
 
         configRegistry.addComment("Snapping Turtle");
         configRegistry.addPairData(new Pair<>("snapping_turtle_spawn_weight", 5), "Snapping Turtle spawn weight");
@@ -114,7 +114,7 @@ public class MobSpawningConfig {
         configRegistry.addPairData(new Pair<>("songbird_spawn_weight", 5), "Songbird spawn weight");
         configRegistry.addPairData(new Pair<>("songbird_spawn_min_group", 1), "Songbird spawn min group");
         configRegistry.addPairData(new Pair<>("songbird_spawn_max_group", 3), "Songbird spawn max group");
-        configRegistry.addPairData(new Pair<>("songbird_biome_tag", "[swamp]"), "Songbird biome tag");
+        configRegistry.addPairData(new Pair<>("songbird_biome_tag", "[swamp, jungle, bamboo_jungle, sparse_jungle, mangrove_swamp]"), "Songbird biome tag");
 
         configRegistry.addComment("Tapir");
         configRegistry.addPairData(new Pair<>("tapir_spawn_weight", 5), "Tapir spawn weight");
