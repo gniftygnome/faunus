@@ -72,11 +72,11 @@ public class HoatzinEntity extends ParrotEntity implements GeoEntity, FeedableEn
     }
 
     protected <E extends HoatzinEntity> PlayState idleAnimController(final AnimationState<E> state) {
-        if (state.isMoving() && isOnGround()) {
+        if (state.isMoving() && isBlockBelow()) {
             state.setAndContinue(WALKING_ANIM);
-        } else if (!isOnGround()) {
+        } else if (!isBlockBelow()) {
             state.setAndContinue(FLY_ANIM);
-        } else if (!state.isMoving() && isOnGround()) {
+        } else if (!state.isMoving() && isBlockBelow()) {
             state.setAndContinue(IDLE_ANIM);
         }
 
@@ -91,8 +91,7 @@ public class HoatzinEntity extends ParrotEntity implements GeoEntity, FeedableEn
                 .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.6f);
     }
 
-    @Override
-    public boolean isOnGround() {
+    public boolean isBlockBelow() {
         return !this.getWorld().getBlockState(getBlockPos().down()).isAir();
     }
 
