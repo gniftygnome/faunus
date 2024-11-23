@@ -1,8 +1,8 @@
 package cybercat5555.faunus.common.config;
 
+import cybercat5555.faunus.common.tags.FaunusBiomeTags;
 import cybercat5555.faunus.core.EntityRegistry;
 import cybercat5555.faunus.core.entity.livingEntity.*;
-import cybercat5555.faunus.util.MCUtil;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectionContext;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
@@ -45,10 +45,10 @@ public class SpawnHandler {
 
     public static void addSpawn() {
         /* ARAPAIMA */
-        Predicate<BiomeSelectionContext> arapaimaSpawnPredicate = BiomeSelectors.includeByKey(MCUtil.getBiomeKeys(ARAPAIMA_BIOME_TAG));
+        Predicate<BiomeSelectionContext> arapaimaSpawnPredicate = BiomeSelectors.tag(FaunusBiomeTags.SPAWNS_ARAPAIMA);
 
         BiomeModifications.addSpawn(
-                MCUtil.getBiomeKeys(ARAPAIMA_BIOME_TAG).isEmpty() ? BiomeSelectors.all() : arapaimaSpawnPredicate,
+                arapaimaSpawnPredicate,
                 SpawnGroup.WATER_CREATURE,
                 EntityRegistry.ARAPAIMA,
                 ARAPAIMA_SPAWN_WEIGHT, ARAPAIMA_SPAWN_MIN_GROUP, ARAPAIMA_SPAWN_MAX_GROUP
@@ -61,10 +61,10 @@ public class SpawnHandler {
                 ArapaimaEntity::canMobSpawn);
 
         /* CAPUCHIN */
-        Predicate<BiomeSelectionContext> capuchinSpawnPredicate = BiomeSelectors.includeByKey(MCUtil.getBiomeKeys(CAPUCHIN_BIOME_TAG));
+        Predicate<BiomeSelectionContext> capuchinSpawnPredicate = BiomeSelectors.tag(FaunusBiomeTags.SPAWNS_CAPUCHIN);
 
         BiomeModifications.addSpawn(
-                MCUtil.getBiomeKeys(CAPUCHIN_BIOME_TAG).isEmpty() ? BiomeSelectors.all() : capuchinSpawnPredicate,
+                capuchinSpawnPredicate,
                 SpawnGroup.AMBIENT,
                 EntityRegistry.CAPUCHIN,
                 CAPUCHIN_SPAWN_WEIGHT, CAPUCHIN_SPAWN_MIN_GROUP, CAPUCHIN_SPAWN_MAX_GROUP
@@ -77,10 +77,10 @@ public class SpawnHandler {
                 CapuchinEntity::canMobSpawn);
 
         /* CRAYFISH */
-        Predicate<BiomeSelectionContext> crayfishSpawnPredicate = BiomeSelectors.includeByKey(MCUtil.getBiomeKeys(CRAYFISH_BIOME_TAG));
+        Predicate<BiomeSelectionContext> crayfishSpawnPredicate = BiomeSelectors.tag(FaunusBiomeTags.SPAWNS_CRAYFISH);
 
         BiomeModifications.addSpawn(
-                MCUtil.getBiomeKeys(CRAYFISH_BIOME_TAG).isEmpty() ? BiomeSelectors.all() : crayfishSpawnPredicate,
+                crayfishSpawnPredicate,
                 SpawnGroup.WATER_CREATURE,
                 EntityRegistry.CRAYFISH,
                 CRAYFISH_SPAWN_WEIGHT, CRAYFISH_SPAWN_MIN_GROUP, CRAYFISH_SPAWN_MAX_GROUP
@@ -93,10 +93,10 @@ public class SpawnHandler {
                 CrayfishEntity::canMobSpawn);
 
         /* HOATZIN */
-        Predicate<BiomeSelectionContext> hoatzinSpawnPredicate = BiomeSelectors.includeByKey(MCUtil.getBiomeKeys(HOATZIN_BIOME_TAG));
+        Predicate<BiomeSelectionContext> hoatzinSpawnPredicate = BiomeSelectors.tag(FaunusBiomeTags.SPAWNS_HOATZIN);
 
         BiomeModifications.addSpawn(
-                MCUtil.getBiomeKeys(HOATZIN_BIOME_TAG).isEmpty() ? BiomeSelectors.all() : hoatzinSpawnPredicate,
+                hoatzinSpawnPredicate,
                 SpawnGroup.CREATURE,
                 EntityRegistry.HOATZIN,
                 HOATZIN_SPAWN_WEIGHT, HOATZIN_SPAWN_MIN_GROUP, HOATZIN_SPAWN_MAX_GROUP
@@ -109,10 +109,10 @@ public class SpawnHandler {
                 HoatzinEntity::canMobSpawn);
 
         /* LEECH */
-        Predicate<BiomeSelectionContext> leechSpawnPredicate = BiomeSelectors.includeByKey(MCUtil.getBiomeKeys(LEECH_BIOME_TAG));
+        Predicate<BiomeSelectionContext> leechSpawnPredicate = BiomeSelectors.tag(FaunusBiomeTags.SPAWNS_LEECH);
 
         BiomeModifications.addSpawn(
-                MCUtil.getBiomeKeys(LEECH_BIOME_TAG).isEmpty() ? BiomeSelectors.all() : leechSpawnPredicate,
+                leechSpawnPredicate,
                 SpawnGroup.WATER_CREATURE,
                 EntityRegistry.LEECH,
                 LEECH_SPAWN_WEIGHT, LEECH_SPAWN_MIN_GROUP, LEECH_SPAWN_MAX_GROUP
@@ -125,10 +125,10 @@ public class SpawnHandler {
                 LeechEntity::canMobSpawn);
 
         /* PIRANHA */
-        Predicate<BiomeSelectionContext> piranhaSpawnPredicate = BiomeSelectors.includeByKey(MCUtil.getBiomeKeys(PIRANHA_BIOME_TAG));
+        Predicate<BiomeSelectionContext> piranhaSpawnPredicate = BiomeSelectors.tag(FaunusBiomeTags.SPAWNS_PIRANHA);
 
         BiomeModifications.addSpawn(
-                MCUtil.getBiomeKeys(PIRANHA_BIOME_TAG).isEmpty() ? BiomeSelectors.all() : piranhaSpawnPredicate,
+                piranhaSpawnPredicate,
                 SpawnGroup.WATER_CREATURE,
                 EntityRegistry.PIRANHA,
                 PIRANHA_SPAWN_WEIGHT, PIRANHA_SPAWN_MIN_GROUP, PIRANHA_SPAWN_MAX_GROUP
@@ -141,10 +141,10 @@ public class SpawnHandler {
                 PiranhaEntity::canMobSpawn);
 
         /* QUETZAL */
-        Predicate<BiomeSelectionContext> quetzalSpawnPredicate = BiomeSelectors.includeByKey(MCUtil.getBiomeKeys(QUETZAL_BIOME_TAG));
+        Predicate<BiomeSelectionContext> quetzalSpawnPredicate = BiomeSelectors.tag(FaunusBiomeTags.SPAWNS_QUETZAL);
 
         BiomeModifications.addSpawn(
-                MCUtil.getBiomeKeys(QUETZAL_BIOME_TAG).isEmpty() ? BiomeSelectors.all() : quetzalSpawnPredicate,
+                quetzalSpawnPredicate,
                 SpawnGroup.CREATURE,
                 EntityRegistry.QUETZAL,
                 QUETZAL_SPAWN_WEIGHT, QUETZAL_SPAWN_MIN_GROUP, QUETZAL_SPAWN_MAX_GROUP
@@ -157,10 +157,10 @@ public class SpawnHandler {
                 QuetzalEntity::canMobSpawn);
 
         /* SNAPPING_TURTLE */
-        Predicate<BiomeSelectionContext> snappingTurtleSpawnPredicate = BiomeSelectors.includeByKey(MCUtil.getBiomeKeys(SNAPPING_TURTLE_BIOME_TAG));
+        Predicate<BiomeSelectionContext> snappingTurtleSpawnPredicate = BiomeSelectors.tag(FaunusBiomeTags.SPAWNS_SNAPPING_TURTLE);
 
         BiomeModifications.addSpawn(
-                MCUtil.getBiomeKeys(SNAPPING_TURTLE_BIOME_TAG).isEmpty() ? BiomeSelectors.all() : snappingTurtleSpawnPredicate,
+                snappingTurtleSpawnPredicate,
                 SpawnGroup.CREATURE,
                 EntityRegistry.SNAPPING_TURTLE,
                 SNAPPING_TURTLE_SPAWN_WEIGHT, SNAPPING_TURTLE_SPAWN_MIN_GROUP, SNAPPING_TURTLE_SPAWN_MAX_GROUP
@@ -173,10 +173,10 @@ public class SpawnHandler {
                 SnappingTurtleEntity::canMobSpawn);
 
         /* SONGBIRD */
-        Predicate<BiomeSelectionContext> songbirdSpawnPredicate = BiomeSelectors.includeByKey(MCUtil.getBiomeKeys(SONGBIRD_BIOME_TAG));
+        Predicate<BiomeSelectionContext> songbirdSpawnPredicate = BiomeSelectors.tag(FaunusBiomeTags.SPAWNS_SONGBIRD);
 
         BiomeModifications.addSpawn(
-                MCUtil.getBiomeKeys(SONGBIRD_BIOME_TAG).isEmpty() ? BiomeSelectors.all() : songbirdSpawnPredicate,
+                songbirdSpawnPredicate,
                 SpawnGroup.CREATURE,
                 EntityRegistry.SONGBIRD,
                 SONGBIRD_SPAWN_WEIGHT, SONGBIRD_SPAWN_MIN_GROUP, SONGBIRD_SPAWN_MAX_GROUP
@@ -189,10 +189,10 @@ public class SpawnHandler {
                 SongbirdEntity::canMobSpawn);
 
         /* TAPIR */
-        Predicate<BiomeSelectionContext> tapirSpawnPredicate = BiomeSelectors.includeByKey(MCUtil.getBiomeKeys(TAPIR_BIOME_TAG));
+        Predicate<BiomeSelectionContext> tapirSpawnPredicate = BiomeSelectors.tag(FaunusBiomeTags.SPAWNS_TAPIR);
 
         BiomeModifications.addSpawn(
-                MCUtil.getBiomeKeys(TAPIR_BIOME_TAG).isEmpty() ? BiomeSelectors.all() : tapirSpawnPredicate,
+                tapirSpawnPredicate,
                 SpawnGroup.CREATURE,
                 EntityRegistry.TAPIR,
                 TAPIR_SPAWN_WEIGHT, TAPIR_SPAWN_MIN_GROUP, TAPIR_SPAWN_MAX_GROUP
@@ -205,10 +205,10 @@ public class SpawnHandler {
                 TapirEntity::canMobSpawn);
 
         /* YACARE */
-        Predicate<BiomeSelectionContext> yacareSpawnPredicate = BiomeSelectors.includeByKey(MCUtil.getBiomeKeys(YACARE_BIOME_TAG));
+        Predicate<BiomeSelectionContext> yacareSpawnPredicate = BiomeSelectors.tag(FaunusBiomeTags.SPAWNS_YACARE);
 
         BiomeModifications.addSpawn(
-                MCUtil.getBiomeKeys(YACARE_BIOME_TAG).isEmpty() ? BiomeSelectors.all() : yacareSpawnPredicate,
+                yacareSpawnPredicate,
                 SpawnGroup.CREATURE,
                 EntityRegistry.YACARE,
                 YACARE_SPAWN_WEIGHT, YACARE_SPAWN_MIN_GROUP, YACARE_SPAWN_MAX_GROUP
