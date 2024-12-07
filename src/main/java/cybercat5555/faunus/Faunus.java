@@ -26,6 +26,7 @@ public class Faunus implements ModInitializer {
 
         configHandler();
         eventHandler();
+        SpawnHandler.removeSpawn();
         SpawnHandler.addSpawn();
     }
 
