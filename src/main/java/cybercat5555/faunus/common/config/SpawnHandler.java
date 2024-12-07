@@ -108,6 +108,20 @@ public class SpawnHandler {
                 Heightmap.Type.MOTION_BLOCKING_NO_LEAVES,
                 HoatzinEntity::canMobSpawn);
 
+        /* IGUANA */
+        BiomeModifications.addSpawn(
+                BiomeSelectors.tag(FaunusBiomeTags.SPAWNS_IGUANA),
+                SpawnGroup.CREATURE,
+                EntityRegistry.IGUANA,
+                IGUANA_SPAWN_WEIGHT, IGUANA_SPAWN_MIN_GROUP, IGUANA_SPAWN_MAX_GROUP
+        );
+
+        SpawnRestriction.register(
+                EntityRegistry.IGUANA,
+                SpawnRestriction.Location.ON_GROUND,
+                Heightmap.Type.MOTION_BLOCKING,
+                IguanaEntity::canMobSpawn);
+
         /* LEECH */
         Predicate<BiomeSelectionContext> leechSpawnPredicate = BiomeSelectors.tag(FaunusBiomeTags.SPAWNS_LEECH);
 

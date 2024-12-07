@@ -23,12 +23,11 @@ public class DrinkablePotionMixin {
         // If item is leeching potion, and is a drinkable potion apply clear effects
         if (stack.getItem() == ItemRegistry.BOTTLED_LEECH) {
             clearNegativeEffects(user);
+            user.addStatusEffect(new StatusEffectInstance(EffectStatusRegistry.LEECHING_EFFECT, 1200));
             stack.decrement(1);
 
             cir.setReturnValue(stack);
         }
-
-        user.addStatusEffect(new StatusEffectInstance(EffectStatusRegistry.LEECHING_EFFECT, 1200));
     }
 
     @Unique
