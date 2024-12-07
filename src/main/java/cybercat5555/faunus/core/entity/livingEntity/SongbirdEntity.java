@@ -129,7 +129,7 @@ public class SongbirdEntity extends ParrotEntity implements GeoEntity {
 
     @Override
     public EntityView method_48926() {
-        return null;
+        return getWorld();
     }
 
 
