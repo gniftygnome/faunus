@@ -17,6 +17,7 @@ public class MobSpawningConfig {
     public static int CONSTRICTOR_SPAWN_WEIGHT, CONSTRICTOR_SPAWN_MIN_GROUP, CONSTRICTOR_SPAWN_MAX_GROUP;
     public static int CRAYFISH_SPAWN_WEIGHT, CRAYFISH_SPAWN_MIN_GROUP, CRAYFISH_SPAWN_MAX_GROUP;
     public static int HOATZIN_SPAWN_WEIGHT, HOATZIN_SPAWN_MIN_GROUP, HOATZIN_SPAWN_MAX_GROUP;
+    public static int IGUANA_SPAWN_WEIGHT, IGUANA_SPAWN_MIN_GROUP, IGUANA_SPAWN_MAX_GROUP;
     public static int LEECH_SPAWN_WEIGHT, LEECH_SPAWN_MIN_GROUP, LEECH_SPAWN_MAX_GROUP;
     public static int PIRANHA_SPAWN_WEIGHT, PIRANHA_SPAWN_MIN_GROUP, PIRANHA_SPAWN_MAX_GROUP;
     public static int QUETZAL_SPAWN_WEIGHT, QUETZAL_SPAWN_MIN_GROUP, QUETZAL_SPAWN_MAX_GROUP;
@@ -64,6 +65,11 @@ public class MobSpawningConfig {
         configRegistry.addPairData(new Pair<>("hoatzin_spawn_weight", 5), "Hoatzin spawn weight");
         configRegistry.addPairData(new Pair<>("hoatzin_spawn_min_group", 1), "Hoatzin spawn min group");
         configRegistry.addPairData(new Pair<>("hoatzin_spawn_max_group", 3), "Hoatzin spawn max group");
+
+        configRegistry.addComment("Iguana");
+        configRegistry.addPairData(new Pair<>("iguana_spawn_weight", 5), "Iguana spawn weight");
+        configRegistry.addPairData(new Pair<>("iguana_spawn_min_group", 1), "Iguana spawn min group");
+        configRegistry.addPairData(new Pair<>("iguana_spawn_max_group", 3), "Iguana spawn max group");
 
         configRegistry.addComment("Leech");
         configRegistry.addPairData(new Pair<>("leech_spawn_weight", 5), "Leech spawn weight");
@@ -131,6 +137,10 @@ public class MobSpawningConfig {
         HOATZIN_SPAWN_WEIGHT = Integer.parseInt(config.getOrDefault("hoatzin_spawn_weight", "0"));
         HOATZIN_SPAWN_MIN_GROUP = Integer.parseInt(config.getOrDefault("hoatzin_spawn_min_group", "0"));
         HOATZIN_SPAWN_MAX_GROUP = Integer.parseInt(config.getOrDefault("hoatzin_spawn_max_group", "0"));
+
+        IGUANA_SPAWN_WEIGHT = Integer.parseInt(config.getOrDefault("iguana_spawn_weight", "0"));
+        IGUANA_SPAWN_MIN_GROUP = Integer.parseInt(config.getOrDefault("iguana_spawn_min_group", "0"));
+        IGUANA_SPAWN_MAX_GROUP = Integer.parseInt(config.getOrDefault("iguana_spawn_max_group", "0"));
 
         LEECH_SPAWN_WEIGHT = Integer.parseInt(config.getOrDefault("leech_spawn_weight", "0"));
         LEECH_SPAWN_MIN_GROUP = Integer.parseInt(config.getOrDefault("leech_spawn_min_group", "0"));

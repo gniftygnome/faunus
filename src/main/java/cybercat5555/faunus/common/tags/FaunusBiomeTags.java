@@ -12,6 +12,7 @@ public class FaunusBiomeTags {
     public static final TagKey<Biome> SPAWNS_CONSTRICTOR = FaunusBiomeTags.of("spawns_constrictor");
     public static final TagKey<Biome> SPAWNS_CRAYFISH = FaunusBiomeTags.of("spawns_crayfish");
     public static final TagKey<Biome> SPAWNS_HOATZIN = FaunusBiomeTags.of("spawns_hoatzin");
+    public static final TagKey<Biome> SPAWNS_IGUANA = FaunusBiomeTags.of("spawns_iguana");
     public static final TagKey<Biome> SPAWNS_LEECH = FaunusBiomeTags.of("spawns_leech");
     public static final TagKey<Biome> SPAWNS_PIRANHA = FaunusBiomeTags.of("spawns_piranha");
     public static final TagKey<Biome> SPAWNS_QUETZAL = FaunusBiomeTags.of("spawns_quetzal");
